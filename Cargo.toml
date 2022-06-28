@@ -1,0 +1,17 @@
+[package]
+name = "lua-wasm"
+version = "0.1.0"
+authors = ["Firebolt <24422634+Fireboltofdeath@users.noreply.github.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Smaller allocator
+wee_alloc = { version = "0.4.5" }
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+# opt-level = "s"
+opt-level = "z"
