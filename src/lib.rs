@@ -1,12 +1,8 @@
 #![feature(backtrace)]
 extern crate wee_alloc;
-pub mod datatypes;
-pub mod instances;
+pub mod bindings;
 pub mod util;
-use std::convert::TryFrom;
-
-use crate::datatypes::Vector3;
-use instances::{BasePart, DataModel, Instance};
+use bindings::*;
 use std::panic;
 use util::error;
 use util::println;
@@ -15,69 +11,33 @@ use util::println;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+#[allow(improper_ctypes)]
+extern "C" {
+    fn get_game() -> DataModel;
+}
+
 /// # Safety
 #[no_mangle]
+#[allow(unreachable_code)]
 pub unsafe fn greet() {
-    // println(&format!(
-    //     "vector3: {}",
-    //     Vector3::new(5.0, 5.0, 5.0) + Vector3::new(4.0, 5.0, 4.0) / Vector3::new(0.5, 2., 5.)
-    // ));
-    // option_test("None", None);
-    // option_test("Some", Some(25));
+    let x = "wow!".to_string();
+    let fnn1 = move || {
+        println(&format!("Wow, hello {}!", x));
+    };
+
+    fnn1();
+    fnn1();
+    task_delay(3., fnn1);
+
+    let my_fancy_part = Instance::new::<Part>();
+    my_fancy_part.set_anchored(true);
+    my_fancy_part.set_color(Color3::from_rgb(255., 0., 0.));
+    my_fancy_part.set_parent(Some(get_game().get_child("Workspace")));
+    my_fancy_part.set_size(Vector3::new(25., 420., 25.));
+    my_fancy_part.set_position(Vector3::new(55., 250., 30.));
 
     panic::set_hook(Box::new(|info| {
         let msg = info.to_string();
-
-        // msg.push_str("\n\nStack:\n\n");
-        // let e = Backtrace::capture();
-        // let stack = e.to_string();
-        // msg.push_str(&stack);
-
-        // msg.push_str("\n\n");
-
         error(&msg);
     }));
-
-    let game = DataModel::instance()
-        .child("Workspace")
-        .unwrap()
-        .parent()
-        .unwrap();
-
-    // println(&format!("{} + {} = {}", 69f64, 420f64, 69f64 + 420f64));
-
-    if let Ok(part) =
-        BasePart::try_from(game.child("Workspace").unwrap().child("Baseplate").unwrap())
-    {
-        println(&format!("can collide? {}", part.can_collide()));
-        part.set_can_collide(!part.can_collide());
-        println(&format!("can collide after set? {}", part.can_collide()));
-
-        println(&format!("part pos: {}", part.position()));
-        part.set_position(part.position() + Vector3::new(0., 15., 0.));
-        println(&format!("part pos after move: {}", part.position()));
-    }
-
-    game.child("Workspace")
-        .unwrap()
-        .child("Baseplate")
-        .unwrap()
-        .set_parent(game.child("Workspace").unwrap().child("Terrain"));
-
-    match DataModel::try_from(game) {
-        Ok(game) => {
-            println("Successfully converted to data model!");
-            println(
-                &game
-                    .child("Workspace")
-                    .unwrap()
-                    .child("Terrain")
-                    .unwrap()
-                    .child("Baseplate")
-                    .unwrap()
-                    .name(),
-            );
-        }
-        Err(_) => println("Could not convert to data model :("),
-    };
 }
