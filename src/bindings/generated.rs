@@ -331,19 +331,22 @@ extern "C" {
 #[allow(unused_imports)]
 use super::*;
 pub trait RobloxCreatable {
-	fn instance_new() -> Self;
+	fn new() -> Self;
 }
 macro_rules! creatable {
-	($name:ident) => {
-		impl RobloxCreatable for $name {
-			fn instance_new() -> $name {
-				unsafe { Self(instance_new(stringify!($name))) }
+	($($name:ident)*) => {
+		$(
+			impl RobloxCreatable for $name {
+				fn new() -> $name {
+					unsafe { Self(instance_new(stringify!($name))) }
+				}
 			}
-		}
+		)*
 	}
 }
 macro_rules! impl_instance_exclusive {
 	($name:ident) => {
+		impl_instance!($name);
 		impl std::convert::TryFrom<Instance> for $name {
 			type Error = ();
 			fn try_from(value: Instance) -> Result<Self, Self::Error> {
@@ -364,9 +367,7 @@ macro_rules! impl_instance {
 		#[repr(C)]
 		pub struct $name(u32);
 		impl $name {
-			pub fn new<I: RobloxCreatable>() -> I {
-				I::instance_new()
-			}
+			#[allow(clippy::wrong_self_convention)]
 			pub(crate) fn to_ptr(&self) -> u32 { self.0 }
 			pub fn get_child(&self, name: &str) -> Instance {
 				match unsafe { get_child(self.0, name) } {
@@ -474,7 +475,7 @@ macro_rules! impl_instance {
 }
 macro_rules! impl_accoutrement {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn attachment_forward(&self) -> Vector3 {
 				unsafe { Vector3(get_datatype_property(self.to_ptr(), "AttachmentForward")) }
@@ -507,7 +508,6 @@ macro_rules! impl_accoutrement {
 				unsafe { set_datatype_property(self.to_ptr(), "AttachmentUp", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -541,7 +541,7 @@ macro_rules! impl_hat {
 }
 macro_rules! impl_animation {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn animation_id(&self) -> Content {
 				unsafe { Content(get_datatype_property(self.to_ptr(), "AnimationId")) }
@@ -550,7 +550,6 @@ macro_rules! impl_animation {
 				unsafe { set_datatype_property(self.to_ptr(), "AnimationId", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -560,7 +559,7 @@ macro_rules! impl_animation {
 }
 macro_rules! impl_animation_clip {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn r#loop(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Loop") }
@@ -569,7 +568,6 @@ macro_rules! impl_animation_clip {
 				unsafe { set_bool_property(self.to_ptr(), "Loop", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -612,10 +610,9 @@ macro_rules! impl_keyframe_sequence {
 }
 macro_rules! impl_animation_controller {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -625,10 +622,9 @@ macro_rules! impl_animation_controller {
 }
 macro_rules! impl_animation_rig_data {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -638,7 +634,7 @@ macro_rules! impl_animation_rig_data {
 }
 macro_rules! impl_animation_stream_track {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn is_playing(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "IsPlaying") }
@@ -650,7 +646,6 @@ macro_rules! impl_animation_stream_track {
 				unsafe { get_float_property(self.to_ptr(), "WeightTarget") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -660,7 +655,7 @@ macro_rules! impl_animation_stream_track {
 }
 macro_rules! impl_animation_track {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn animation(&self) -> Option<Animation> {
 				unsafe { get_instance_property(self.to_ptr(), "Animation").map(|id| Animation(id)) }
@@ -711,7 +706,6 @@ macro_rules! impl_animation_track {
 				unsafe { dyn_animation_track_stop(self.to_ptr(), "Stop", fade_time) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -721,7 +715,7 @@ macro_rules! impl_animation_track {
 }
 macro_rules! impl_animator {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_playing_animation_tracks(&self) {
 				unsafe { dyn_animator_get_playing_animation_tracks(self.to_ptr(), "GetPlayingAnimationTracks") }
@@ -730,7 +724,6 @@ macro_rules! impl_animator {
 				unsafe { dyn_animator_load_animation(self.to_ptr(), "LoadAnimation", animation) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -740,7 +733,7 @@ macro_rules! impl_animator {
 }
 macro_rules! impl_atmosphere {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn color(&self) -> Color3 {
 				unsafe { Color3(get_datatype_property(self.to_ptr(), "Color")) }
@@ -779,7 +772,6 @@ macro_rules! impl_atmosphere {
 				unsafe { set_float_property(self.to_ptr(), "Offset", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -789,7 +781,7 @@ macro_rules! impl_atmosphere {
 }
 macro_rules! impl_attachment {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn axis(&self) -> Vector3 {
 				unsafe { Vector3(get_datatype_property(self.to_ptr(), "Axis")) }
@@ -870,7 +862,6 @@ macro_rules! impl_attachment {
 				unsafe { set_datatype_property(self.to_ptr(), "WorldSecondaryAxis", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -904,10 +895,9 @@ macro_rules! impl_bone {
 }
 macro_rules! impl_backpack {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -917,7 +907,7 @@ macro_rules! impl_backpack {
 }
 macro_rules! impl_backpack_item {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn texture_id(&self) -> Content {
 				unsafe { Content(get_datatype_property(self.to_ptr(), "TextureId")) }
@@ -926,7 +916,6 @@ macro_rules! impl_backpack_item {
 				unsafe { set_datatype_property(self.to_ptr(), "TextureId", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1014,13 +1003,12 @@ macro_rules! impl_tool {
 }
 macro_rules! impl_base_player_gui {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_gui_objects_at_position(&self, x: f64, y: f64) -> Objects {
 				unsafe { dyn_base_player_gui_get_gui_objects_at_position(self.to_ptr(), "GetGuiObjectsAtPosition", x, y) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1077,7 +1065,7 @@ macro_rules! impl_starter_gui {
 }
 macro_rules! impl_base_wrap {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn cage_mesh_id(&self) -> Content {
 				unsafe { Content(get_datatype_property(self.to_ptr(), "CageMeshId")) }
@@ -1095,7 +1083,6 @@ macro_rules! impl_base_wrap {
 				unsafe { CFrame(get_datatype_property(self.to_ptr(), "ImportOriginWorld")) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1165,7 +1152,7 @@ macro_rules! impl_wrap_target {
 }
 macro_rules! impl_beam {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn attachment_0(&self) -> Option<Attachment> {
 				unsafe { get_instance_property(self.to_ptr(), "Attachment0").map(|id| Attachment(id)) }
@@ -1279,7 +1266,6 @@ macro_rules! impl_beam {
 				unsafe { dyn_beam_set_texture_offset(self.to_ptr(), "SetTextureOffset", offset) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1289,10 +1275,9 @@ macro_rules! impl_beam {
 }
 macro_rules! impl_bindable_event {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1302,10 +1287,9 @@ macro_rules! impl_bindable_event {
 }
 macro_rules! impl_bindable_function {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1315,10 +1299,9 @@ macro_rules! impl_bindable_function {
 }
 macro_rules! impl_body_mover {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1592,7 +1575,7 @@ macro_rules! impl_rocket_propulsion {
 }
 macro_rules! impl_camera {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn c_frame(&self) -> CFrame {
 				unsafe { CFrame(get_datatype_property(self.to_ptr(), "CFrame")) }
@@ -1684,7 +1667,6 @@ macro_rules! impl_camera {
 				unsafe { dyn_camera_world_to_viewport_point(self.to_ptr(), "WorldToViewportPoint", world_point) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1694,10 +1676,9 @@ macro_rules! impl_camera {
 }
 macro_rules! impl_character_appearance {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1899,7 +1880,7 @@ macro_rules! impl_shirt_graphic {
 }
 macro_rules! impl_click_detector {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn cursor_icon(&self) -> Content {
 				unsafe { Content(get_datatype_property(self.to_ptr(), "CursorIcon")) }
@@ -1914,7 +1895,6 @@ macro_rules! impl_click_detector {
 				unsafe { set_float_property(self.to_ptr(), "MaxActivationDistance", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1924,7 +1904,7 @@ macro_rules! impl_click_detector {
 }
 macro_rules! impl_clouds {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn color(&self) -> Color3 {
 				unsafe { Color3(get_datatype_property(self.to_ptr(), "Color")) }
@@ -1951,7 +1931,6 @@ macro_rules! impl_clouds {
 				unsafe { set_bool_property(self.to_ptr(), "Enabled", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1961,7 +1940,7 @@ macro_rules! impl_clouds {
 }
 macro_rules! impl_command_instance {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn allow_gui_access_points(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "AllowGUIAccessPoints") }
@@ -1973,7 +1952,6 @@ macro_rules! impl_command_instance {
 				unsafe { set_string_property(self.to_ptr(), "DisplayName", &value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -1983,7 +1961,7 @@ macro_rules! impl_command_instance {
 }
 macro_rules! impl_constraint {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn active(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Active") }
@@ -2019,7 +1997,6 @@ macro_rules! impl_constraint {
 				unsafe { set_bool_property(self.to_ptr(), "Visible", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3006,10 +2983,9 @@ macro_rules! impl_vector_force {
 }
 macro_rules! impl_controller {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3061,7 +3037,7 @@ macro_rules! impl_vehicle_controller {
 }
 macro_rules! impl_data_model_mesh {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn offset(&self) -> Vector3 {
 				unsafe { Vector3(get_datatype_property(self.to_ptr(), "Offset")) }
@@ -3082,7 +3058,6 @@ macro_rules! impl_data_model_mesh {
 				unsafe { set_datatype_property(self.to_ptr(), "VertexColor", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3164,13 +3139,12 @@ macro_rules! impl_special_mesh {
 }
 macro_rules! impl_data_store_increment_options {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_metadata(&self) {
 				unsafe { dyn_data_store_increment_options_get_metadata(self.to_ptr(), "GetMetadata") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3180,7 +3154,7 @@ macro_rules! impl_data_store_increment_options {
 }
 macro_rules! impl_data_store_info {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn created_time(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "CreatedTime") }
@@ -3192,7 +3166,6 @@ macro_rules! impl_data_store_info {
 				unsafe { get_float_property(self.to_ptr(), "UpdatedTime") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3202,13 +3175,12 @@ macro_rules! impl_data_store_info {
 }
 macro_rules! impl_data_store_key {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn key_name(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "KeyName") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3218,7 +3190,7 @@ macro_rules! impl_data_store_key {
 }
 macro_rules! impl_data_store_key_info {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn created_time(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "CreatedTime") }
@@ -3236,7 +3208,6 @@ macro_rules! impl_data_store_key_info {
 				unsafe { dyn_data_store_key_info_get_user_ids(self.to_ptr(), "GetUserIds") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3246,7 +3217,7 @@ macro_rules! impl_data_store_key_info {
 }
 macro_rules! impl_data_store_object_version_info {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn created_time(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "CreatedTime") }
@@ -3258,7 +3229,6 @@ macro_rules! impl_data_store_object_version_info {
 				unsafe { get_string_property(self.to_ptr(), "Version") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3268,7 +3238,7 @@ macro_rules! impl_data_store_object_version_info {
 }
 macro_rules! impl_data_store_options {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn all_scopes(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "AllScopes") }
@@ -3277,7 +3247,6 @@ macro_rules! impl_data_store_options {
 				unsafe { set_bool_property(self.to_ptr(), "AllScopes", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3287,13 +3256,12 @@ macro_rules! impl_data_store_options {
 }
 macro_rules! impl_data_store_set_options {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_metadata(&self) {
 				unsafe { dyn_data_store_set_options_get_metadata(self.to_ptr(), "GetMetadata") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3303,7 +3271,7 @@ macro_rules! impl_data_store_set_options {
 }
 macro_rules! impl_dialog {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn conversation_distance(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "ConversationDistance") }
@@ -3351,7 +3319,6 @@ macro_rules! impl_dialog {
 				unsafe { dyn_dialog_get_current_players(self.to_ptr(), "GetCurrentPlayers") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3361,7 +3328,7 @@ macro_rules! impl_dialog {
 }
 macro_rules! impl_dialog_choice {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn goodbye_choice_active(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "GoodbyeChoiceActive") }
@@ -3388,7 +3355,6 @@ macro_rules! impl_dialog_choice {
 				unsafe { set_string_property(self.to_ptr(), "UserDialog", &value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3398,7 +3364,7 @@ macro_rules! impl_dialog_choice {
 }
 macro_rules! impl_dragger {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_mouse_down(&self, mouse_part: Option<Instance>, point_on_mouse_part: Vector3, parts: Objects) {
 				unsafe { dyn_dragger_mouse_down(self.to_ptr(), "MouseDown", mouse_part, point_on_mouse_part, parts) }
@@ -3410,7 +3376,6 @@ macro_rules! impl_dragger {
 				unsafe { dyn_dragger_mouse_up(self.to_ptr(), "MouseUp") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3420,7 +3385,7 @@ macro_rules! impl_dragger {
 }
 macro_rules! impl_euler_rotation_curve {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_angles_at_time(&self, time: f64) {
 				unsafe { dyn_euler_rotation_curve_get_angles_at_time(self.to_ptr(), "GetAnglesAtTime", time) }
@@ -3438,7 +3403,6 @@ macro_rules! impl_euler_rotation_curve {
 				unsafe { dyn_euler_rotation_curve_z(self.to_ptr(), "Z") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3448,7 +3412,7 @@ macro_rules! impl_euler_rotation_curve {
 }
 macro_rules! impl_explosion {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn blast_pressure(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "BlastPressure") }
@@ -3487,7 +3451,6 @@ macro_rules! impl_explosion {
 				unsafe { set_bool_property(self.to_ptr(), "Visible", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3497,10 +3460,9 @@ macro_rules! impl_explosion {
 }
 macro_rules! impl_face_instance {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3604,10 +3566,9 @@ macro_rules! impl_texture {
 }
 macro_rules! impl_feature {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3617,7 +3578,7 @@ macro_rules! impl_feature {
 }
 macro_rules! impl_fire {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn color(&self) -> Color3 {
 				unsafe { Color3(get_datatype_property(self.to_ptr(), "Color")) }
@@ -3656,7 +3617,6 @@ macro_rules! impl_fire {
 				unsafe { set_float_property(self.to_ptr(), "TimeScale", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3666,7 +3626,7 @@ macro_rules! impl_fire {
 }
 macro_rules! impl_float_curve {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn length(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "Length") }
@@ -3690,7 +3650,6 @@ macro_rules! impl_float_curve {
 				unsafe { dyn_float_curve_remove_key_at_index(self.to_ptr(), "RemoveKeyAtIndex", starting_index, count) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3700,10 +3659,9 @@ macro_rules! impl_float_curve {
 }
 macro_rules! impl_folder {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3713,7 +3671,7 @@ macro_rules! impl_folder {
 }
 macro_rules! impl_force_field {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn visible(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Visible") }
@@ -3722,7 +3680,6 @@ macro_rules! impl_force_field {
 				unsafe { set_bool_property(self.to_ptr(), "Visible", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3732,7 +3689,7 @@ macro_rules! impl_force_field {
 }
 macro_rules! impl_get_text_bounds_params {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn font(&self) -> Font {
 				unsafe { Font(get_datatype_property(self.to_ptr(), "Font")) }
@@ -3759,7 +3716,6 @@ macro_rules! impl_get_text_bounds_params {
 				unsafe { set_float_property(self.to_ptr(), "Width", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3769,7 +3725,7 @@ macro_rules! impl_get_text_bounds_params {
 }
 macro_rules! impl_global_data_store {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_async(&self, key: &str) {
 				unsafe { dyn_global_data_store_get_async(self.to_ptr(), "GetAsync", key) }
@@ -3781,7 +3737,6 @@ macro_rules! impl_global_data_store {
 				unsafe { dyn_global_data_store_update_async(self.to_ptr(), "UpdateAsync", key, transform_function) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -3824,10 +3779,9 @@ macro_rules! impl_ordered_data_store {
 }
 macro_rules! impl_gui_base {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -5594,7 +5548,7 @@ macro_rules! impl_selection_point_lasso {
 }
 macro_rules! impl_highlight {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn adornee(&self) -> Option<Instance> {
 				unsafe { get_instance_property(self.to_ptr(), "Adornee").map(|id| Instance(id)) }
@@ -5633,7 +5587,6 @@ macro_rules! impl_highlight {
 				unsafe { set_float_property(self.to_ptr(), "OutlineTransparency", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -5643,7 +5596,7 @@ macro_rules! impl_highlight {
 }
 macro_rules! impl_humanoid {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn auto_jump_enabled(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "AutoJumpEnabled") }
@@ -5859,7 +5812,6 @@ macro_rules! impl_humanoid {
 				unsafe { dyn_humanoid_play_emote(self.to_ptr(), "PlayEmote", emote_name) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -5869,7 +5821,7 @@ macro_rules! impl_humanoid {
 }
 macro_rules! impl_humanoid_description {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn back_accessory(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "BackAccessory") }
@@ -6109,7 +6061,6 @@ macro_rules! impl_humanoid_description {
 				unsafe { dyn_humanoid_description_remove_emote(self.to_ptr(), "RemoveEmote", name) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6119,7 +6070,7 @@ macro_rules! impl_humanoid_description {
 }
 macro_rules! impl_importer_base_settings {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn id(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "Id") }
@@ -6137,7 +6088,6 @@ macro_rules! impl_importer_base_settings {
 				unsafe { set_bool_property(self.to_ptr(), "ShouldImport", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6333,7 +6283,7 @@ macro_rules! impl_importer_root_settings {
 }
 macro_rules! impl_input_object {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn delta(&self) -> Vector3 {
 				unsafe { Vector3(get_datatype_property(self.to_ptr(), "Delta")) }
@@ -6348,7 +6298,6 @@ macro_rules! impl_input_object {
 				unsafe { set_datatype_property(self.to_ptr(), "Position", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6358,7 +6307,7 @@ macro_rules! impl_input_object {
 }
 macro_rules! impl_joint_instance {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn active(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Active") }
@@ -6394,7 +6343,6 @@ macro_rules! impl_joint_instance {
 				unsafe { set_instance_property(self.to_ptr(), "Part1", value.map(|v| v.to_ptr()).unwrap_or(0)) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6539,7 +6487,7 @@ macro_rules! impl_velocity_motor {
 }
 macro_rules! impl_keyframe {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn time(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "Time") }
@@ -6566,7 +6514,6 @@ macro_rules! impl_keyframe {
 				unsafe { dyn_keyframe_remove_pose(self.to_ptr(), "RemovePose", pose) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6576,7 +6523,7 @@ macro_rules! impl_keyframe {
 }
 macro_rules! impl_keyframe_marker {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn value(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "Value") }
@@ -6585,7 +6532,6 @@ macro_rules! impl_keyframe_marker {
 				unsafe { set_string_property(self.to_ptr(), "Value", &value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6595,7 +6541,7 @@ macro_rules! impl_keyframe_marker {
 }
 macro_rules! impl_light {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn brightness(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "Brightness") }
@@ -6622,7 +6568,6 @@ macro_rules! impl_light {
 				unsafe { set_bool_property(self.to_ptr(), "Shadows", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6698,7 +6643,7 @@ macro_rules! impl_surface_light {
 }
 macro_rules! impl_lighting {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn ambient(&self) -> Color3 {
 				unsafe { Color3(get_datatype_property(self.to_ptr(), "Ambient")) }
@@ -6828,7 +6773,6 @@ macro_rules! impl_lighting {
 				unsafe { dyn_lighting_set_minutes_after_midnight(self.to_ptr(), "SetMinutesAfterMidnight", minutes) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6838,7 +6782,7 @@ macro_rules! impl_lighting {
 }
 macro_rules! impl_localization_table {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			#[deprecated]
 			pub fn development_language(&self) -> String {
@@ -6893,7 +6837,6 @@ macro_rules! impl_localization_table {
 				unsafe { dyn_localization_table_set_entry_value(self.to_ptr(), "SetEntryValue", key, source, context, locale_id, text) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6903,7 +6846,7 @@ macro_rules! impl_localization_table {
 }
 macro_rules! impl_lod_data_entity {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn entity_lod_enabled(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "EntityLodEnabled") }
@@ -6912,7 +6855,6 @@ macro_rules! impl_lod_data_entity {
 				unsafe { set_bool_property(self.to_ptr(), "EntityLodEnabled", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -6922,10 +6864,9 @@ macro_rules! impl_lod_data_entity {
 }
 macro_rules! impl_lua_source_container {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7001,7 +6942,7 @@ macro_rules! impl_module_script {
 }
 macro_rules! impl_marker_curve {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn length(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "Length") }
@@ -7019,7 +6960,6 @@ macro_rules! impl_marker_curve {
 				unsafe { dyn_marker_curve_remove_marker_at_index(self.to_ptr(), "RemoveMarkerAtIndex", starting_index, count) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7029,7 +6969,7 @@ macro_rules! impl_marker_curve {
 }
 macro_rules! impl_material_variant {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn studs_per_tile(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "StudsPerTile") }
@@ -7038,7 +6978,6 @@ macro_rules! impl_material_variant {
 				unsafe { set_float_property(self.to_ptr(), "StudsPerTile", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7048,7 +6987,7 @@ macro_rules! impl_material_variant {
 }
 macro_rules! impl_memory_store_queue {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_read_async(&self, count: f64, all_or_nothing: bool, wait_timeout: f64) {
 				unsafe { dyn_memory_store_queue_read_async(self.to_ptr(), "ReadAsync", count, all_or_nothing, wait_timeout) }
@@ -7057,7 +6996,6 @@ macro_rules! impl_memory_store_queue {
 				unsafe { dyn_memory_store_queue_remove_async(self.to_ptr(), "RemoveAsync", id) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7067,7 +7005,7 @@ macro_rules! impl_memory_store_queue {
 }
 macro_rules! impl_memory_store_sorted_map {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_async(&self, key: &str) {
 				unsafe { dyn_memory_store_sorted_map_get_async(self.to_ptr(), "GetAsync", key) }
@@ -7079,7 +7017,6 @@ macro_rules! impl_memory_store_sorted_map {
 				unsafe { dyn_memory_store_sorted_map_update_async(self.to_ptr(), "UpdateAsync", key, transform_function, expiration) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7089,7 +7026,7 @@ macro_rules! impl_memory_store_sorted_map {
 }
 macro_rules! impl_mouse {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn hit(&self) -> CFrame {
 				unsafe { CFrame(get_datatype_property(self.to_ptr(), "Hit")) }
@@ -7128,7 +7065,6 @@ macro_rules! impl_mouse {
 				unsafe { get_float_property(self.to_ptr(), "Y") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7150,10 +7086,9 @@ macro_rules! impl_player_mouse {
 }
 macro_rules! impl_network_marker {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7163,7 +7098,7 @@ macro_rules! impl_network_marker {
 }
 macro_rules! impl_no_collision_constraint {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn enabled(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Enabled") }
@@ -7184,7 +7119,6 @@ macro_rules! impl_no_collision_constraint {
 				unsafe { set_instance_property(self.to_ptr(), "Part1", value.map(|v| v.to_ptr()).unwrap_or(0)) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -7194,7 +7128,7 @@ macro_rules! impl_no_collision_constraint {
 }
 macro_rules! impl_pv_instance {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_pivot(&self) -> CFrame {
 				unsafe { dyn_pv_instance_get_pivot(self.to_ptr(), "GetPivot") }
@@ -7203,7 +7137,6 @@ macro_rules! impl_pv_instance {
 				unsafe { dyn_pv_instance_pivot_to(self.to_ptr(), "PivotTo", target_c_frame) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8181,7 +8114,7 @@ macro_rules! impl_world_model {
 }
 macro_rules! impl_package_link {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn package_id(&self) -> Content {
 				unsafe { Content(get_datatype_property(self.to_ptr(), "PackageId")) }
@@ -8190,7 +8123,6 @@ macro_rules! impl_package_link {
 				unsafe { get_float_property(self.to_ptr(), "VersionNumber") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8200,7 +8132,7 @@ macro_rules! impl_package_link {
 }
 macro_rules! impl_pages {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn is_finished(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "IsFinished") }
@@ -8212,7 +8144,6 @@ macro_rules! impl_pages {
 				unsafe { dyn_pages_advance_to_next_page_async(self.to_ptr(), "AdvanceToNextPageAsync") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8342,7 +8273,7 @@ macro_rules! impl_standard_pages {
 }
 macro_rules! impl_particle_emitter {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn acceleration(&self) -> Vector3 {
 				unsafe { Vector3(get_datatype_property(self.to_ptr(), "Acceleration")) }
@@ -8509,7 +8440,6 @@ macro_rules! impl_particle_emitter {
 				unsafe { dyn_particle_emitter_emit(self.to_ptr(), "Emit", particle_count) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8519,7 +8449,7 @@ macro_rules! impl_particle_emitter {
 }
 macro_rules! impl_path {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_waypoints(&self) {
 				unsafe { dyn_path_get_waypoints(self.to_ptr(), "GetWaypoints") }
@@ -8531,7 +8461,6 @@ macro_rules! impl_path {
 				unsafe { dyn_path_compute_async(self.to_ptr(), "ComputeAsync", start, finish) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8541,7 +8470,7 @@ macro_rules! impl_path {
 }
 macro_rules! impl_pathfinding_link {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn attachment_0(&self) -> Option<Attachment> {
 				unsafe { get_instance_property(self.to_ptr(), "Attachment0").map(|id| Attachment(id)) }
@@ -8568,7 +8497,6 @@ macro_rules! impl_pathfinding_link {
 				unsafe { set_string_property(self.to_ptr(), "Label", &value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8578,7 +8506,7 @@ macro_rules! impl_pathfinding_link {
 }
 macro_rules! impl_pathfinding_modifier {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn label(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "Label") }
@@ -8593,7 +8521,6 @@ macro_rules! impl_pathfinding_modifier {
 				unsafe { set_bool_property(self.to_ptr(), "PassThrough", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8603,7 +8530,7 @@ macro_rules! impl_pathfinding_modifier {
 }
 macro_rules! impl_player {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn account_age(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "AccountAge") }
@@ -8778,7 +8705,6 @@ macro_rules! impl_player {
 				unsafe { dyn_player_request_stream_around_async(self.to_ptr(), "RequestStreamAroundAsync", position, time_out) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8788,7 +8714,7 @@ macro_rules! impl_player {
 }
 macro_rules! impl_player_scripts {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_clear_computer_camera_movement_modes(&self) {
 				unsafe { dyn_player_scripts_clear_computer_camera_movement_modes(self.to_ptr(), "ClearComputerCameraMovementModes") }
@@ -8803,7 +8729,6 @@ macro_rules! impl_player_scripts {
 				unsafe { dyn_player_scripts_clear_touch_movement_modes(self.to_ptr(), "ClearTouchMovementModes") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8813,7 +8738,7 @@ macro_rules! impl_player_scripts {
 }
 macro_rules! impl_pose_base {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn weight(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "Weight") }
@@ -8822,7 +8747,6 @@ macro_rules! impl_pose_base {
 				unsafe { set_float_property(self.to_ptr(), "Weight", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -8885,7 +8809,7 @@ macro_rules! impl_pose {
 }
 macro_rules! impl_post_effect {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn enabled(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Enabled") }
@@ -8894,7 +8818,6 @@ macro_rules! impl_post_effect {
 				unsafe { set_bool_property(self.to_ptr(), "Enabled", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9048,7 +8971,7 @@ macro_rules! impl_sun_rays_effect {
 }
 macro_rules! impl_proximity_prompt {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn action_text(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "ActionText") }
@@ -9117,7 +9040,6 @@ macro_rules! impl_proximity_prompt {
 				unsafe { dyn_proximity_prompt_input_hold_end(self.to_ptr(), "InputHoldEnd") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9127,10 +9049,9 @@ macro_rules! impl_proximity_prompt {
 }
 macro_rules! impl_remote_event {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9140,10 +9061,9 @@ macro_rules! impl_remote_event {
 }
 macro_rules! impl_remote_function {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9153,13 +9073,12 @@ macro_rules! impl_remote_function {
 }
 macro_rules! impl_replicated_first {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_remove_default_loading_screen(&self) {
 				unsafe { dyn_replicated_first_remove_default_loading_screen(self.to_ptr(), "RemoveDefaultLoadingScreen") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9169,10 +9088,9 @@ macro_rules! impl_replicated_first {
 }
 macro_rules! impl_replicated_storage {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9182,7 +9100,7 @@ macro_rules! impl_replicated_storage {
 }
 macro_rules! impl_rotation_curve {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn length(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "Length") }
@@ -9206,7 +9124,6 @@ macro_rules! impl_rotation_curve {
 				unsafe { dyn_rotation_curve_remove_key_at_index(self.to_ptr(), "RemoveKeyAtIndex", starting_index, count) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9216,7 +9133,7 @@ macro_rules! impl_rotation_curve {
 }
 macro_rules! impl_screenshot_hud {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn camera_button_icon(&self) -> Content {
 				unsafe { Content(get_datatype_property(self.to_ptr(), "CameraButtonIcon")) }
@@ -9261,7 +9178,6 @@ macro_rules! impl_screenshot_hud {
 				unsafe { set_bool_property(self.to_ptr(), "Visible", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9271,10 +9187,9 @@ macro_rules! impl_screenshot_hud {
 }
 macro_rules! impl_server_script_service {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9284,10 +9199,9 @@ macro_rules! impl_server_script_service {
 }
 macro_rules! impl_server_storage {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9297,7 +9211,7 @@ macro_rules! impl_server_storage {
 }
 macro_rules! impl_service_provider {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_find_service(&self, class_name: &str) -> Option<Instance> {
 				unsafe { dyn_service_provider_find_service(self.to_ptr(), "FindService", class_name) }
@@ -9306,7 +9220,6 @@ macro_rules! impl_service_provider {
 				unsafe { dyn_service_provider_get_service(self.to_ptr(), "GetService", class_name) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9396,7 +9309,7 @@ macro_rules! impl_user_settings {
 }
 macro_rules! impl_sky {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn celestial_bodies_shown(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "CelestialBodiesShown") }
@@ -9471,7 +9384,6 @@ macro_rules! impl_sky {
 				unsafe { set_datatype_property(self.to_ptr(), "SunTextureId", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9481,7 +9393,7 @@ macro_rules! impl_sky {
 }
 macro_rules! impl_smoke {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn color(&self) -> Color3 {
 				unsafe { Color3(get_datatype_property(self.to_ptr(), "Color")) }
@@ -9520,7 +9432,6 @@ macro_rules! impl_smoke {
 				unsafe { set_float_property(self.to_ptr(), "TimeScale", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9530,7 +9441,7 @@ macro_rules! impl_smoke {
 }
 macro_rules! impl_sound {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			#[deprecated]
 			pub fn emitter_size(&self) -> f64 {
@@ -9652,7 +9563,6 @@ macro_rules! impl_sound {
 				unsafe { dyn_sound_stop(self.to_ptr(), "Stop") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9662,7 +9572,7 @@ macro_rules! impl_sound {
 }
 macro_rules! impl_sound_effect {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn enabled(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Enabled") }
@@ -9677,7 +9587,6 @@ macro_rules! impl_sound_effect {
 				unsafe { set_float_property(self.to_ptr(), "Priority", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -9999,7 +9908,7 @@ macro_rules! impl_tremolo_sound_effect {
 }
 macro_rules! impl_sound_group {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn volume(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "Volume") }
@@ -10008,7 +9917,6 @@ macro_rules! impl_sound_group {
 				unsafe { set_float_property(self.to_ptr(), "Volume", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10018,7 +9926,7 @@ macro_rules! impl_sound_group {
 }
 macro_rules! impl_sparkles {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn color(&self) -> Color3 {
 				unsafe { Color3(get_datatype_property(self.to_ptr(), "Color")) }
@@ -10045,7 +9953,6 @@ macro_rules! impl_sparkles {
 				unsafe { set_float_property(self.to_ptr(), "TimeScale", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10055,7 +9962,7 @@ macro_rules! impl_sparkles {
 }
 macro_rules! impl_speaker {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn channel_count(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "ChannelCount") }
@@ -10094,7 +10001,6 @@ macro_rules! impl_speaker {
 				unsafe { set_float_property(self.to_ptr(), "Volume", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10104,10 +10010,9 @@ macro_rules! impl_speaker {
 }
 macro_rules! impl_starter_gear {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10117,10 +10022,9 @@ macro_rules! impl_starter_gear {
 }
 macro_rules! impl_starter_pack {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10130,7 +10034,7 @@ macro_rules! impl_starter_pack {
 }
 macro_rules! impl_starter_player {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn allow_custom_animations(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "AllowCustomAnimations") }
@@ -10214,7 +10118,6 @@ macro_rules! impl_starter_player {
 				unsafe { set_bool_property(self.to_ptr(), "UserEmotesEnabled", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10224,10 +10127,9 @@ macro_rules! impl_starter_player {
 }
 macro_rules! impl_starter_player_scripts {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10249,10 +10151,9 @@ macro_rules! impl_starter_character_scripts {
 }
 macro_rules! impl_surface_appearance {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10262,7 +10163,7 @@ macro_rules! impl_surface_appearance {
 }
 macro_rules! impl_team {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn auto_assignable(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "AutoAssignable") }
@@ -10296,7 +10197,6 @@ macro_rules! impl_team {
 				unsafe { dyn_team_get_players(self.to_ptr(), "GetPlayers") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10306,13 +10206,12 @@ macro_rules! impl_team {
 }
 macro_rules! impl_teams {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_teams(&self) -> Objects {
 				unsafe { dyn_teams_get_teams(self.to_ptr(), "GetTeams") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10322,7 +10221,7 @@ macro_rules! impl_teams {
 }
 macro_rules! impl_teleport_async_result {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn private_server_id(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "PrivateServerId") }
@@ -10331,7 +10230,6 @@ macro_rules! impl_teleport_async_result {
 				unsafe { get_string_property(self.to_ptr(), "ReservedServerAccessCode") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10341,7 +10239,7 @@ macro_rules! impl_teleport_async_result {
 }
 macro_rules! impl_teleport_options {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn reserved_server_access_code(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "ReservedServerAccessCode") }
@@ -10365,7 +10263,6 @@ macro_rules! impl_teleport_options {
 				unsafe { dyn_teleport_options_get_teleport_data(self.to_ptr(), "GetTeleportData") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10375,7 +10272,7 @@ macro_rules! impl_teleport_options {
 }
 macro_rules! impl_terrain_detail {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn studs_per_tile(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "StudsPerTile") }
@@ -10384,7 +10281,6 @@ macro_rules! impl_terrain_detail {
 				unsafe { set_float_property(self.to_ptr(), "StudsPerTile", value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10394,7 +10290,7 @@ macro_rules! impl_terrain_detail {
 }
 macro_rules! impl_terrain_region {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			#[deprecated]
 			pub fn is_smooth(&self) -> bool {
@@ -10404,7 +10300,6 @@ macro_rules! impl_terrain_region {
 				unsafe { Vector3(get_datatype_property(self.to_ptr(), "SizeInCells")) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10414,7 +10309,7 @@ macro_rules! impl_terrain_region {
 }
 macro_rules! impl_text_channel {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_display_system_message(&self, system_message: &str, metadata: &str) -> Option<TextChatMessage> {
 				unsafe { dyn_text_channel_display_system_message(self.to_ptr(), "DisplaySystemMessage", system_message, metadata) }
@@ -10426,7 +10321,6 @@ macro_rules! impl_text_channel {
 				unsafe { dyn_text_channel_send_async(self.to_ptr(), "SendAsync", message, metadata) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10436,7 +10330,7 @@ macro_rules! impl_text_channel {
 }
 macro_rules! impl_text_chat_command {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn enabled(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Enabled") }
@@ -10457,7 +10351,6 @@ macro_rules! impl_text_chat_command {
 				unsafe { set_string_property(self.to_ptr(), "SecondaryAlias", &value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10467,10 +10360,9 @@ macro_rules! impl_text_chat_command {
 }
 macro_rules! impl_text_chat_configurations {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10522,7 +10414,7 @@ macro_rules! impl_chat_window_configuration {
 }
 macro_rules! impl_text_chat_message {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn message_id(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "MessageId") }
@@ -10567,7 +10459,6 @@ macro_rules! impl_text_chat_message {
 				unsafe { set_datatype_property(self.to_ptr(), "Timestamp", value.to_ptr()) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10577,7 +10468,7 @@ macro_rules! impl_text_chat_message {
 }
 macro_rules! impl_text_chat_message_properties {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn prefix_text(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "PrefixText") }
@@ -10592,7 +10483,6 @@ macro_rules! impl_text_chat_message_properties {
 				unsafe { set_string_property(self.to_ptr(), "Text", &value) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10602,7 +10492,7 @@ macro_rules! impl_text_chat_message_properties {
 }
 macro_rules! impl_text_filter_result {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_chat_for_user_async(&self, to_user_id: f64) -> String {
 				unsafe { dyn_text_filter_result_get_chat_for_user_async(self.to_ptr(), "GetChatForUserAsync", to_user_id) }
@@ -10614,7 +10504,6 @@ macro_rules! impl_text_filter_result {
 				unsafe { dyn_text_filter_result_get_non_chat_string_for_user_async(self.to_ptr(), "GetNonChatStringForUserAsync", to_user_id) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10624,7 +10513,7 @@ macro_rules! impl_text_filter_result {
 }
 macro_rules! impl_text_source {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn can_send(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "CanSend") }
@@ -10636,7 +10525,6 @@ macro_rules! impl_text_source {
 				unsafe { get_float_property(self.to_ptr(), "UserId") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10646,10 +10534,9 @@ macro_rules! impl_text_source {
 }
 macro_rules! impl_touch_transmitter {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10659,7 +10546,7 @@ macro_rules! impl_touch_transmitter {
 }
 macro_rules! impl_trail {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn attachment_0(&self) -> Option<Attachment> {
 				unsafe { get_instance_property(self.to_ptr(), "Attachment0").map(|id| Attachment(id)) }
@@ -10755,7 +10642,6 @@ macro_rules! impl_trail {
 				unsafe { dyn_trail_clear(self.to_ptr(), "Clear") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10765,7 +10651,7 @@ macro_rules! impl_trail {
 }
 macro_rules! impl_translator {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn locale_id(&self) -> String {
 				unsafe { get_string_property(self.to_ptr(), "LocaleId") }
@@ -10774,7 +10660,6 @@ macro_rules! impl_translator {
 				unsafe { dyn_translator_translate(self.to_ptr(), "Translate", context, text) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10784,7 +10669,7 @@ macro_rules! impl_translator {
 }
 macro_rules! impl_tween_base {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_cancel(&self) {
 				unsafe { dyn_tween_base_cancel(self.to_ptr(), "Cancel") }
@@ -10796,7 +10681,6 @@ macro_rules! impl_tween_base {
 				unsafe { dyn_tween_base_play(self.to_ptr(), "Play") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -10824,10 +10708,9 @@ macro_rules! impl_tween {
 }
 macro_rules! impl_ui_base {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -11257,7 +11140,7 @@ macro_rules! impl_ui_stroke {
 }
 macro_rules! impl_user_game_settings {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn gamepad_camera_sensitivity(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "GamepadCameraSensitivity") }
@@ -11308,7 +11191,6 @@ macro_rules! impl_user_game_settings {
 				unsafe { dyn_user_game_settings_set_onboarding_completed(self.to_ptr(), "SetOnboardingCompleted", onboarding_id) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -11318,10 +11200,9 @@ macro_rules! impl_user_game_settings {
 }
 macro_rules! impl_value_base {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -11583,7 +11464,7 @@ macro_rules! impl_vector_3_value {
 }
 macro_rules! impl_vector_3_curve {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_value_at_time(&self, time: f64) {
 				unsafe { dyn_vector_3_curve_get_value_at_time(self.to_ptr(), "GetValueAtTime", time) }
@@ -11598,7 +11479,6 @@ macro_rules! impl_vector_3_curve {
 				unsafe { dyn_vector_3_curve_z(self.to_ptr(), "Z") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -11608,10 +11488,9 @@ macro_rules! impl_vector_3_curve {
 }
 macro_rules! impl_voice_channel {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -11621,13 +11500,12 @@ macro_rules! impl_voice_channel {
 }
 macro_rules! impl_voice_source {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn user_id(&self) -> f64 {
 				unsafe { get_float_property(self.to_ptr(), "UserId") }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -11637,7 +11515,7 @@ macro_rules! impl_voice_source {
 }
 macro_rules! impl_weld_constraint {
 	($name:ident) => {
-		impl_instance!($name);
+		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn active(&self) -> bool {
 				unsafe { get_bool_property(self.to_ptr(), "Active") }
@@ -11661,7 +11539,6 @@ macro_rules! impl_weld_constraint {
 				unsafe { set_instance_property(self.to_ptr(), "Part1", value.map(|v| v.to_ptr()).unwrap_or(0)) }
 			}
 		}
-		impl_instance_exclusive!($name);
 		impl From<$name> for Instance {
 			fn from(value: $name) -> Instance {
 				Instance(value.to_ptr())
@@ -11991,209 +11868,4 @@ impl_vector_3_curve!(Vector3Curve);
 impl_voice_channel!(VoiceChannel);
 impl_voice_source!(VoiceSource);
 impl_weld_constraint!(WeldConstraint);
-creatable!(Accoutrement);
-creatable!(Accessory);
-creatable!(Hat);
-creatable!(Animation);
-creatable!(CurveAnimation);
-creatable!(KeyframeSequence);
-creatable!(AnimationController);
-creatable!(AnimationRigData);
-creatable!(Animator);
-creatable!(Atmosphere);
-creatable!(Attachment);
-creatable!(Bone);
-creatable!(Backpack);
-creatable!(Tool);
-creatable!(WrapLayer);
-creatable!(WrapTarget);
-creatable!(Beam);
-creatable!(BindableEvent);
-creatable!(BindableFunction);
-creatable!(BodyAngularVelocity);
-creatable!(BodyForce);
-creatable!(BodyGyro);
-creatable!(BodyPosition);
-creatable!(BodyThrust);
-creatable!(BodyVelocity);
-creatable!(RocketPropulsion);
-creatable!(Camera);
-creatable!(BodyColors);
-creatable!(CharacterMesh);
-creatable!(Pants);
-creatable!(Shirt);
-creatable!(ShirtGraphic);
-creatable!(ClickDetector);
-creatable!(Clouds);
-creatable!(AlignOrientation);
-creatable!(AlignPosition);
-creatable!(AngularVelocity);
-creatable!(BallSocketConstraint);
-creatable!(HingeConstraint);
-creatable!(LineForce);
-creatable!(LinearVelocity);
-creatable!(PlaneConstraint);
-creatable!(Plane);
-creatable!(RigidConstraint);
-creatable!(RodConstraint);
-creatable!(RopeConstraint);
-creatable!(CylindricalConstraint);
-creatable!(PrismaticConstraint);
-creatable!(SpringConstraint);
-creatable!(Torque);
-creatable!(TorsionSpringConstraint);
-creatable!(UniversalConstraint);
-creatable!(VectorForce);
-creatable!(HumanoidController);
-creatable!(SkateboardController);
-creatable!(VehicleController);
-creatable!(BlockMesh);
-creatable!(CylinderMesh);
-creatable!(FileMesh);
-creatable!(SpecialMesh);
-creatable!(DataStoreIncrementOptions);
-creatable!(DataStoreOptions);
-creatable!(DataStoreSetOptions);
-creatable!(Dialog);
-creatable!(DialogChoice);
-creatable!(Dragger);
-creatable!(EulerRotationCurve);
-creatable!(Explosion);
-creatable!(Decal);
-creatable!(Texture);
-creatable!(Fire);
-creatable!(FloatCurve);
-creatable!(Folder);
-creatable!(ForceField);
-creatable!(GetTextBoundsParams);
-creatable!(CanvasGroup);
-creatable!(Frame);
-creatable!(ImageButton);
-creatable!(TextButton);
-creatable!(ImageLabel);
-creatable!(TextLabel);
-creatable!(ScrollingFrame);
-creatable!(TextBox);
-creatable!(VideoFrame);
-creatable!(ViewportFrame);
-creatable!(BillboardGui);
-creatable!(ScreenGui);
-creatable!(SurfaceGui);
-creatable!(FloorWire);
-creatable!(SelectionBox);
-creatable!(BoxHandleAdornment);
-creatable!(ConeHandleAdornment);
-creatable!(CylinderHandleAdornment);
-creatable!(ImageHandleAdornment);
-creatable!(LineHandleAdornment);
-creatable!(SphereHandleAdornment);
-creatable!(ParabolaAdornment);
-creatable!(SelectionSphere);
-creatable!(ArcHandles);
-creatable!(Handles);
-creatable!(SurfaceSelection);
-creatable!(SelectionPartLasso);
-creatable!(SelectionPointLasso);
-creatable!(Highlight);
-creatable!(Humanoid);
-creatable!(HumanoidDescription);
-creatable!(Glue);
-creatable!(Motor);
-creatable!(Motor6D);
-creatable!(VelocityMotor);
-creatable!(Keyframe);
-creatable!(KeyframeMarker);
-creatable!(PointLight);
-creatable!(SpotLight);
-creatable!(SurfaceLight);
-creatable!(LocalizationTable);
-creatable!(Script);
-creatable!(LocalScript);
-creatable!(ModuleScript);
-creatable!(MarkerCurve);
-creatable!(MaterialVariant);
-creatable!(NoCollisionConstraint);
-creatable!(CornerWedgePart);
-creatable!(Part);
-creatable!(Seat);
-creatable!(SkateboardPlatform);
-creatable!(SpawnLocation);
-creatable!(WedgePart);
-creatable!(MeshPart);
-creatable!(PartOperation);
-creatable!(NegateOperation);
-creatable!(UnionOperation);
-creatable!(TrussPart);
-creatable!(VehicleSeat);
-creatable!(Model);
-creatable!(Actor);
-creatable!(WorldModel);
-creatable!(ParticleEmitter);
-creatable!(PathfindingLink);
-creatable!(PathfindingModifier);
-creatable!(Player);
-creatable!(NumberPose);
-creatable!(Pose);
-creatable!(BloomEffect);
-creatable!(BlurEffect);
-creatable!(ColorCorrectionEffect);
-creatable!(DepthOfFieldEffect);
-creatable!(SunRaysEffect);
-creatable!(ProximityPrompt);
-creatable!(RemoteEvent);
-creatable!(RemoteFunction);
-creatable!(RotationCurve);
-creatable!(Sky);
-creatable!(Smoke);
-creatable!(Sound);
-creatable!(ChorusSoundEffect);
-creatable!(CompressorSoundEffect);
-creatable!(ChannelSelectorSoundEffect);
-creatable!(DistortionSoundEffect);
-creatable!(EchoSoundEffect);
-creatable!(EqualizerSoundEffect);
-creatable!(FlangeSoundEffect);
-creatable!(PitchShiftSoundEffect);
-creatable!(ReverbSoundEffect);
-creatable!(TremoloSoundEffect);
-creatable!(SoundGroup);
-creatable!(Sparkles);
-creatable!(Speaker);
-creatable!(StarterGear);
-creatable!(SurfaceAppearance);
-creatable!(Team);
-creatable!(TeleportOptions);
-creatable!(TerrainDetail);
-creatable!(TerrainRegion);
-creatable!(TextChannel);
-creatable!(TextChatCommand);
-creatable!(TextChatMessageProperties);
-creatable!(Trail);
-creatable!(Tween);
-creatable!(UIAspectRatioConstraint);
-creatable!(UISizeConstraint);
-creatable!(UITextSizeConstraint);
-creatable!(UICorner);
-creatable!(UIGradient);
-creatable!(UIGridLayout);
-creatable!(UIListLayout);
-creatable!(UIPageLayout);
-creatable!(UITableLayout);
-creatable!(UIPadding);
-creatable!(UIScale);
-creatable!(UIStroke);
-creatable!(BoolValue);
-creatable!(BrickColorValue);
-creatable!(CFrameValue);
-creatable!(Color3Value);
-creatable!(DoubleConstrainedValue);
-creatable!(IntConstrainedValue);
-creatable!(IntValue);
-creatable!(NumberValue);
-creatable!(ObjectValue);
-creatable!(RayValue);
-creatable!(StringValue);
-creatable!(Vector3Value);
-creatable!(Vector3Curve);
-creatable!(VoiceChannel);
-creatable!(WeldConstraint);
+creatable!(Accoutrement Accessory Hat Animation CurveAnimation KeyframeSequence AnimationController AnimationRigData Animator Atmosphere Attachment Bone Backpack Tool WrapLayer WrapTarget Beam BindableEvent BindableFunction BodyAngularVelocity BodyForce BodyGyro BodyPosition BodyThrust BodyVelocity RocketPropulsion Camera BodyColors CharacterMesh Pants Shirt ShirtGraphic ClickDetector Clouds AlignOrientation AlignPosition AngularVelocity BallSocketConstraint HingeConstraint LineForce LinearVelocity PlaneConstraint Plane RigidConstraint RodConstraint RopeConstraint CylindricalConstraint PrismaticConstraint SpringConstraint Torque TorsionSpringConstraint UniversalConstraint VectorForce HumanoidController SkateboardController VehicleController BlockMesh CylinderMesh FileMesh SpecialMesh DataStoreIncrementOptions DataStoreOptions DataStoreSetOptions Dialog DialogChoice Dragger EulerRotationCurve Explosion Decal Texture Fire FloatCurve Folder ForceField GetTextBoundsParams CanvasGroup Frame ImageButton TextButton ImageLabel TextLabel ScrollingFrame TextBox VideoFrame ViewportFrame BillboardGui ScreenGui SurfaceGui FloorWire SelectionBox BoxHandleAdornment ConeHandleAdornment CylinderHandleAdornment ImageHandleAdornment LineHandleAdornment SphereHandleAdornment ParabolaAdornment SelectionSphere ArcHandles Handles SurfaceSelection SelectionPartLasso SelectionPointLasso Highlight Humanoid HumanoidDescription Glue Motor Motor6D VelocityMotor Keyframe KeyframeMarker PointLight SpotLight SurfaceLight LocalizationTable Script LocalScript ModuleScript MarkerCurve MaterialVariant NoCollisionConstraint CornerWedgePart Part Seat SkateboardPlatform SpawnLocation WedgePart MeshPart PartOperation NegateOperation UnionOperation TrussPart VehicleSeat Model Actor WorldModel ParticleEmitter PathfindingLink PathfindingModifier Player NumberPose Pose BloomEffect BlurEffect ColorCorrectionEffect DepthOfFieldEffect SunRaysEffect ProximityPrompt RemoteEvent RemoteFunction RotationCurve Sky Smoke Sound ChorusSoundEffect CompressorSoundEffect ChannelSelectorSoundEffect DistortionSoundEffect EchoSoundEffect EqualizerSoundEffect FlangeSoundEffect PitchShiftSoundEffect ReverbSoundEffect TremoloSoundEffect SoundGroup Sparkles Speaker StarterGear SurfaceAppearance Team TeleportOptions TerrainDetail TerrainRegion TextChannel TextChatCommand TextChatMessageProperties Trail Tween UIAspectRatioConstraint UISizeConstraint UITextSizeConstraint UICorner UIGradient UIGridLayout UIListLayout UIPageLayout UITableLayout UIPadding UIScale UIStroke BoolValue BrickColorValue CFrameValue Color3Value DoubleConstrainedValue IntConstrainedValue IntValue NumberValue ObjectValue RayValue StringValue Vector3Value Vector3Curve VoiceChannel WeldConstraint);

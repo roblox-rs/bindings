@@ -29,7 +29,7 @@ pub unsafe fn greet() {
     fnn1();
     task_delay(3., fnn1);
 
-    let my_fancy_part = Instance::new::<Part>();
+    let my_fancy_part = Part::new();
     my_fancy_part.set_anchored(true);
     my_fancy_part.set_color(Color3::from_rgb(255., 0., 0.));
     my_fancy_part.set_parent(Some(get_game().get_child("Workspace")));
