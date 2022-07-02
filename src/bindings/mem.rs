@@ -1,6 +1,9 @@
 #[no_mangle]
-fn __alloc_string(capacity: usize) -> String {
-    String::with_capacity(capacity)
+fn __heap_alloc_string(capacity: usize) -> *mut u8 {
+    let mut str = String::with_capacity(capacity);
+    let ptr = str.as_mut_ptr();
+    std::mem::forget(str);
+    ptr
 }
 
 #[no_mangle]
