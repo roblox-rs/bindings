@@ -8,3 +8,5 @@ wasm-pack.log
 **/*.wasm
 .vscode
 !roblox/**/*.luau
+roblox/wasm.luau
+build.rbxl
