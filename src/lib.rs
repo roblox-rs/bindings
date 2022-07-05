@@ -25,7 +25,7 @@ pub unsafe fn greet() {
     let my_fancy_part = Part::new();
     my_fancy_part.set_anchored(true);
     my_fancy_part.set_color(Color3::from_rgb(255., 0., 0.));
-    my_fancy_part.set_parent(Some(DataModel::instance().get_child("Workspace")));
+    my_fancy_part.set_parent(Some(Workspace::instance().downcast()));
     my_fancy_part.set_size(Vector3::new(25., 420., 25.));
     my_fancy_part.set_position(Vector3::new(55., 160., 30.));
 
