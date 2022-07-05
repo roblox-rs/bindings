@@ -3,11 +3,12 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 
-use crate::bindings::get_float_property;
-
 #[allow(improper_ctypes)]
 extern "C" {
     fn vector3_new(x: f64, y: f64, z: f64) -> Vector3;
+    fn get_vector3_x(vector: u32) -> f64;
+    fn get_vector3_y(vector: u32) -> f64;
+    fn get_vector3_z(vector: u32) -> f64;
 }
 
 use super::{
@@ -28,15 +29,15 @@ impl Vector3 {
     }
 
     pub fn x(&self) -> f64 {
-        unsafe { get_float_property(self.to_ptr(), "x") }
+        unsafe { get_vector3_x(self.to_ptr()) }
     }
 
     pub fn y(&self) -> f64 {
-        unsafe { get_float_property(self.to_ptr(), "y") }
+        unsafe { get_vector3_y(self.to_ptr()) }
     }
 
     pub fn z(&self) -> f64 {
-        unsafe { get_float_property(self.to_ptr(), "z") }
+        unsafe { get_vector3_z(self.to_ptr()) }
     }
 }
 

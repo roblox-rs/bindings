@@ -1,5 +1,3 @@
-use crate::bindings::get_float_property;
-
 #[allow(improper_ctypes)]
 extern "C" {
     fn color3_new(r: f64, g: f64, b: f64) -> Color3;
@@ -8,6 +6,9 @@ extern "C" {
     fn color3_from_hex(hex: &str) -> Color3;
     fn color3_to_hex(id: u32) -> String;
     fn color3_lerp(start: u32, target: u32, alpha: f64) -> Color3;
+    fn get_color3_r(vector: u32) -> f64;
+    fn get_color3_g(vector: u32) -> f64;
+    fn get_color3_b(vector: u32) -> f64;
 }
 
 #[repr(C)]
@@ -35,15 +36,15 @@ impl Color3 {
     }
 
     pub fn r(&self) -> f64 {
-        unsafe { get_float_property(self.to_ptr(), "R") }
+        unsafe { get_color3_r(self.to_ptr()) }
     }
 
     pub fn g(&self) -> f64 {
-        unsafe { get_float_property(self.to_ptr(), "G") }
+        unsafe { get_color3_g(self.to_ptr()) }
     }
 
     pub fn b(&self) -> f64 {
-        unsafe { get_float_property(self.to_ptr(), "B") }
+        unsafe { get_color3_b(self.to_ptr()) }
     }
 
     pub fn to_hex(&self) -> String {
