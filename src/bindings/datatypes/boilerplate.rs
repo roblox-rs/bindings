@@ -8,6 +8,8 @@ macro_rules! unimplemented_datatype {
                 self.0
             }
         }
+
+        crate::impl_datatype_drop!($name);
     };
 }
 
@@ -20,8 +22,8 @@ unimplemented_datatype!(Vector3int16);
 unimplemented_datatype!(Region3);
 unimplemented_datatype!(Vector2);
 unimplemented_datatype!(Ray);
-unimplemented_datatype!(RBXScriptSignal);
-unimplemented_datatype!(RBXScriptConnection);
+unimplemented_datatype!(RbxScriptSignal);
+unimplemented_datatype!(RbxScriptConnection);
 unimplemented_datatype!(Objects);
 unimplemented_datatype!(Rect);
 unimplemented_datatype!(Axes);

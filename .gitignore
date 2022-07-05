@@ -7,3 +7,4 @@ wasm-pack.log
 **/*.luau
 **/*.wasm
 .vscode
+!roblox/**/*.luau
