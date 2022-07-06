@@ -1,6 +1,7 @@
 // Unimplemented datatypes.
 macro_rules! unimplemented_datatype {
     ($name:ident) => {
+        #[repr(transparent)]
         pub struct $name(pub(crate) u32);
 
         impl $name {

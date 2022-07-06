@@ -3,7 +3,7 @@ extern "C" {
     fn is_connected(connection: u32) -> bool;
 }
 
-#[repr(C)]
+#[repr(transparent)]
 pub struct RbxScriptConnection(pub(crate) u32);
 
 impl RbxScriptConnection {

@@ -2765,7 +2765,7 @@ macro_rules! impl_instance_exclusive {
 macro_rules! impl_instance {
 	($name:ident) => {
 		#[allow(dead_code)]
-		#[repr(C)]
+		#[repr(transparent)]
 		pub struct $name(u32);
 		impl $name {
 			#[allow(clippy::wrong_self_convention)]

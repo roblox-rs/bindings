@@ -11,7 +11,7 @@ extern "C" {
     fn get_color3_b(vector: u32) -> f64;
 }
 
-#[repr(C)]
+#[repr(transparent)]
 pub struct Color3(pub(crate) u32);
 
 impl Color3 {

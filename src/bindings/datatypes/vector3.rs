@@ -16,7 +16,7 @@ use super::{
     sub_datatype_ptr,
 };
 
-#[repr(C)]
+#[repr(transparent)]
 pub struct Vector3(pub(crate) u32);
 
 impl Vector3 {
