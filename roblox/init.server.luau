@@ -153,10 +153,7 @@ local function addModule(moduleInstance)
 	local module = require(moduleInstance);
 	table.insert(withWasm, module);
 
-	for i, v in pairs(module) do
-		if i == "withWasm" then
-			continue
-		end
+	for i, v in pairs(module.abi) do
 		if env[i] then
 			warn(i, "is being overriden");
 		end
