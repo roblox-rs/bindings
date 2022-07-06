@@ -17,6 +17,9 @@ function signal.abi.disconnect_connection(connection)
 	dropFunctionRef(func[1], func[2]);
 	connections[connection] = nil
 end
+function signal.abi.is_connected(connection)
+	return getPointer(connection).Connected and 1 or 0;
+end
 function signal.abi.connect_instance_ancestry_changed(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).AncestryChanged:Connect(function(child, parent)
 		local stackPointer = pushStack(16);

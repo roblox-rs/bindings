@@ -44,15 +44,6 @@ local env = {
 		return createPointer(Instance.new(readString(name_addr, name_len)));
 	end,
 
-	-- RbxScriptConnection
-	is_connected = function(id)
-		return getPointer(id).Connected and 1 or 0;
-	end,
-
-	disconnect_connection = function(id)
-		getPointer(id):Disconnect();
-	end,
-
 	-- Color3
 
 	get_color3_r = function(id)
@@ -133,19 +124,12 @@ local env = {
 	end,
 
 	-- testing/logging
-	stream = function(char)
-		outputStream ..= string.char(char);
+	print = function(addr, len)
+		task.defer(print, readString(addr, len));
 	end,
-	emit = function()
-		local stream = outputStream;
-		task.defer(print, stream);
-		outputStream = "";
-	end,
-	emit_error = function()
-		local s = outputStream;
-		outputStream = "";
-		error(s);
-	end,
+	error = function(addr, len)
+		error(readString(addr, len));
+	end
 }
 
 local withWasm = {}

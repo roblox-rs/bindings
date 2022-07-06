@@ -1,11 +1,8 @@
 #![feature(backtrace)]
 extern crate wee_alloc;
 pub mod bindings;
-pub mod util;
 use bindings::*;
 use std::panic;
-use util::error;
-use util::println;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
@@ -17,7 +14,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub unsafe fn greet() {
     let x = "wow!";
     let fnn1 = move || {
-        println(&format!("Wow, hello {}!", x));
+        println!("Wow, hello {}!", x);
     };
 
     task_delay(3., fnn1);
@@ -31,14 +28,14 @@ pub unsafe fn greet() {
 
     my_fancy_part
         .on_touched(|value| {
-            println(&format!("on_touched called!! {}", value.is_some()));
+            println!("on_touched called!! {}", value.is_some());
             if let Some(value) = value {
-                println("I ACTUALLY GOT A BASE PART?!?!?");
-                println(&format!(
+                println!("I ACTUALLY GOT A BASE PART?!?!?");
+                println!(
                     "base part is a: {} and is named: {}",
                     &value.class_name(),
                     &value.name()
-                ));
+                );
             }
         })
         .leak();
@@ -46,12 +43,12 @@ pub unsafe fn greet() {
     let value = Vector3Value::new();
     value
         .on_changed(|v: Vector3| {
-            println(&format!(
+            println!(
                 "vector changed: {} {} {}",
                 v.x() as i32,
                 v.y() as i32,
                 v.z() as i32
-            ));
+            );
         })
         .leak();
 
@@ -60,6 +57,6 @@ pub unsafe fn greet() {
 
     panic::set_hook(Box::new(|info| {
         let msg = info.to_string();
-        error(&msg);
+        roblox_error(&msg);
     }));
 }
