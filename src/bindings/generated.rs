@@ -2141,6 +2141,32 @@ extern "C" {
 	fn dyn_player_scripts_register_computer_movement_mode(instance: u32);
 	fn dyn_player_scripts_register_touch_camera_movement_mode(instance: u32);
 	fn dyn_player_scripts_register_touch_movement_mode(instance: u32);
+	fn dyn_players_get_player_by_user_id(instance: u32, p_userId: f64) -> Option<Player>;
+	fn dyn_players_get_player_from_character(instance: u32, p_character: Option<Model>) -> Option<Player>;
+	fn dyn_players_get_players(instance: u32) -> Objects;
+	fn dyn_players_create_humanoid_model_from_description(instance: u32, p_description: Option<HumanoidDescription>) -> Option<Model>;
+	fn dyn_players_create_humanoid_model_from_user_id(instance: u32, p_userId: f64) -> Option<Model>;
+	fn dyn_players_get_character_appearance_async(instance: u32, p_userId: f64) -> Option<Model>;
+	fn dyn_players_get_character_appearance_info_async(instance: u32, p_userId: f64);
+	fn dyn_players_get_friends_async(instance: u32, p_userId: f64) -> Option<FriendPages>;
+	fn dyn_players_get_humanoid_description_from_outfit_id(instance: u32, p_outfitId: f64) -> Option<HumanoidDescription>;
+	fn dyn_players_get_humanoid_description_from_user_id(instance: u32, p_userId: f64) -> Option<HumanoidDescription>;
+	fn dyn_players_get_name_from_user_id_async(instance: u32, p_userId: f64) -> String;
+	fn dyn_players_get_user_id_from_name_async(instance: u32, p_userName: &str) -> f64;
+	fn dyn_players_get_user_thumbnail_async(instance: u32, p_userId: f64);
+	fn prop_players_bubble_chat(instance: u32) -> bool;
+	fn prop_players_character_auto_loads(instance: u32) -> bool;
+	fn prop_set_players_character_auto_loads(instance: u32, value: bool);
+	fn prop_players_classic_chat(instance: u32) -> bool;
+	fn prop_players_local_player(instance: u32) -> Option<Player>;
+	fn prop_players_max_players(instance: u32) -> f64;
+	fn prop_players_num_players(instance: u32) -> f64;
+	fn prop_players_preferred_players(instance: u32) -> f64;
+	fn prop_players_respawn_time(instance: u32) -> f64;
+	fn prop_set_players_respawn_time(instance: u32, value: f64);
+	fn connect_players_player_added(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
+	fn connect_players_player_membership_changed(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
+	fn connect_players_player_removing(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
 	fn prop_pose_base_weight(instance: u32) -> f64;
 	fn prop_set_pose_base_weight(instance: u32, value: f64);
 	fn prop_number_pose_value(instance: u32) -> f64;
@@ -11669,6 +11695,93 @@ macro_rules! impl_player_scripts {
 		}
 	}
 }
+macro_rules! impl_players {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn bubble_chat(&self) -> bool {
+				unsafe { prop_players_bubble_chat(self.to_ptr()) }
+			}
+			pub fn character_auto_loads(&self) -> bool {
+				unsafe { prop_players_character_auto_loads(self.to_ptr()) }
+			}
+			pub fn set_character_auto_loads(&self, value: bool) {
+				unsafe { prop_set_players_character_auto_loads(self.to_ptr(), value) }
+			}
+			pub fn classic_chat(&self) -> bool {
+				unsafe { prop_players_classic_chat(self.to_ptr()) }
+			}
+			pub fn local_player(&self) -> Option<Player> {
+				unsafe { prop_players_local_player(self.to_ptr()) }
+			}
+			pub fn max_players(&self) -> f64 {
+				unsafe { prop_players_max_players(self.to_ptr()) }
+			}
+			pub fn num_players(&self) -> f64 {
+				unsafe { prop_players_num_players(self.to_ptr()) }
+			}
+			pub fn preferred_players(&self) -> f64 {
+				unsafe { prop_players_preferred_players(self.to_ptr()) }
+			}
+			pub fn respawn_time(&self) -> f64 {
+				unsafe { prop_players_respawn_time(self.to_ptr()) }
+			}
+			pub fn set_respawn_time(&self, value: f64) {
+				unsafe { prop_set_players_respawn_time(self.to_ptr(), value) }
+			}
+			pub fn fn_get_player_by_user_id(&self, user_id: f64) -> Option<Player> {
+				unsafe { dyn_players_get_player_by_user_id(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_player_from_character(&self, character: Option<Model>) -> Option<Player> {
+				unsafe { dyn_players_get_player_from_character(self.to_ptr(), character) }
+			}
+			pub fn fn_get_players(&self) -> Objects {
+				unsafe { dyn_players_get_players(self.to_ptr()) }
+			}
+			pub fn fn_create_humanoid_model_from_user_id(&self, user_id: f64) -> Option<Model> {
+				unsafe { dyn_players_create_humanoid_model_from_user_id(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_character_appearance_async(&self, user_id: f64) -> Option<Model> {
+				unsafe { dyn_players_get_character_appearance_async(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_character_appearance_info_async(&self, user_id: f64) {
+				unsafe { dyn_players_get_character_appearance_info_async(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_friends_async(&self, user_id: f64) -> Option<FriendPages> {
+				unsafe { dyn_players_get_friends_async(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_humanoid_description_from_outfit_id(&self, outfit_id: f64) -> Option<HumanoidDescription> {
+				unsafe { dyn_players_get_humanoid_description_from_outfit_id(self.to_ptr(), outfit_id) }
+			}
+			pub fn fn_get_humanoid_description_from_user_id(&self, user_id: f64) -> Option<HumanoidDescription> {
+				unsafe { dyn_players_get_humanoid_description_from_user_id(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_name_from_user_id_async(&self, user_id: f64) -> String {
+				unsafe { dyn_players_get_name_from_user_id_async(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_user_id_from_name_async(&self, user_name: &str) -> f64 {
+				unsafe { dyn_players_get_user_id_from_name_async(self.to_ptr(), user_name) }
+			}
+			pub fn on_player_added<F: 'static + Fn(Option<Player>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_players_player_added(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_player_membership_changed<F: 'static + Fn(Option<Player>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_players_player_membership_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_player_removing<F: 'static + Fn(Option<Player>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_players_player_removing(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_pose_base {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -14860,6 +14973,7 @@ impl_pathfinding_link!(PathfindingLink);
 impl_pathfinding_modifier!(PathfindingModifier);
 impl_player!(Player);
 impl_player_scripts!(PlayerScripts);
+impl_players!(Players);
 impl_pose_base!(PoseBase);
 impl_number_pose!(NumberPose);
 impl_pose!(Pose);
