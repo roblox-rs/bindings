@@ -60,13 +60,13 @@ function functions.abi.dyn_instance_get_attribute(instance, attributeAddr, attri
 	getPointer(instance):GetAttribute(readString(attributeAddr, attributeLength))
 end
 function functions.abi.dyn_instance_get_attribute_changed_signal(instance, attributeAddr, attributeLength)
-	getPointer(instance):GetAttributeChangedSignal(readString(attributeAddr, attributeLength))
+	return createPointer(getPointer(instance):GetAttributeChangedSignal(readString(attributeAddr, attributeLength)));
 end
 function functions.abi.dyn_instance_get_attributes(instance)
 	getPointer(instance):GetAttributes()
 end
 function functions.abi.dyn_instance_get_children(instance)
-	getPointer(instance):GetChildren()
+	return createPointer(getPointer(instance):GetChildren());
 end
 function functions.abi.dyn_instance_get_descendants(instance)
 	getPointer(instance):GetDescendants()
@@ -76,16 +76,16 @@ function functions.abi.dyn_instance_get_full_name(addr, instance)
 	writeStringReturn(addr, str)
 end
 function functions.abi.dyn_instance_get_property_changed_signal(instance, propertyAddr, propertyLength)
-	getPointer(instance):GetPropertyChangedSignal(readString(propertyAddr, propertyLength))
+	return createPointer(getPointer(instance):GetPropertyChangedSignal(readString(propertyAddr, propertyLength)));
 end
 function functions.abi.dyn_instance_is_a(instance, classNameAddr, classNameLength)
-	getPointer(instance):IsA(readString(classNameAddr, classNameLength))
+	return getPointer(instance):IsA(readString(classNameAddr, classNameLength)) and 1 or 0;
 end
 function functions.abi.dyn_instance_is_ancestor_of(instance, descendantSome, descendantValue)
-	getPointer(instance):IsAncestorOf(descendantSome == 1 and getPointer(descendantValue) or nil)
+	return getPointer(instance):IsAncestorOf(descendantSome == 1 and getPointer(descendantValue) or nil) and 1 or 0;
 end
 function functions.abi.dyn_instance_is_descendant_of(instance, ancestorSome, ancestorValue)
-	getPointer(instance):IsDescendantOf(ancestorSome == 1 and getPointer(ancestorValue) or nil)
+	return getPointer(instance):IsDescendantOf(ancestorSome == 1 and getPointer(ancestorValue) or nil) and 1 or 0;
 end
 function functions.abi.dyn_instance_remove(instance)
 	getPointer(instance):Remove()
@@ -102,7 +102,7 @@ function functions.abi.dyn_keyframe_sequence_add_keyframe(instance, keyframeSome
 	getPointer(instance):AddKeyframe(keyframeSome == 1 and getPointer(keyframeValue) or nil)
 end
 function functions.abi.dyn_keyframe_sequence_get_keyframes(instance)
-	getPointer(instance):GetKeyframes()
+	return createPointer(getPointer(instance):GetKeyframes());
 end
 function functions.abi.dyn_keyframe_sequence_remove_keyframe(instance, keyframeSome, keyframeValue)
 	getPointer(instance):RemoveKeyframe(keyframeSome == 1 and getPointer(keyframeValue) or nil)
@@ -122,10 +122,10 @@ function functions.abi.dyn_animation_track_adjust_weight(instance)
 	getPointer(instance):AdjustWeight()
 end
 function functions.abi.dyn_animation_track_get_marker_reached_signal(instance, nameAddr, nameLength)
-	getPointer(instance):GetMarkerReachedSignal(readString(nameAddr, nameLength))
+	return createPointer(getPointer(instance):GetMarkerReachedSignal(readString(nameAddr, nameLength)));
 end
 function functions.abi.dyn_animation_track_get_time_of_keyframe(instance, keyframeNameAddr, keyframeNameLength)
-	getPointer(instance):GetTimeOfKeyframe(readString(keyframeNameAddr, keyframeNameLength))
+	return getPointer(instance):GetTimeOfKeyframe(readString(keyframeNameAddr, keyframeNameLength));
 end
 function functions.abi.dyn_animation_track_play(instance)
 	getPointer(instance):Play()
@@ -145,10 +145,10 @@ function functions.abi.dyn_animator_load_animation(addr, instance, animationSome
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_attachment_get_axis(instance)
-	getPointer(instance):GetAxis()
+	return createPointer(getPointer(instance):GetAxis());
 end
 function functions.abi.dyn_attachment_get_secondary_axis(instance)
-	getPointer(instance):GetSecondaryAxis()
+	return createPointer(getPointer(instance):GetSecondaryAxis());
 end
 function functions.abi.dyn_attachment_set_axis(instance, axis)
 	getPointer(instance):SetAxis(getPointer(axis))
@@ -163,16 +163,16 @@ function functions.abi.dyn_tool_deactivate(instance)
 	getPointer(instance):Deactivate()
 end
 function functions.abi.dyn_base_player_gui_get_gui_objects_at_position(instance)
-	getPointer(instance):GetGuiObjectsAtPosition()
+	return createPointer(getPointer(instance):GetGuiObjectsAtPosition());
 end
 function functions.abi.dyn_player_gui_get_topbar_transparency(instance)
-	getPointer(instance):GetTopbarTransparency()
+	return getPointer(instance):GetTopbarTransparency();
 end
 function functions.abi.dyn_player_gui_set_topbar_transparency(instance)
 	getPointer(instance):SetTopbarTransparency()
 end
 function functions.abi.dyn_starter_gui_get_core_gui_enabled(instance)
-	getPointer(instance):GetCoreGuiEnabled()
+	return getPointer(instance):GetCoreGuiEnabled() and 1 or 0;
 end
 function functions.abi.dyn_starter_gui_set_core(instance, parameterNameAddr, parameterNameLength)
 	getPointer(instance):SetCore(readString(parameterNameAddr, parameterNameLength))
@@ -193,22 +193,22 @@ function functions.abi.dyn_bindable_function_invoke(instance)
 	getPointer(instance):Invoke()
 end
 function functions.abi.dyn_camera_get_largest_cutoff_distance(instance, ignoreList)
-	getPointer(instance):GetLargestCutoffDistance(getPointer(ignoreList))
+	return getPointer(instance):GetLargestCutoffDistance(getPointer(ignoreList));
 end
 function functions.abi.dyn_camera_get_pan_speed(instance)
-	getPointer(instance):GetPanSpeed()
+	return getPointer(instance):GetPanSpeed();
 end
 function functions.abi.dyn_camera_get_parts_obscuring_target(instance, ignoreList)
-	getPointer(instance):GetPartsObscuringTarget(getPointer(ignoreList))
+	return createPointer(getPointer(instance):GetPartsObscuringTarget(getPointer(ignoreList)));
 end
 function functions.abi.dyn_camera_get_render_c_frame(instance)
-	getPointer(instance):GetRenderCFrame()
+	return createPointer(getPointer(instance):GetRenderCFrame());
 end
 function functions.abi.dyn_camera_get_roll(instance)
-	getPointer(instance):GetRoll()
+	return getPointer(instance):GetRoll();
 end
 function functions.abi.dyn_camera_get_tilt_speed(instance)
-	getPointer(instance):GetTiltSpeed()
+	return getPointer(instance):GetTiltSpeed();
 end
 function functions.abi.dyn_camera_interpolate(instance, endPos, endFocus)
 	getPointer(instance):Interpolate(getPointer(endPos), getPointer(endFocus))
@@ -217,7 +217,7 @@ function functions.abi.dyn_camera_pan_units(instance)
 	getPointer(instance):PanUnits()
 end
 function functions.abi.dyn_camera_screen_point_to_ray(instance)
-	getPointer(instance):ScreenPointToRay()
+	return createPointer(getPointer(instance):ScreenPointToRay());
 end
 function functions.abi.dyn_camera_set_camera_pan_mode(instance)
 	getPointer(instance):SetCameraPanMode()
@@ -226,10 +226,10 @@ function functions.abi.dyn_camera_set_roll(instance)
 	getPointer(instance):SetRoll()
 end
 function functions.abi.dyn_camera_tilt_units(instance)
-	getPointer(instance):TiltUnits()
+	return getPointer(instance):TiltUnits() and 1 or 0;
 end
 function functions.abi.dyn_camera_viewport_point_to_ray(instance)
-	getPointer(instance):ViewportPointToRay()
+	return createPointer(getPointer(instance):ViewportPointToRay());
 end
 function functions.abi.dyn_camera_world_to_screen_point(instance, worldPoint)
 	getPointer(instance):WorldToScreenPoint(getPointer(worldPoint))
@@ -241,7 +241,7 @@ function functions.abi.dyn_controller_bind_button(instance, captionAddr, caption
 	getPointer(instance):BindButton(readString(captionAddr, captionLength))
 end
 function functions.abi.dyn_controller_get_button(instance)
-	getPointer(instance):GetButton()
+	return getPointer(instance):GetButton() and 1 or 0;
 end
 function functions.abi.dyn_controller_unbind_button(instance)
 	getPointer(instance):UnbindButton()
@@ -268,7 +268,7 @@ function functions.abi.dyn_data_store_set_options_set_metadata(instance)
 	getPointer(instance):SetMetadata()
 end
 function functions.abi.dyn_dialog_get_current_players(instance)
-	getPointer(instance):GetCurrentPlayers()
+	return createPointer(getPointer(instance):GetCurrentPlayers());
 end
 function functions.abi.dyn_dragger_axis_rotate(instance)
 	getPointer(instance):AxisRotate()
@@ -286,7 +286,7 @@ function functions.abi.dyn_euler_rotation_curve_get_angles_at_time(instance)
 	getPointer(instance):GetAnglesAtTime()
 end
 function functions.abi.dyn_euler_rotation_curve_get_rotation_at_time(instance)
-	getPointer(instance):GetRotationAtTime()
+	return createPointer(getPointer(instance):GetRotationAtTime());
 end
 function functions.abi.dyn_euler_rotation_curve_x(addr, instance)
 	local class = getPointer(instance):X();
@@ -304,7 +304,7 @@ function functions.abi.dyn_euler_rotation_curve_z(addr, instance)
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_float_curve_get_key_at_index(instance)
-	getPointer(instance):GetKeyAtIndex()
+	return createPointer(getPointer(instance):GetKeyAtIndex());
 end
 function functions.abi.dyn_float_curve_get_key_indices_at_time(instance)
 	getPointer(instance):GetKeyIndicesAtTime()
@@ -319,13 +319,13 @@ function functions.abi.dyn_float_curve_insert_key(instance, key)
 	getPointer(instance):InsertKey(getPointer(key))
 end
 function functions.abi.dyn_float_curve_remove_key_at_index(instance)
-	getPointer(instance):RemoveKeyAtIndex()
+	return getPointer(instance):RemoveKeyAtIndex();
 end
 function functions.abi.dyn_float_curve_set_keys(instance)
-	getPointer(instance):SetKeys()
+	return getPointer(instance):SetKeys();
 end
 function functions.abi.dyn_global_data_store_on_update(instance, keyAddr, keyLength, callback)
-	getPointer(instance):OnUpdate(readString(keyAddr, keyLength), getPointer(callback))
+	return createPointer(getPointer(instance):OnUpdate(readString(keyAddr, keyLength), getPointer(callback)));
 end
 function functions.abi.dyn_global_data_store_get_async(instance, keyAddr, keyLength)
 	getPointer(instance):GetAsync(readString(keyAddr, keyLength))
@@ -364,19 +364,19 @@ function functions.abi.dyn_ordered_data_store_get_sorted_async(addr, instance, a
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_gui_object_tween_position(instance, endPosition, override, callback)
-	getPointer(instance):TweenPosition(getPointer(endPosition), override == 1, getPointer(callback))
+	return getPointer(instance):TweenPosition(getPointer(endPosition), override == 1, getPointer(callback)) and 1 or 0;
 end
 function functions.abi.dyn_gui_object_tween_size(instance, endSize, override, callback)
-	getPointer(instance):TweenSize(getPointer(endSize), override == 1, getPointer(callback))
+	return getPointer(instance):TweenSize(getPointer(endSize), override == 1, getPointer(callback)) and 1 or 0;
 end
 function functions.abi.dyn_gui_object_tween_size_and_position(instance, endSize, endPosition, override, callback)
-	getPointer(instance):TweenSizeAndPosition(getPointer(endSize), getPointer(endPosition), override == 1, getPointer(callback))
+	return getPointer(instance):TweenSizeAndPosition(getPointer(endSize), getPointer(endPosition), override == 1, getPointer(callback)) and 1 or 0;
 end
 function functions.abi.dyn_text_box_capture_focus(instance)
 	getPointer(instance):CaptureFocus()
 end
 function functions.abi.dyn_text_box_is_focused(instance)
-	getPointer(instance):IsFocused()
+	return getPointer(instance):IsFocused() and 1 or 0;
 end
 function functions.abi.dyn_text_box_release_focus(instance, submitted)
 	getPointer(instance):ReleaseFocus(submitted == 1)
@@ -394,10 +394,10 @@ function functions.abi.dyn_humanoid_add_accessory(instance, accessorySome, acces
 	getPointer(instance):AddAccessory(accessorySome == 1 and getPointer(accessoryValue) or nil)
 end
 function functions.abi.dyn_humanoid_add_custom_status(instance, statusAddr, statusLength)
-	getPointer(instance):AddCustomStatus(readString(statusAddr, statusLength))
+	return getPointer(instance):AddCustomStatus(readString(statusAddr, statusLength)) and 1 or 0;
 end
 function functions.abi.dyn_humanoid_add_status(instance)
-	getPointer(instance):AddStatus()
+	return getPointer(instance):AddStatus() and 1 or 0;
 end
 function functions.abi.dyn_humanoid_build_rig_from_attachments(instance)
 	getPointer(instance):BuildRigFromAttachments()
@@ -429,16 +429,16 @@ function functions.abi.dyn_humanoid_get_state(instance)
 	getPointer(instance):GetState()
 end
 function functions.abi.dyn_humanoid_get_state_enabled(instance)
-	getPointer(instance):GetStateEnabled()
+	return getPointer(instance):GetStateEnabled() and 1 or 0;
 end
 function functions.abi.dyn_humanoid_get_statuses(instance)
 	getPointer(instance):GetStatuses()
 end
 function functions.abi.dyn_humanoid_has_custom_status(instance, statusAddr, statusLength)
-	getPointer(instance):HasCustomStatus(readString(statusAddr, statusLength))
+	return getPointer(instance):HasCustomStatus(readString(statusAddr, statusLength)) and 1 or 0;
 end
 function functions.abi.dyn_humanoid_has_status(instance)
-	getPointer(instance):HasStatus()
+	return getPointer(instance):HasStatus() and 1 or 0;
 end
 function functions.abi.dyn_humanoid_load_animation(addr, instance, animationSome, animationValue)
 	local class = getPointer(instance):LoadAnimation(animationSome == 1 and getPointer(animationValue) or nil);
@@ -455,13 +455,13 @@ function functions.abi.dyn_humanoid_remove_accessories(instance)
 	getPointer(instance):RemoveAccessories()
 end
 function functions.abi.dyn_humanoid_remove_custom_status(instance, statusAddr, statusLength)
-	getPointer(instance):RemoveCustomStatus(readString(statusAddr, statusLength))
+	return getPointer(instance):RemoveCustomStatus(readString(statusAddr, statusLength)) and 1 or 0;
 end
 function functions.abi.dyn_humanoid_remove_status(instance)
-	getPointer(instance):RemoveStatus()
+	return getPointer(instance):RemoveStatus() and 1 or 0;
 end
 function functions.abi.dyn_humanoid_replace_body_part_r_15(instance, partSome, partValue)
-	getPointer(instance):ReplaceBodyPartR15(partSome == 1 and getPointer(partValue) or nil)
+	return getPointer(instance):ReplaceBodyPartR15(partSome == 1 and getPointer(partValue) or nil) and 1 or 0;
 end
 function functions.abi.dyn_humanoid_set_state_enabled(instance, enabled)
 	getPointer(instance):SetStateEnabled(enabled == 1)
@@ -479,7 +479,7 @@ function functions.abi.dyn_humanoid_apply_description_reset(instance, humanoidDe
 	getPointer(instance):ApplyDescriptionReset(humanoidDescriptionSome == 1 and getPointer(humanoidDescriptionValue) or nil)
 end
 function functions.abi.dyn_humanoid_play_emote(instance, emoteNameAddr, emoteNameLength)
-	getPointer(instance):PlayEmote(readString(emoteNameAddr, emoteNameLength))
+	return getPointer(instance):PlayEmote(readString(emoteNameAddr, emoteNameLength)) and 1 or 0;
 end
 function functions.abi.dyn_humanoid_description_add_emote(instance, nameAddr, nameLength)
 	getPointer(instance):AddEmote(readString(nameAddr, nameLength))
@@ -506,7 +506,7 @@ function functions.abi.dyn_humanoid_description_set_equipped_emotes(instance)
 	getPointer(instance):SetEquippedEmotes()
 end
 function functions.abi.dyn_input_object_is_modifier_key_down(instance)
-	getPointer(instance):IsModifierKeyDown()
+	return getPointer(instance):IsModifierKeyDown() and 1 or 0;
 end
 function functions.abi.dyn_motor_set_desired_angle(instance)
 	getPointer(instance):SetDesiredAngle()
@@ -518,10 +518,10 @@ function functions.abi.dyn_keyframe_add_pose(instance, poseSome, poseValue)
 	getPointer(instance):AddPose(poseSome == 1 and getPointer(poseValue) or nil)
 end
 function functions.abi.dyn_keyframe_get_markers(instance)
-	getPointer(instance):GetMarkers()
+	return createPointer(getPointer(instance):GetMarkers());
 end
 function functions.abi.dyn_keyframe_get_poses(instance)
-	getPointer(instance):GetPoses()
+	return createPointer(getPointer(instance):GetPoses());
 end
 function functions.abi.dyn_keyframe_remove_marker(instance, markerSome, markerValue)
 	getPointer(instance):RemoveMarker(markerSome == 1 and getPointer(markerValue) or nil)
@@ -530,16 +530,16 @@ function functions.abi.dyn_keyframe_remove_pose(instance, poseSome, poseValue)
 	getPointer(instance):RemovePose(poseSome == 1 and getPointer(poseValue) or nil)
 end
 function functions.abi.dyn_lighting_get_minutes_after_midnight(instance)
-	getPointer(instance):GetMinutesAfterMidnight()
+	return getPointer(instance):GetMinutesAfterMidnight();
 end
 function functions.abi.dyn_lighting_get_moon_direction(instance)
-	getPointer(instance):GetMoonDirection()
+	return createPointer(getPointer(instance):GetMoonDirection());
 end
 function functions.abi.dyn_lighting_get_moon_phase(instance)
-	getPointer(instance):GetMoonPhase()
+	return getPointer(instance):GetMoonPhase();
 end
 function functions.abi.dyn_lighting_get_sun_direction(instance)
-	getPointer(instance):GetSunDirection()
+	return createPointer(getPointer(instance):GetSunDirection());
 end
 function functions.abi.dyn_lighting_set_minutes_after_midnight(instance)
 	getPointer(instance):SetMinutesAfterMidnight()
@@ -606,7 +606,7 @@ function functions.abi.dyn_marker_curve_insert_marker_at_time(instance, markerAd
 	getPointer(instance):InsertMarkerAtTime(readString(markerAddr, markerLength))
 end
 function functions.abi.dyn_marker_curve_remove_marker_at_index(instance)
-	getPointer(instance):RemoveMarkerAtIndex()
+	return getPointer(instance):RemoveMarkerAtIndex();
 end
 function functions.abi.dyn_memory_store_queue_add_async(instance)
 	getPointer(instance):AddAsync()
@@ -627,13 +627,13 @@ function functions.abi.dyn_memory_store_sorted_map_remove_async(instance, keyAdd
 	getPointer(instance):RemoveAsync(readString(keyAddr, keyLength))
 end
 function functions.abi.dyn_memory_store_sorted_map_set_async(instance, keyAddr, keyLength)
-	getPointer(instance):SetAsync(readString(keyAddr, keyLength))
+	return getPointer(instance):SetAsync(readString(keyAddr, keyLength)) and 1 or 0;
 end
 function functions.abi.dyn_memory_store_sorted_map_update_async(instance, keyAddr, keyLength, transformFunction)
 	getPointer(instance):UpdateAsync(readString(keyAddr, keyLength), getPointer(transformFunction))
 end
 function functions.abi.dyn_pv_instance_get_pivot(instance)
-	getPointer(instance):GetPivot()
+	return createPointer(getPointer(instance):GetPivot());
 end
 function functions.abi.dyn_pv_instance_pivot_to(instance, targetCFrame)
 	getPointer(instance):PivotTo(getPointer(targetCFrame))
@@ -651,19 +651,19 @@ function functions.abi.dyn_base_part_break_joints(instance)
 	getPointer(instance):BreakJoints()
 end
 function functions.abi.dyn_base_part_can_collide_with(instance, partSome, partValue)
-	getPointer(instance):CanCollideWith(partSome == 1 and getPointer(partValue) or nil)
+	return getPointer(instance):CanCollideWith(partSome == 1 and getPointer(partValue) or nil) and 1 or 0;
 end
 function functions.abi.dyn_base_part_can_set_network_ownership(instance)
 	getPointer(instance):CanSetNetworkOwnership()
 end
 function functions.abi.dyn_base_part_get_connected_parts(instance, recursive)
-	getPointer(instance):GetConnectedParts(recursive == 1)
+	return createPointer(getPointer(instance):GetConnectedParts(recursive == 1));
 end
 function functions.abi.dyn_base_part_get_joints(instance)
-	getPointer(instance):GetJoints()
+	return createPointer(getPointer(instance):GetJoints());
 end
 function functions.abi.dyn_base_part_get_mass(instance)
-	getPointer(instance):GetMass()
+	return getPointer(instance):GetMass();
 end
 function functions.abi.dyn_base_part_get_network_owner(addr, instance)
 	local class = getPointer(instance):GetNetworkOwner();
@@ -671,10 +671,10 @@ function functions.abi.dyn_base_part_get_network_owner(addr, instance)
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_base_part_get_network_ownership_auto(instance)
-	getPointer(instance):GetNetworkOwnershipAuto()
+	return getPointer(instance):GetNetworkOwnershipAuto() and 1 or 0;
 end
 function functions.abi.dyn_base_part_get_render_c_frame(instance)
-	getPointer(instance):GetRenderCFrame()
+	return createPointer(getPointer(instance):GetRenderCFrame());
 end
 function functions.abi.dyn_base_part_get_root_part(addr, instance)
 	local class = getPointer(instance):GetRootPart();
@@ -682,19 +682,19 @@ function functions.abi.dyn_base_part_get_root_part(addr, instance)
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_base_part_get_touching_parts(instance)
-	getPointer(instance):GetTouchingParts()
+	return createPointer(getPointer(instance):GetTouchingParts());
 end
 function functions.abi.dyn_base_part_get_velocity_at_position(instance, position)
-	getPointer(instance):GetVelocityAtPosition(getPointer(position))
+	return createPointer(getPointer(instance):GetVelocityAtPosition(getPointer(position)));
 end
 function functions.abi.dyn_base_part_is_grounded(instance)
-	getPointer(instance):IsGrounded()
+	return getPointer(instance):IsGrounded() and 1 or 0;
 end
 function functions.abi.dyn_base_part_make_joints(instance)
 	getPointer(instance):MakeJoints()
 end
 function functions.abi.dyn_base_part_resize(instance)
-	getPointer(instance):Resize()
+	return getPointer(instance):Resize() and 1 or 0;
 end
 function functions.abi.dyn_base_part_set_network_owner(instance, playerInstanceSome, playerInstanceValue)
 	getPointer(instance):SetNetworkOwner(playerInstanceSome == 1 and getPointer(playerInstanceValue) or nil)
@@ -716,16 +716,16 @@ function functions.abi.dyn_seat_sit(instance, humanoidSome, humanoidValue)
 	getPointer(instance):Sit(humanoidSome == 1 and getPointer(humanoidValue) or nil)
 end
 function functions.abi.dyn_terrain_autowedge_cell(instance)
-	getPointer(instance):AutowedgeCell()
+	return getPointer(instance):AutowedgeCell() and 1 or 0;
 end
 function functions.abi.dyn_terrain_autowedge_cells(instance, region)
 	getPointer(instance):AutowedgeCells(getPointer(region))
 end
 function functions.abi.dyn_terrain_cell_center_to_world(instance)
-	getPointer(instance):CellCenterToWorld()
+	return createPointer(getPointer(instance):CellCenterToWorld());
 end
 function functions.abi.dyn_terrain_cell_corner_to_world(instance)
-	getPointer(instance):CellCornerToWorld()
+	return createPointer(getPointer(instance):CellCornerToWorld());
 end
 function functions.abi.dyn_terrain_clear(instance)
 	getPointer(instance):Clear()
@@ -736,7 +736,7 @@ function functions.abi.dyn_terrain_copy_region(addr, instance, region)
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_terrain_count_cells(instance)
-	getPointer(instance):CountCells()
+	return getPointer(instance):CountCells();
 end
 function functions.abi.dyn_terrain_fill_ball(instance, center)
 	getPointer(instance):FillBall(getPointer(center))
@@ -757,7 +757,7 @@ function functions.abi.dyn_terrain_get_cell(instance)
 	getPointer(instance):GetCell()
 end
 function functions.abi.dyn_terrain_get_material_color(instance)
-	getPointer(instance):GetMaterialColor()
+	return createPointer(getPointer(instance):GetMaterialColor());
 end
 function functions.abi.dyn_terrain_get_water_cell(instance)
 	getPointer(instance):GetWaterCell()
@@ -784,13 +784,13 @@ function functions.abi.dyn_terrain_set_water_cell(instance)
 	getPointer(instance):SetWaterCell()
 end
 function functions.abi.dyn_terrain_world_to_cell(instance, position)
-	getPointer(instance):WorldToCell(getPointer(position))
+	return createPointer(getPointer(instance):WorldToCell(getPointer(position)));
 end
 function functions.abi.dyn_terrain_world_to_cell_prefer_empty(instance, position)
-	getPointer(instance):WorldToCellPreferEmpty(getPointer(position))
+	return createPointer(getPointer(instance):WorldToCellPreferEmpty(getPointer(position)));
 end
 function functions.abi.dyn_terrain_world_to_cell_prefer_solid(instance, position)
-	getPointer(instance):WorldToCellPreferSolid(getPointer(position))
+	return createPointer(getPointer(instance):WorldToCellPreferSolid(getPointer(position)));
 end
 function functions.abi.dyn_terrain_write_voxels(instance, region)
 	getPointer(instance):WriteVoxels(getPointer(region))
@@ -808,16 +808,16 @@ function functions.abi.dyn_model_get_bounding_box(instance)
 	getPointer(instance):GetBoundingBox()
 end
 function functions.abi.dyn_model_get_extents_size(instance)
-	getPointer(instance):GetExtentsSize()
+	return createPointer(getPointer(instance):GetExtentsSize());
 end
 function functions.abi.dyn_model_get_model_c_frame(instance)
-	getPointer(instance):GetModelCFrame()
+	return createPointer(getPointer(instance):GetModelCFrame());
 end
 function functions.abi.dyn_model_get_model_size(instance)
-	getPointer(instance):GetModelSize()
+	return createPointer(getPointer(instance):GetModelSize());
 end
 function functions.abi.dyn_model_get_primary_part_c_frame(instance)
-	getPointer(instance):GetPrimaryPartCFrame()
+	return createPointer(getPointer(instance):GetPrimaryPartCFrame());
 end
 function functions.abi.dyn_model_make_joints(instance)
 	getPointer(instance):MakeJoints()
@@ -838,7 +838,7 @@ function functions.abi.dyn_model_translate_by(instance, delta)
 	getPointer(instance):TranslateBy(getPointer(delta))
 end
 function functions.abi.dyn_world_root_are_parts_touching_others(instance, partList)
-	getPointer(instance):ArePartsTouchingOthers(getPointer(partList))
+	return getPointer(instance):ArePartsTouchingOthers(getPointer(partList)) and 1 or 0;
 end
 function functions.abi.dyn_world_root_bulk_move_to(instance, partList)
 	getPointer(instance):BulkMoveTo(getPointer(partList))
@@ -853,49 +853,49 @@ function functions.abi.dyn_world_root_find_part_on_ray_with_whitelist(instance, 
 	getPointer(instance):FindPartOnRayWithWhitelist(getPointer(ray), getPointer(whitelistDescendantsTable), ignoreWater == 1)
 end
 function functions.abi.dyn_world_root_find_parts_in_region_3(instance, region, ignoreDescendantsInstanceSome, ignoreDescendantsInstanceValue)
-	getPointer(instance):FindPartsInRegion3(getPointer(region), ignoreDescendantsInstanceSome == 1 and getPointer(ignoreDescendantsInstanceValue) or nil)
+	return createPointer(getPointer(instance):FindPartsInRegion3(getPointer(region), ignoreDescendantsInstanceSome == 1 and getPointer(ignoreDescendantsInstanceValue) or nil));
 end
 function functions.abi.dyn_world_root_find_parts_in_region_3_with_ignore_list(instance, region, ignoreDescendantsTable)
-	getPointer(instance):FindPartsInRegion3WithIgnoreList(getPointer(region), getPointer(ignoreDescendantsTable))
+	return createPointer(getPointer(instance):FindPartsInRegion3WithIgnoreList(getPointer(region), getPointer(ignoreDescendantsTable)));
 end
 function functions.abi.dyn_world_root_find_parts_in_region_3_with_white_list(instance, region, whitelistDescendantsTable)
-	getPointer(instance):FindPartsInRegion3WithWhiteList(getPointer(region), getPointer(whitelistDescendantsTable))
+	return createPointer(getPointer(instance):FindPartsInRegion3WithWhiteList(getPointer(region), getPointer(whitelistDescendantsTable)));
 end
 function functions.abi.dyn_world_root_get_part_bounds_in_box(instance, cframe, size, overlapParams)
-	getPointer(instance):GetPartBoundsInBox(getPointer(cframe), getPointer(size), getPointer(overlapParams))
+	return createPointer(getPointer(instance):GetPartBoundsInBox(getPointer(cframe), getPointer(size), getPointer(overlapParams)));
 end
 function functions.abi.dyn_world_root_get_part_bounds_in_radius(instance, position, overlapParams)
-	getPointer(instance):GetPartBoundsInRadius(getPointer(position), getPointer(overlapParams))
+	return createPointer(getPointer(instance):GetPartBoundsInRadius(getPointer(position), getPointer(overlapParams)));
 end
 function functions.abi.dyn_world_root_get_parts_in_part(instance, partSome, partValue, overlapParams)
-	getPointer(instance):GetPartsInPart(partSome == 1 and getPointer(partValue) or nil, getPointer(overlapParams))
+	return createPointer(getPointer(instance):GetPartsInPart(partSome == 1 and getPointer(partValue) or nil, getPointer(overlapParams)));
 end
 function functions.abi.dyn_world_root_is_region_3_empty(instance, region, ignoreDescendentsInstanceSome, ignoreDescendentsInstanceValue)
-	getPointer(instance):IsRegion3Empty(getPointer(region), ignoreDescendentsInstanceSome == 1 and getPointer(ignoreDescendentsInstanceValue) or nil)
+	return getPointer(instance):IsRegion3Empty(getPointer(region), ignoreDescendentsInstanceSome == 1 and getPointer(ignoreDescendentsInstanceValue) or nil) and 1 or 0;
 end
 function functions.abi.dyn_world_root_is_region_3_empty_with_ignore_list(instance, region, ignoreDescendentsTable)
-	getPointer(instance):IsRegion3EmptyWithIgnoreList(getPointer(region), getPointer(ignoreDescendentsTable))
+	return getPointer(instance):IsRegion3EmptyWithIgnoreList(getPointer(region), getPointer(ignoreDescendentsTable)) and 1 or 0;
 end
 function functions.abi.dyn_world_root_raycast(instance, origin, direction, raycastParams)
-	getPointer(instance):Raycast(getPointer(origin), getPointer(direction), getPointer(raycastParams))
+	return createPointer(getPointer(instance):Raycast(getPointer(origin), getPointer(direction), getPointer(raycastParams)));
 end
 function functions.abi.dyn_workspace_get_num_awake_parts(instance)
-	getPointer(instance):GetNumAwakeParts()
+	return getPointer(instance):GetNumAwakeParts();
 end
 function functions.abi.dyn_workspace_get_physics_throttling(instance)
-	getPointer(instance):GetPhysicsThrottling()
+	return getPointer(instance):GetPhysicsThrottling();
 end
 function functions.abi.dyn_workspace_get_real_physics_fps(instance)
-	getPointer(instance):GetRealPhysicsFPS()
+	return getPointer(instance):GetRealPhysicsFPS();
 end
 function functions.abi.dyn_workspace_get_server_time_now(instance)
-	getPointer(instance):GetServerTimeNow()
+	return getPointer(instance):GetServerTimeNow();
 end
 function functions.abi.dyn_workspace_join_to_outsiders(instance, objects)
 	getPointer(instance):JoinToOutsiders(getPointer(objects))
 end
 function functions.abi.dyn_workspace_pgs_is_enabled(instance)
-	getPointer(instance):PGSIsEnabled()
+	return getPointer(instance):PGSIsEnabled() and 1 or 0;
 end
 function functions.abi.dyn_workspace_unjoin_from_outsiders(instance, objects)
 	getPointer(instance):UnjoinFromOutsiders(getPointer(objects))
@@ -919,7 +919,7 @@ function functions.abi.dyn_path_get_waypoints(instance)
 	getPointer(instance):GetWaypoints()
 end
 function functions.abi.dyn_path_check_occlusion_async(instance)
-	getPointer(instance):CheckOcclusionAsync()
+	return getPointer(instance):CheckOcclusionAsync();
 end
 function functions.abi.dyn_path_compute_async(instance, start, finish)
 	getPointer(instance):ComputeAsync(getPointer(start), getPointer(finish))
@@ -928,7 +928,7 @@ function functions.abi.dyn_player_clear_character_appearance(instance)
 	getPointer(instance):ClearCharacterAppearance()
 end
 function functions.abi.dyn_player_distance_from_character(instance, point)
-	getPointer(instance):DistanceFromCharacter(getPointer(point))
+	return getPointer(instance):DistanceFromCharacter(getPointer(point));
 end
 function functions.abi.dyn_player_get_join_data(instance)
 	getPointer(instance):GetJoinData()
@@ -939,19 +939,19 @@ function functions.abi.dyn_player_get_mouse(addr, instance)
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_player_get_network_ping(instance)
-	getPointer(instance):GetNetworkPing()
+	return getPointer(instance):GetNetworkPing();
 end
 function functions.abi.dyn_player_has_appearance_loaded(instance)
-	getPointer(instance):HasAppearanceLoaded()
+	return getPointer(instance):HasAppearanceLoaded() and 1 or 0;
 end
 function functions.abi.dyn_player_is_user_available_for_experiment(instance)
-	getPointer(instance):IsUserAvailableForExperiment()
+	return getPointer(instance):IsUserAvailableForExperiment() and 1 or 0;
 end
 function functions.abi.dyn_player_kick(instance, messageAddr, messageLength)
 	getPointer(instance):Kick(readString(messageAddr, messageLength))
 end
 function functions.abi.dyn_player_load_boolean(instance, keyAddr, keyLength)
-	getPointer(instance):LoadBoolean(readString(keyAddr, keyLength))
+	return getPointer(instance):LoadBoolean(readString(keyAddr, keyLength)) and 1 or 0;
 end
 function functions.abi.dyn_player_load_character_appearance(instance, assetInstanceSome, assetInstanceValue)
 	getPointer(instance):LoadCharacterAppearance(assetInstanceSome == 1 and getPointer(assetInstanceValue) or nil)
@@ -962,7 +962,7 @@ function functions.abi.dyn_player_load_instance(addr, instance, keyAddr, keyLeng
 	store_i32(memory, addr + 4, class and createPointer(class) or 0);
 end
 function functions.abi.dyn_player_load_number(instance, keyAddr, keyLength)
-	getPointer(instance):LoadNumber(readString(keyAddr, keyLength))
+	return getPointer(instance):LoadNumber(readString(keyAddr, keyLength));
 end
 function functions.abi.dyn_player_load_string(addr, instance, keyAddr, keyLength)
 	local str = getPointer(instance):LoadString(readString(keyAddr, keyLength));
@@ -987,20 +987,20 @@ function functions.abi.dyn_player_get_friends_online(instance)
 	getPointer(instance):GetFriendsOnline()
 end
 function functions.abi.dyn_player_get_rank_in_group(instance)
-	getPointer(instance):GetRankInGroup()
+	return getPointer(instance):GetRankInGroup();
 end
 function functions.abi.dyn_player_get_role_in_group(addr, instance)
 	local str = getPointer(instance):GetRoleInGroup();
 	writeStringReturn(addr, str)
 end
 function functions.abi.dyn_player_is_best_friends_with(instance)
-	getPointer(instance):IsBestFriendsWith()
+	return getPointer(instance):IsBestFriendsWith() and 1 or 0;
 end
 function functions.abi.dyn_player_is_friends_with(instance)
-	getPointer(instance):IsFriendsWith()
+	return getPointer(instance):IsFriendsWith() and 1 or 0;
 end
 function functions.abi.dyn_player_is_in_group(instance)
-	getPointer(instance):IsInGroup()
+	return getPointer(instance):IsInGroup() and 1 or 0;
 end
 function functions.abi.dyn_player_load_character(instance)
 	getPointer(instance):LoadCharacter()
@@ -1012,7 +1012,7 @@ function functions.abi.dyn_player_request_stream_around_async(instance, position
 	getPointer(instance):RequestStreamAroundAsync(getPointer(position))
 end
 function functions.abi.dyn_player_wait_for_data_ready(instance)
-	getPointer(instance):WaitForDataReady()
+	return getPointer(instance):WaitForDataReady() and 1 or 0;
 end
 function functions.abi.dyn_player_scripts_clear_computer_camera_movement_modes(instance)
 	getPointer(instance):ClearComputerCameraMovementModes()
@@ -1042,7 +1042,7 @@ function functions.abi.dyn_pose_add_sub_pose(instance, poseSome, poseValue)
 	getPointer(instance):AddSubPose(poseSome == 1 and getPointer(poseValue) or nil)
 end
 function functions.abi.dyn_pose_get_sub_poses(instance)
-	getPointer(instance):GetSubPoses()
+	return createPointer(getPointer(instance):GetSubPoses());
 end
 function functions.abi.dyn_pose_remove_sub_pose(instance, poseSome, poseValue)
 	getPointer(instance):RemoveSubPose(poseSome == 1 and getPointer(poseValue) or nil)
@@ -1072,7 +1072,7 @@ function functions.abi.dyn_replicated_first_remove_default_loading_screen(instan
 	getPointer(instance):RemoveDefaultLoadingScreen()
 end
 function functions.abi.dyn_rotation_curve_get_key_at_index(instance)
-	getPointer(instance):GetKeyAtIndex()
+	return createPointer(getPointer(instance):GetKeyAtIndex());
 end
 function functions.abi.dyn_rotation_curve_get_key_indices_at_time(instance)
 	getPointer(instance):GetKeyIndicesAtTime()
@@ -1081,16 +1081,16 @@ function functions.abi.dyn_rotation_curve_get_keys(instance)
 	getPointer(instance):GetKeys()
 end
 function functions.abi.dyn_rotation_curve_get_value_at_time(instance)
-	getPointer(instance):GetValueAtTime()
+	return createPointer(getPointer(instance):GetValueAtTime());
 end
 function functions.abi.dyn_rotation_curve_insert_key(instance, key)
 	getPointer(instance):InsertKey(getPointer(key))
 end
 function functions.abi.dyn_rotation_curve_remove_key_at_index(instance)
-	getPointer(instance):RemoveKeyAtIndex()
+	return getPointer(instance):RemoveKeyAtIndex();
 end
 function functions.abi.dyn_rotation_curve_set_keys(instance)
-	getPointer(instance):SetKeys()
+	return getPointer(instance):SetKeys();
 end
 function functions.abi.dyn_service_provider_find_service(addr, instance, classNameAddr, classNameLength)
 	local class = getPointer(instance):FindService(readString(classNameAddr, classNameLength));
@@ -1110,19 +1110,19 @@ function functions.abi.dyn_data_model_get_message(addr, instance)
 	writeStringReturn(addr, str)
 end
 function functions.abi.dyn_data_model_get_remote_build_mode(instance)
-	getPointer(instance):GetRemoteBuildMode()
+	return getPointer(instance):GetRemoteBuildMode() and 1 or 0;
 end
 function functions.abi.dyn_data_model_is_gear_type_allowed(instance)
-	getPointer(instance):IsGearTypeAllowed()
+	return getPointer(instance):IsGearTypeAllowed() and 1 or 0;
 end
 function functions.abi.dyn_data_model_is_loaded(instance)
-	getPointer(instance):IsLoaded()
+	return getPointer(instance):IsLoaded() and 1 or 0;
 end
 function functions.abi.dyn_data_model_save_place(instance)
-	getPointer(instance):SavePlace()
+	return getPointer(instance):SavePlace() and 1 or 0;
 end
 function functions.abi.dyn_user_settings_is_user_feature_enabled(instance, nameAddr, nameLength)
-	getPointer(instance):IsUserFeatureEnabled(readString(nameAddr, nameLength))
+	return getPointer(instance):IsUserFeatureEnabled(readString(nameAddr, nameLength)) and 1 or 0;
 end
 function functions.abi.dyn_user_settings_reset(instance)
 	getPointer(instance):Reset()
@@ -1140,10 +1140,10 @@ function functions.abi.dyn_sound_stop(instance)
 	getPointer(instance):Stop()
 end
 function functions.abi.dyn_team_get_players(instance)
-	getPointer(instance):GetPlayers()
+	return createPointer(getPointer(instance):GetPlayers());
 end
 function functions.abi.dyn_teams_get_teams(instance)
-	getPointer(instance):GetTeams()
+	return createPointer(getPointer(instance):GetTeams());
 end
 function functions.abi.dyn_teams_rebalance_teams(instance)
 	getPointer(instance):RebalanceTeams()
@@ -1218,16 +1218,16 @@ function functions.abi.dyn_ui_page_layout_previous(instance)
 	getPointer(instance):Previous()
 end
 function functions.abi.dyn_user_game_settings_get_camera_y_invert_value(instance)
-	getPointer(instance):GetCameraYInvertValue()
+	return getPointer(instance):GetCameraYInvertValue();
 end
 function functions.abi.dyn_user_game_settings_get_onboarding_completed(instance, onboardingIdAddr, onboardingIdLength)
-	getPointer(instance):GetOnboardingCompleted(readString(onboardingIdAddr, onboardingIdLength))
+	return getPointer(instance):GetOnboardingCompleted(readString(onboardingIdAddr, onboardingIdLength)) and 1 or 0;
 end
 function functions.abi.dyn_user_game_settings_in_full_screen(instance)
-	getPointer(instance):InFullScreen()
+	return getPointer(instance):InFullScreen() and 1 or 0;
 end
 function functions.abi.dyn_user_game_settings_in_studio_mode(instance)
-	getPointer(instance):InStudioMode()
+	return getPointer(instance):InStudioMode() and 1 or 0;
 end
 function functions.abi.dyn_user_game_settings_set_camera_y_invert_visible(instance)
 	getPointer(instance):SetCameraYInvertVisible()
