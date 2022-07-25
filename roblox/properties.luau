@@ -877,6 +877,15 @@ end
 function property.abi.prop_set_shirt_graphic_graphic(instance, content)
 	getPointer(instance).Graphic = getPointer(content);
 end
+function property.abi.prop_chat_bubble_chat_enabled(instance)
+	return getPointer(instance).BubbleChatEnabled and 1 or 0;
+end
+function property.abi.prop_set_chat_bubble_chat_enabled(instance, bool)
+	getPointer(instance).BubbleChatEnabled = bool and 1 or 0;
+end
+function property.abi.prop_chat_load_default_chat(instance)
+	return getPointer(instance).LoadDefaultChat and 1 or 0;
+end
 function property.abi.prop_click_detector_cursor_icon(instance)
 	return createPointer(getPointer(instance).CursorIcon);
 end
@@ -1716,6 +1725,12 @@ function property.abi.prop_set_vector_force_force(instance, vector_3)
 end
 function property.abi.prop_vector_force_relative_to(instance)
 end
+function property.abi.prop_content_provider_base_url(addr, instance)
+	writeStringReturn(addr, getPointer(instance).BaseUrl);
+end
+function property.abi.prop_content_provider_request_queue_size(instance)
+	return getPointer(instance).RequestQueueSize;
+end
 function property.abi.prop_skateboard_controller_steer(instance)
 	return getPointer(instance).Steer;
 end
@@ -1790,6 +1805,12 @@ end
 function property.abi.prop_set_data_store_options_all_scopes(instance, bool)
 	getPointer(instance).AllScopes = bool and 1 or 0;
 end
+function property.abi.prop_debris_max_items(instance)
+	return getPointer(instance).MaxItems;
+end
+function property.abi.prop_set_debris_max_items(instance, number)
+	getPointer(instance).MaxItems = number;
+end
 function property.abi.prop_dialog_behavior_type(instance)
 end
 function property.abi.prop_dialog_conversation_distance(instance)
@@ -1861,6 +1882,52 @@ function property.abi.prop_dialog_choice_user_dialog(addr, instance)
 end
 function property.abi.prop_set_dialog_choice_user_dialog(instance, addr, length)
 	getPointer(instance).UserDialog = readString(addr, length);
+end
+function property.abi.prop_dragger_service_align_dragged_objects(instance)
+	return getPointer(instance).AlignDraggedObjects and 1 or 0;
+end
+function property.abi.prop_dragger_service_angle_snap_enabled(instance)
+	return getPointer(instance).AngleSnapEnabled and 1 or 0;
+end
+function property.abi.prop_dragger_service_angle_snap_increment(instance)
+	return getPointer(instance).AngleSnapIncrement;
+end
+function property.abi.prop_dragger_service_animate_hover(instance)
+	return getPointer(instance).AnimateHover and 1 or 0;
+end
+function property.abi.prop_dragger_service_collisions_enabled(instance)
+	return getPointer(instance).CollisionsEnabled and 1 or 0;
+end
+function property.abi.prop_dragger_service_dragger_coordinate_space(instance)
+end
+function property.abi.prop_dragger_service_dragger_movement_mode(instance)
+end
+function property.abi.prop_dragger_service_geometry_snap_color(instance)
+	return createPointer(getPointer(instance).GeometrySnapColor);
+end
+function property.abi.prop_dragger_service_hover_animate_frequency(instance)
+	return getPointer(instance).HoverAnimateFrequency;
+end
+function property.abi.prop_dragger_service_hover_thickness(instance)
+	return getPointer(instance).HoverThickness;
+end
+function property.abi.prop_dragger_service_joints_enabled(instance)
+	return getPointer(instance).JointsEnabled and 1 or 0;
+end
+function property.abi.prop_dragger_service_linear_snap_enabled(instance)
+	return getPointer(instance).LinearSnapEnabled and 1 or 0;
+end
+function property.abi.prop_dragger_service_linear_snap_increment(instance)
+	return getPointer(instance).LinearSnapIncrement;
+end
+function property.abi.prop_dragger_service_show_hover(instance)
+	return getPointer(instance).ShowHover and 1 or 0;
+end
+function property.abi.prop_dragger_service_show_pivot_indicator(instance)
+	return getPointer(instance).ShowPivotIndicator and 1 or 0;
+end
+function property.abi.prop_set_dragger_service_show_pivot_indicator(instance, bool)
+	getPointer(instance).ShowPivotIndicator = bool and 1 or 0;
 end
 function property.abi.prop_euler_rotation_curve_rotation_order(instance)
 end
@@ -3397,6 +3464,47 @@ end
 function property.abi.prop_set_selection_point_lasso_point(instance, vector_3)
 	getPointer(instance).Point = getPointer(vector_3);
 end
+function property.abi.prop_gui_service_auto_select_gui_enabled(instance)
+	return getPointer(instance).AutoSelectGuiEnabled and 1 or 0;
+end
+function property.abi.prop_set_gui_service_auto_select_gui_enabled(instance, bool)
+	getPointer(instance).AutoSelectGuiEnabled = bool and 1 or 0;
+end
+function property.abi.prop_gui_service_core_gui_navigation_enabled(instance)
+	return getPointer(instance).CoreGuiNavigationEnabled and 1 or 0;
+end
+function property.abi.prop_set_gui_service_core_gui_navigation_enabled(instance, bool)
+	getPointer(instance).CoreGuiNavigationEnabled = bool and 1 or 0;
+end
+function property.abi.prop_gui_service_gui_navigation_enabled(instance)
+	return getPointer(instance).GuiNavigationEnabled and 1 or 0;
+end
+function property.abi.prop_set_gui_service_gui_navigation_enabled(instance, bool)
+	getPointer(instance).GuiNavigationEnabled = bool and 1 or 0;
+end
+function property.abi.prop_gui_service_is_modal_dialog(instance)
+	return getPointer(instance).IsModalDialog and 1 or 0;
+end
+function property.abi.prop_gui_service_is_windows(instance)
+	return getPointer(instance).IsWindows and 1 or 0;
+end
+function property.abi.prop_gui_service_menu_is_open(instance)
+	return getPointer(instance).MenuIsOpen and 1 or 0;
+end
+function property.abi.prop_gui_service_selected_object(addr, instance)
+	local value = getPointer(instance).SelectedObject;
+	store_i32(memory, addr, value and 1 or 0);
+	store_i32(memory, addr + 4, value and createPointer(value) or 0);
+end
+function property.abi.prop_set_gui_service_selected_object(instance, isSome, value)
+	getPointer(instance).SelectedObject = if isSome == 1 then getPointer(value) else nil;
+end
+function property.abi.prop_gui_service_touch_controls_enabled(instance)
+	return getPointer(instance).TouchControlsEnabled and 1 or 0;
+end
+function property.abi.prop_set_gui_service_touch_controls_enabled(instance, bool)
+	getPointer(instance).TouchControlsEnabled = bool and 1 or 0;
+end
 function property.abi.prop_highlight_adornee(addr, instance)
 	local value = getPointer(instance).Adornee;
 	store_i32(memory, addr, value and 1 or 0);
@@ -4033,6 +4141,18 @@ function property.abi.prop_input_object_user_input_state(instance)
 end
 function property.abi.prop_input_object_user_input_type(instance)
 end
+function property.abi.prop_insert_service_allow_client_insert_models(instance)
+	return getPointer(instance).AllowClientInsertModels and 1 or 0;
+end
+function property.abi.prop_set_insert_service_allow_client_insert_models(instance, bool)
+	getPointer(instance).AllowClientInsertModels = bool and 1 or 0;
+end
+function property.abi.prop_insert_service_allow_insert_free_models(instance)
+	return getPointer(instance).AllowInsertFreeModels and 1 or 0;
+end
+function property.abi.prop_set_insert_service_allow_insert_free_models(instance, bool)
+	getPointer(instance).AllowInsertFreeModels = bool and 1 or 0;
+end
 function property.abi.prop_joint_instance_active(instance)
 	return getPointer(instance).Active and 1 or 0;
 end
@@ -4327,6 +4447,12 @@ function property.abi.prop_lighting_time_of_day(addr, instance)
 end
 function property.abi.prop_set_lighting_time_of_day(instance, addr, length)
 	getPointer(instance).TimeOfDay = readString(addr, length);
+end
+function property.abi.prop_localization_service_roblox_locale_id(addr, instance)
+	writeStringReturn(addr, getPointer(instance).RobloxLocaleId);
+end
+function property.abi.prop_localization_service_system_locale_id(addr, instance)
+	writeStringReturn(addr, getPointer(instance).SystemLocaleId);
 end
 function property.abi.prop_localization_table_development_language(addr, instance)
 	writeStringReturn(addr, getPointer(instance).DevelopmentLanguage);
@@ -5316,6 +5442,12 @@ end
 function property.abi.prop_set_pathfinding_modifier_pass_through(instance, bool)
 	getPointer(instance).PassThrough = bool and 1 or 0;
 end
+function property.abi.prop_pathfinding_service_empty_cutoff(instance)
+	return getPointer(instance).EmptyCutoff;
+end
+function property.abi.prop_set_pathfinding_service_empty_cutoff(instance, number)
+	getPointer(instance).EmptyCutoff = number;
+end
 function property.abi.prop_player_account_age(instance)
 	return getPointer(instance).AccountAge;
 end
@@ -5457,6 +5589,38 @@ function property.abi.prop_player_user_id(instance)
 end
 function property.abi.prop_set_player_user_id(instance, number)
 	getPointer(instance).UserId = number;
+end
+function property.abi.prop_players_bubble_chat(instance)
+	return getPointer(instance).BubbleChat and 1 or 0;
+end
+function property.abi.prop_players_character_auto_loads(instance)
+	return getPointer(instance).CharacterAutoLoads and 1 or 0;
+end
+function property.abi.prop_set_players_character_auto_loads(instance, bool)
+	getPointer(instance).CharacterAutoLoads = bool and 1 or 0;
+end
+function property.abi.prop_players_classic_chat(instance)
+	return getPointer(instance).ClassicChat and 1 or 0;
+end
+function property.abi.prop_players_local_player(addr, instance)
+	local value = getPointer(instance).LocalPlayer;
+	store_i32(memory, addr, value and 1 or 0);
+	store_i32(memory, addr + 4, value and createPointer(value) or 0);
+end
+function property.abi.prop_players_max_players(instance)
+	return getPointer(instance).MaxPlayers;
+end
+function property.abi.prop_players_num_players(instance)
+	return getPointer(instance).NumPlayers;
+end
+function property.abi.prop_players_preferred_players(instance)
+	return getPointer(instance).PreferredPlayers;
+end
+function property.abi.prop_players_respawn_time(instance)
+	return getPointer(instance).RespawnTime;
+end
+function property.abi.prop_set_players_respawn_time(instance, number)
+	getPointer(instance).RespawnTime = number;
 end
 function property.abi.prop_pose_base_easing_direction(instance)
 end
@@ -5645,6 +5809,18 @@ function property.abi.prop_proximity_prompt_ui_offset(instance)
 end
 function property.abi.prop_set_proximity_prompt_ui_offset(instance, vector_2)
 	getPointer(instance).UIOffset = getPointer(vector_2);
+end
+function property.abi.prop_proximity_prompt_service_enabled(instance)
+	return getPointer(instance).Enabled and 1 or 0;
+end
+function property.abi.prop_set_proximity_prompt_service_enabled(instance, bool)
+	getPointer(instance).Enabled = bool and 1 or 0;
+end
+function property.abi.prop_proximity_prompt_service_max_prompts_visible(instance)
+	return getPointer(instance).MaxPromptsVisible;
+end
+function property.abi.prop_set_proximity_prompt_service_max_prompts_visible(instance, number)
+	getPointer(instance).MaxPromptsVisible = number;
 end
 function property.abi.prop_rotation_curve_length(instance)
 	return getPointer(instance).Length;
@@ -6148,6 +6324,32 @@ end
 function property.abi.prop_set_sound_group_volume(instance, number)
 	getPointer(instance).Volume = number;
 end
+function property.abi.prop_sound_service_ambient_reverb(instance)
+end
+function property.abi.prop_sound_service_distance_factor(instance)
+	return getPointer(instance).DistanceFactor;
+end
+function property.abi.prop_set_sound_service_distance_factor(instance, number)
+	getPointer(instance).DistanceFactor = number;
+end
+function property.abi.prop_sound_service_doppler_scale(instance)
+	return getPointer(instance).DopplerScale;
+end
+function property.abi.prop_set_sound_service_doppler_scale(instance, number)
+	getPointer(instance).DopplerScale = number;
+end
+function property.abi.prop_sound_service_respect_filtering_enabled(instance)
+	return getPointer(instance).RespectFilteringEnabled and 1 or 0;
+end
+function property.abi.prop_set_sound_service_respect_filtering_enabled(instance, bool)
+	getPointer(instance).RespectFilteringEnabled = bool and 1 or 0;
+end
+function property.abi.prop_sound_service_rolloff_scale(instance)
+	return getPointer(instance).RolloffScale;
+end
+function property.abi.prop_set_sound_service_rolloff_scale(instance, number)
+	getPointer(instance).RolloffScale = number;
+end
 function property.abi.prop_sparkles_color(instance)
 	return createPointer(getPointer(instance).Color);
 end
@@ -6307,6 +6509,36 @@ end
 function property.abi.prop_set_starter_player_user_emotes_enabled(instance, bool)
 	getPointer(instance).UserEmotesEnabled = bool and 1 or 0;
 end
+function property.abi.prop_stats_contacts_count(instance)
+	return getPointer(instance).ContactsCount;
+end
+function property.abi.prop_stats_data_receive_kbps(instance)
+	return getPointer(instance).DataReceiveKbps;
+end
+function property.abi.prop_stats_data_send_kbps(instance)
+	return getPointer(instance).DataSendKbps;
+end
+function property.abi.prop_stats_heartbeat_time_ms(instance)
+	return getPointer(instance).HeartbeatTimeMs;
+end
+function property.abi.prop_stats_instance_count(instance)
+	return getPointer(instance).InstanceCount;
+end
+function property.abi.prop_stats_moving_primitives_count(instance)
+	return getPointer(instance).MovingPrimitivesCount;
+end
+function property.abi.prop_stats_physics_receive_kbps(instance)
+	return getPointer(instance).PhysicsReceiveKbps;
+end
+function property.abi.prop_stats_physics_send_kbps(instance)
+	return getPointer(instance).PhysicsSendKbps;
+end
+function property.abi.prop_stats_physics_step_time_ms(instance)
+	return getPointer(instance).PhysicsStepTimeMs;
+end
+function property.abi.prop_stats_primitives_count(instance)
+	return getPointer(instance).PrimitivesCount;
+end
 function property.abi.prop_team_auto_assignable(instance)
 	return getPointer(instance).AutoAssignable and 1 or 0;
 end
@@ -6354,6 +6586,12 @@ function property.abi.prop_teleport_options_should_reserve_server(instance)
 end
 function property.abi.prop_set_teleport_options_should_reserve_server(instance, bool)
 	getPointer(instance).ShouldReserveServer = bool and 1 or 0;
+end
+function property.abi.prop_teleport_service_customized_teleport_ui(instance)
+	return getPointer(instance).CustomizedTeleportUI and 1 or 0;
+end
+function property.abi.prop_set_teleport_service_customized_teleport_ui(instance, bool)
+	getPointer(instance).CustomizedTeleportUI = bool and 1 or 0;
 end
 function property.abi.prop_terrain_detail_face(instance)
 end
@@ -6468,6 +6706,14 @@ function property.abi.prop_text_chat_message_properties_text(addr, instance)
 end
 function property.abi.prop_set_text_chat_message_properties_text(instance, addr, length)
 	getPointer(instance).Text = readString(addr, length);
+end
+function property.abi.prop_text_chat_service_chat_version(instance)
+end
+function property.abi.prop_text_chat_service_create_default_commands(instance)
+	return getPointer(instance).CreateDefaultCommands and 1 or 0;
+end
+function property.abi.prop_text_chat_service_create_default_text_channels(instance)
+	return getPointer(instance).CreateDefaultTextChannels and 1 or 0;
 end
 function property.abi.prop_text_source_can_send(instance)
 	return getPointer(instance).CanSend and 1 or 0;
@@ -6870,6 +7116,64 @@ end
 function property.abi.prop_user_game_settings_vignette_enabled(instance)
 	return getPointer(instance).VignetteEnabled and 1 or 0;
 end
+function property.abi.prop_user_input_service_accelerometer_enabled(instance)
+	return getPointer(instance).AccelerometerEnabled and 1 or 0;
+end
+function property.abi.prop_user_input_service_gamepad_enabled(instance)
+	return getPointer(instance).GamepadEnabled and 1 or 0;
+end
+function property.abi.prop_user_input_service_gyroscope_enabled(instance)
+	return getPointer(instance).GyroscopeEnabled and 1 or 0;
+end
+function property.abi.prop_user_input_service_keyboard_enabled(instance)
+	return getPointer(instance).KeyboardEnabled and 1 or 0;
+end
+function property.abi.prop_user_input_service_modal_enabled(instance)
+	return getPointer(instance).ModalEnabled and 1 or 0;
+end
+function property.abi.prop_set_user_input_service_modal_enabled(instance, bool)
+	getPointer(instance).ModalEnabled = bool and 1 or 0;
+end
+function property.abi.prop_user_input_service_mouse_behavior(instance)
+end
+function property.abi.prop_user_input_service_mouse_delta_sensitivity(instance)
+	return getPointer(instance).MouseDeltaSensitivity;
+end
+function property.abi.prop_set_user_input_service_mouse_delta_sensitivity(instance, number)
+	getPointer(instance).MouseDeltaSensitivity = number;
+end
+function property.abi.prop_user_input_service_mouse_enabled(instance)
+	return getPointer(instance).MouseEnabled and 1 or 0;
+end
+function property.abi.prop_user_input_service_mouse_icon_enabled(instance)
+	return getPointer(instance).MouseIconEnabled and 1 or 0;
+end
+function property.abi.prop_set_user_input_service_mouse_icon_enabled(instance, bool)
+	getPointer(instance).MouseIconEnabled = bool and 1 or 0;
+end
+function property.abi.prop_user_input_service_on_screen_keyboard_position(instance)
+	return createPointer(getPointer(instance).OnScreenKeyboardPosition);
+end
+function property.abi.prop_user_input_service_on_screen_keyboard_size(instance)
+	return createPointer(getPointer(instance).OnScreenKeyboardSize);
+end
+function property.abi.prop_user_input_service_on_screen_keyboard_visible(instance)
+	return getPointer(instance).OnScreenKeyboardVisible and 1 or 0;
+end
+function property.abi.prop_user_input_service_touch_enabled(instance)
+	return getPointer(instance).TouchEnabled and 1 or 0;
+end
+function property.abi.prop_user_input_service_user_head_c_frame(instance)
+	return createPointer(getPointer(instance).UserHeadCFrame);
+end
+function property.abi.prop_user_input_service_vr_enabled(instance)
+	return getPointer(instance).VREnabled and 1 or 0;
+end
+function property.abi.prop_vr_service_gui_input_user_c_frame(instance)
+end
+function property.abi.prop_vr_service_vr_enabled(instance)
+	return getPointer(instance).VREnabled and 1 or 0;
+end
 function property.abi.prop_bool_value_value(instance)
 	return getPointer(instance).Value and 1 or 0;
 end
@@ -6979,6 +7283,8 @@ function property.abi.prop_vector_3_value_value(instance)
 end
 function property.abi.prop_set_vector_3_value_value(instance, vector_3)
 	getPointer(instance).Value = getPointer(vector_3);
+end
+function property.abi.prop_voice_chat_internal_voice_chat_state(instance)
 end
 function property.abi.prop_voice_source_user_id(instance)
 	return getPointer(instance).UserId;

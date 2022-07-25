@@ -130,6 +130,55 @@ function signal.abi.connect_animator_animation_played(instance, stack, vtable)
 		popStack(stackPointer, 8);
 	end))
 end
+function signal.abi.connect_asset_import_service_progress_update(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).ProgressUpdate:Connect(function(progressRatio)
+		invokeFunction(stack, vtable, progressRatio);
+	end))
+end
+function signal.abi.connect_asset_import_service_upload_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).UploadFinished:Connect(function(succeeded, errorMap)
+		invokeFunction(stack, vtable, succeeded and 1 or 0, error(errorMap));
+	end))
+end
+function signal.abi.connect_avatar_editor_service_prompt_allow_inventory_read_access_completed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptAllowInventoryReadAccessCompleted:Connect(function(result)
+		invokeFunction(stack, vtable, error(result));
+	end))
+end
+function signal.abi.connect_avatar_editor_service_prompt_create_outfit_completed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptCreateOutfitCompleted:Connect(function(result, failureType)
+		invokeFunction(stack, vtable, error(result), error(failureType));
+	end))
+end
+function signal.abi.connect_avatar_editor_service_prompt_delete_outfit_completed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptDeleteOutfitCompleted:Connect(function(result)
+		invokeFunction(stack, vtable, error(result));
+	end))
+end
+function signal.abi.connect_avatar_editor_service_prompt_rename_outfit_completed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptRenameOutfitCompleted:Connect(function(result)
+		invokeFunction(stack, vtable, error(result));
+	end))
+end
+function signal.abi.connect_avatar_editor_service_prompt_save_avatar_completed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptSaveAvatarCompleted:Connect(function(result, humanoidDescription)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, humanoidDescription and 1 or 0);
+		store_i32(memory, stackPointer + 4, humanoidDescription and createPointer(humanoidDescription) or 0);
+		invokeFunction(stack, vtable, error(result), stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_avatar_editor_service_prompt_set_favorite_completed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptSetFavoriteCompleted:Connect(function(result)
+		invokeFunction(stack, vtable, error(result));
+	end))
+end
+function signal.abi.connect_avatar_editor_service_prompt_update_outfit_completed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptUpdateOutfitCompleted:Connect(function(result)
+		invokeFunction(stack, vtable, error(result));
+	end))
+end
 function signal.abi.connect_tool_activated(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).Activated:Connect(function()
 		invokeFunction(stack, vtable);
@@ -179,6 +228,18 @@ function signal.abi.connect_camera_interpolation_finished(instance, stack, vtabl
 		invokeFunction(stack, vtable);
 	end))
 end
+function signal.abi.connect_chat_chatted(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).Chatted:Connect(function(part, message, color)
+		local stackPointer = pushStack(20);
+		store_i32(memory, stackPointer + 0, part and 1 or 0);
+		store_i32(memory, stackPointer + 4, part and createPointer(part) or 0);
+		store_i32(memory, stackPointer + 8, allocString(message));
+		store_i32(memory, stackPointer + 12, #message);
+		store_i32(memory, stackPointer + 16, #message);
+		invokeFunction(stack, vtable, stackPointer + 0, stackPointer + 8, error(color));
+		popStack(stackPointer, 20);
+	end))
+end
 function signal.abi.connect_click_detector_mouse_click(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).MouseClick:Connect(function(playerWhoClicked)
 		local stackPointer = pushStack(8);
@@ -211,6 +272,67 @@ function signal.abi.connect_click_detector_right_mouse_click(instance, stack, vt
 		local stackPointer = pushStack(8);
 		store_i32(memory, stackPointer + 0, playerWhoClicked and 1 or 0);
 		store_i32(memory, stackPointer + 4, playerWhoClicked and createPointer(playerWhoClicked) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_collection_service_item_added(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).ItemAdded:Connect(function(instance)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, instance and 1 or 0);
+		store_i32(memory, stackPointer + 4, instance and createPointer(instance) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_collection_service_item_removed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).ItemRemoved:Connect(function(instance)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, instance and 1 or 0);
+		store_i32(memory, stackPointer + 4, instance and createPointer(instance) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_collection_service_tag_added(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TagAdded:Connect(function(tag)
+		local stackPointer = pushStack(12);
+		store_i32(memory, stackPointer + 0, allocString(tag));
+		store_i32(memory, stackPointer + 4, #tag);
+		store_i32(memory, stackPointer + 8, #tag);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 12);
+	end))
+end
+function signal.abi.connect_collection_service_tag_removed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TagRemoved:Connect(function(tag)
+		local stackPointer = pushStack(12);
+		store_i32(memory, stackPointer + 0, allocString(tag));
+		store_i32(memory, stackPointer + 4, #tag);
+		store_i32(memory, stackPointer + 8, #tag);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 12);
+	end))
+end
+function signal.abi.connect_content_provider_asset_fetch_failed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).AssetFetchFailed:Connect(function(assetId)
+		invokeFunction(stack, vtable, createPointer(assetId));
+	end))
+end
+function signal.abi.connect_context_action_service_local_tool_equipped(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).LocalToolEquipped:Connect(function(toolEquipped)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, toolEquipped and 1 or 0);
+		store_i32(memory, stackPointer + 4, toolEquipped and createPointer(toolEquipped) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_context_action_service_local_tool_unequipped(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).LocalToolUnequipped:Connect(function(toolUnequipped)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, toolUnequipped and 1 or 0);
+		store_i32(memory, stackPointer + 4, toolUnequipped and createPointer(toolUnequipped) or 0);
 		invokeFunction(stack, vtable, stackPointer + 0);
 		popStack(stackPointer, 8);
 	end))
@@ -541,6 +663,16 @@ function signal.abi.connect_handles_mouse_leave(instance, stack, vtable)
 		invokeFunction(stack, vtable, error(face));
 	end))
 end
+function signal.abi.connect_gui_service_menu_closed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).MenuClosed:Connect(function()
+		invokeFunction(stack, vtable);
+	end))
+end
+function signal.abi.connect_gui_service_menu_opened(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).MenuOpened:Connect(function()
+		invokeFunction(stack, vtable);
+	end))
+end
 function signal.abi.connect_humanoid_animation_played(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).AnimationPlayed:Connect(function(animationTrack)
 		local stackPointer = pushStack(8);
@@ -688,6 +820,71 @@ end
 function signal.abi.connect_lighting_lighting_changed(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).LightingChanged:Connect(function(skyChanged)
 		invokeFunction(stack, vtable, skyChanged and 1 or 0);
+	end))
+end
+function signal.abi.connect_log_service_message_out(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).MessageOut:Connect(function(message, messageType)
+		local stackPointer = pushStack(12);
+		store_i32(memory, stackPointer + 0, allocString(message));
+		store_i32(memory, stackPointer + 4, #message);
+		store_i32(memory, stackPointer + 8, #message);
+		invokeFunction(stack, vtable, stackPointer + 0, error(messageType));
+		popStack(stackPointer, 12);
+	end))
+end
+function signal.abi.connect_marketplace_service_prompt_bundle_purchase_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptBundlePurchaseFinished:Connect(function(player, bundleId, wasPurchased)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, bundleId, wasPurchased and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_marketplace_service_prompt_game_pass_purchase_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptGamePassPurchaseFinished:Connect(function(player, gamePassId, wasPurchased)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, gamePassId, wasPurchased and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_marketplace_service_prompt_premium_purchase_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptPremiumPurchaseFinished:Connect(function()
+		invokeFunction(stack, vtable);
+	end))
+end
+function signal.abi.connect_marketplace_service_prompt_product_purchase_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptProductPurchaseFinished:Connect(function(userId, productId, isPurchased)
+		invokeFunction(stack, vtable, userId, productId, isPurchased and 1 or 0);
+	end))
+end
+function signal.abi.connect_marketplace_service_prompt_purchase_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptPurchaseFinished:Connect(function(player, assetId, isPurchased)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, assetId, isPurchased and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_marketplace_service_prompt_subscription_cancellation_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptSubscriptionCancellationFinished:Connect(function(player, subscriptionId, wasCanceled)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, subscriptionId, wasCanceled and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_marketplace_service_prompt_subscription_purchase_finished(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptSubscriptionPurchaseFinished:Connect(function(player, subscriptionId, wasPurchased)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, subscriptionId, wasPurchased and 1 or 0);
+		popStack(stackPointer, 8);
 	end))
 end
 function signal.abi.connect_mouse_button_1_down(instance, stack, vtable)
@@ -885,6 +1082,33 @@ function signal.abi.connect_player_on_teleport(instance, stack, vtable)
 		popStack(stackPointer, 12);
 	end))
 end
+function signal.abi.connect_players_player_added(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PlayerAdded:Connect(function(player)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_players_player_membership_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PlayerMembershipChanged:Connect(function(player)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_players_player_removing(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PlayerRemoving:Connect(function(player)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
 function signal.abi.connect_proximity_prompt_prompt_button_hold_began(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).PromptButtonHoldBegan:Connect(function(playerWhoTriggered)
 		local stackPointer = pushStack(8);
@@ -931,6 +1155,68 @@ function signal.abi.connect_proximity_prompt_triggered(instance, stack, vtable)
 		popStack(stackPointer, 8);
 	end))
 end
+function signal.abi.connect_proximity_prompt_service_prompt_button_hold_began(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptButtonHoldBegan:Connect(function(prompt, playerWhoTriggered)
+		local stackPointer = pushStack(16);
+		store_i32(memory, stackPointer + 0, prompt and 1 or 0);
+		store_i32(memory, stackPointer + 4, prompt and createPointer(prompt) or 0);
+		store_i32(memory, stackPointer + 8, playerWhoTriggered and 1 or 0);
+		store_i32(memory, stackPointer + 12, playerWhoTriggered and createPointer(playerWhoTriggered) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, stackPointer + 8);
+		popStack(stackPointer, 16);
+	end))
+end
+function signal.abi.connect_proximity_prompt_service_prompt_button_hold_ended(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptButtonHoldEnded:Connect(function(prompt, playerWhoTriggered)
+		local stackPointer = pushStack(16);
+		store_i32(memory, stackPointer + 0, prompt and 1 or 0);
+		store_i32(memory, stackPointer + 4, prompt and createPointer(prompt) or 0);
+		store_i32(memory, stackPointer + 8, playerWhoTriggered and 1 or 0);
+		store_i32(memory, stackPointer + 12, playerWhoTriggered and createPointer(playerWhoTriggered) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, stackPointer + 8);
+		popStack(stackPointer, 16);
+	end))
+end
+function signal.abi.connect_proximity_prompt_service_prompt_hidden(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptHidden:Connect(function(prompt)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, prompt and 1 or 0);
+		store_i32(memory, stackPointer + 4, prompt and createPointer(prompt) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_proximity_prompt_service_prompt_shown(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptShown:Connect(function(prompt, inputType)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, prompt and 1 or 0);
+		store_i32(memory, stackPointer + 4, prompt and createPointer(prompt) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, error(inputType));
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_proximity_prompt_service_prompt_trigger_ended(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptTriggerEnded:Connect(function(prompt, playerWhoTriggered)
+		local stackPointer = pushStack(16);
+		store_i32(memory, stackPointer + 0, prompt and 1 or 0);
+		store_i32(memory, stackPointer + 4, prompt and createPointer(prompt) or 0);
+		store_i32(memory, stackPointer + 8, playerWhoTriggered and 1 or 0);
+		store_i32(memory, stackPointer + 12, playerWhoTriggered and createPointer(playerWhoTriggered) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, stackPointer + 8);
+		popStack(stackPointer, 16);
+	end))
+end
+function signal.abi.connect_proximity_prompt_service_prompt_triggered(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PromptTriggered:Connect(function(prompt, playerWhoTriggered)
+		local stackPointer = pushStack(16);
+		store_i32(memory, stackPointer + 0, prompt and 1 or 0);
+		store_i32(memory, stackPointer + 4, prompt and createPointer(prompt) or 0);
+		store_i32(memory, stackPointer + 8, playerWhoTriggered and 1 or 0);
+		store_i32(memory, stackPointer + 12, playerWhoTriggered and createPointer(playerWhoTriggered) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, stackPointer + 8);
+		popStack(stackPointer, 16);
+	end))
+end
 function signal.abi.connect_remote_event_on_client_event(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).OnClientEvent:Connect(function(arguments)
 		invokeFunction(stack, vtable, error(arguments));
@@ -943,6 +1229,56 @@ function signal.abi.connect_remote_event_on_server_event(instance, stack, vtable
 		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
 		invokeFunction(stack, vtable, stackPointer + 0, error(arguments));
 		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_run_service_heartbeat(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).Heartbeat:Connect(function(deltaTime)
+		invokeFunction(stack, vtable, deltaTime);
+	end))
+end
+function signal.abi.connect_run_service_post_simulation(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PostSimulation:Connect(function(deltaTime)
+		invokeFunction(stack, vtable, deltaTime);
+	end))
+end
+function signal.abi.connect_run_service_pre_animation(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PreAnimation:Connect(function(deltaTime)
+		invokeFunction(stack, vtable, deltaTime);
+	end))
+end
+function signal.abi.connect_run_service_pre_render(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PreRender:Connect(function(deltaTime)
+		invokeFunction(stack, vtable, deltaTime);
+	end))
+end
+function signal.abi.connect_run_service_pre_simulation(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PreSimulation:Connect(function(deltaTime)
+		invokeFunction(stack, vtable, deltaTime);
+	end))
+end
+function signal.abi.connect_run_service_render_stepped(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).RenderStepped:Connect(function(deltaTime)
+		invokeFunction(stack, vtable, deltaTime);
+	end))
+end
+function signal.abi.connect_run_service_stepped(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).Stepped:Connect(function(time, deltaTime)
+		invokeFunction(stack, vtable, time, deltaTime);
+	end))
+end
+function signal.abi.connect_script_context_error(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).Error:Connect(function(message, stackTrace, script)
+		local stackPointer = pushStack(32);
+		store_i32(memory, stackPointer + 0, allocString(message));
+		store_i32(memory, stackPointer + 4, #message);
+		store_i32(memory, stackPointer + 8, #message);
+		store_i32(memory, stackPointer + 12, allocString(stackTrace));
+		store_i32(memory, stackPointer + 16, #stackTrace);
+		store_i32(memory, stackPointer + 20, #stackTrace);
+		store_i32(memory, stackPointer + 24, script and 1 or 0);
+		store_i32(memory, stackPointer + 28, script and createPointer(script) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, stackPointer + 12, stackPointer + 24);
+		popStack(stackPointer, 32);
 	end))
 end
 function signal.abi.connect_service_provider_close(instance, stack, vtable)
@@ -993,6 +1329,15 @@ end
 function signal.abi.connect_data_model_loaded(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).Loaded:Connect(function()
 		invokeFunction(stack, vtable);
+	end))
+end
+function signal.abi.connect_social_service_game_invite_prompt_closed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).GameInvitePromptClosed:Connect(function(player, recipientIds)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, error(recipientIds));
+		popStack(stackPointer, 8);
 	end))
 end
 function signal.abi.connect_sound_did_loop(instance, stack, vtable)
@@ -1083,6 +1428,29 @@ function signal.abi.connect_team_player_removed(instance, stack, vtable)
 		popStack(stackPointer, 8);
 	end))
 end
+function signal.abi.connect_teleport_service_local_player_arrived_from_teleport(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).LocalPlayerArrivedFromTeleport:Connect(function(loadingGui, dataTable)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, loadingGui and 1 or 0);
+		store_i32(memory, stackPointer + 4, loadingGui and createPointer(loadingGui) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, error(dataTable));
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_teleport_service_teleport_init_failed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TeleportInitFailed:Connect(function(player, teleportResult, errorMessage, placeId, teleportOptions)
+		local stackPointer = pushStack(28);
+		store_i32(memory, stackPointer + 0, player and 1 or 0);
+		store_i32(memory, stackPointer + 4, player and createPointer(player) or 0);
+		store_i32(memory, stackPointer + 8, allocString(errorMessage));
+		store_i32(memory, stackPointer + 12, #errorMessage);
+		store_i32(memory, stackPointer + 16, #errorMessage);
+		store_i32(memory, stackPointer + 20, teleportOptions and 1 or 0);
+		store_i32(memory, stackPointer + 24, teleportOptions and createPointer(teleportOptions) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, error(teleportResult), stackPointer + 8, placeId, stackPointer + 20);
+		popStack(stackPointer, 28);
+	end))
+end
 function signal.abi.connect_text_channel_message_received(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).MessageReceived:Connect(function(incomingMessage)
 		local stackPointer = pushStack(8);
@@ -1102,6 +1470,24 @@ function signal.abi.connect_text_chat_command_triggered(instance, stack, vtable)
 		store_i32(memory, stackPointer + 16, #unfilteredText);
 		invokeFunction(stack, vtable, stackPointer + 0, stackPointer + 8);
 		popStack(stackPointer, 20);
+	end))
+end
+function signal.abi.connect_text_chat_service_message_received(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).MessageReceived:Connect(function(textChatMessage)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, textChatMessage and 1 or 0);
+		store_i32(memory, stackPointer + 4, textChatMessage and createPointer(textChatMessage) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_text_chat_service_sending_message(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).SendingMessage:Connect(function(textChatMessage)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, textChatMessage and 1 or 0);
+		store_i32(memory, stackPointer + 4, textChatMessage and createPointer(textChatMessage) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
 	end))
 end
 function signal.abi.connect_tween_base_completed(instance, stack, vtable)
@@ -1144,6 +1530,200 @@ end
 function signal.abi.connect_user_game_settings_studio_mode_changed(instance, stack, vtable)
 	return createConnection(stack, vtable, getPointer(instance).StudioModeChanged:Connect(function(isStudioMode)
 		invokeFunction(stack, vtable, isStudioMode and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_device_acceleration_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).DeviceAccelerationChanged:Connect(function(acceleration)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, acceleration and 1 or 0);
+		store_i32(memory, stackPointer + 4, acceleration and createPointer(acceleration) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_device_gravity_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).DeviceGravityChanged:Connect(function(gravity)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, gravity and 1 or 0);
+		store_i32(memory, stackPointer + 4, gravity and createPointer(gravity) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_device_rotation_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).DeviceRotationChanged:Connect(function(rotation, cframe)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, rotation and 1 or 0);
+		store_i32(memory, stackPointer + 4, rotation and createPointer(rotation) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, createPointer(cframe));
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_gamepad_connected(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).GamepadConnected:Connect(function(gamepadNum)
+		invokeFunction(stack, vtable, error(gamepadNum));
+	end))
+end
+function signal.abi.connect_user_input_service_gamepad_disconnected(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).GamepadDisconnected:Connect(function(gamepadNum)
+		invokeFunction(stack, vtable, error(gamepadNum));
+	end))
+end
+function signal.abi.connect_user_input_service_input_began(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).InputBegan:Connect(function(input, gameProcessedEvent)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, input and 1 or 0);
+		store_i32(memory, stackPointer + 4, input and createPointer(input) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, gameProcessedEvent and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_input_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).InputChanged:Connect(function(input, gameProcessedEvent)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, input and 1 or 0);
+		store_i32(memory, stackPointer + 4, input and createPointer(input) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, gameProcessedEvent and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_input_ended(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).InputEnded:Connect(function(input, gameProcessedEvent)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, input and 1 or 0);
+		store_i32(memory, stackPointer + 4, input and createPointer(input) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, gameProcessedEvent and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_jump_request(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).JumpRequest:Connect(function()
+		invokeFunction(stack, vtable);
+	end))
+end
+function signal.abi.connect_user_input_service_last_input_type_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).LastInputTypeChanged:Connect(function(lastInputType)
+		invokeFunction(stack, vtable, error(lastInputType));
+	end))
+end
+function signal.abi.connect_user_input_service_pointer_action(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).PointerAction:Connect(function(wheel, pan, pinch, gameProcessedEvent)
+		invokeFunction(stack, vtable, wheel, createPointer(pan), pinch, gameProcessedEvent and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_text_box_focus_released(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TextBoxFocusReleased:Connect(function(textboxReleased)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, textboxReleased and 1 or 0);
+		store_i32(memory, stackPointer + 4, textboxReleased and createPointer(textboxReleased) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_text_box_focused(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TextBoxFocused:Connect(function(textboxFocused)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, textboxFocused and 1 or 0);
+		store_i32(memory, stackPointer + 4, textboxFocused and createPointer(textboxFocused) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_ended(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchEnded:Connect(function(touch, gameProcessedEvent)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, touch and 1 or 0);
+		store_i32(memory, stackPointer + 4, touch and createPointer(touch) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, gameProcessedEvent and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_long_press(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchLongPress:Connect(function(touchPositions, state, gameProcessedEvent)
+		invokeFunction(stack, vtable, error(touchPositions), error(state), gameProcessedEvent and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_moved(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchMoved:Connect(function(touch, gameProcessedEvent)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, touch and 1 or 0);
+		store_i32(memory, stackPointer + 4, touch and createPointer(touch) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, gameProcessedEvent and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_pan(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchPan:Connect(function(touchPositions, totalTranslation, velocity, state, gameProcessedEvent)
+		invokeFunction(stack, vtable, error(touchPositions), createPointer(totalTranslation), createPointer(velocity), error(state), gameProcessedEvent and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_pinch(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchPinch:Connect(function(touchPositions, scale, velocity, state, gameProcessedEvent)
+		invokeFunction(stack, vtable, error(touchPositions), scale, velocity, error(state), gameProcessedEvent and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_rotate(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchRotate:Connect(function(touchPositions, rotation, velocity, state, gameProcessedEvent)
+		invokeFunction(stack, vtable, error(touchPositions), rotation, velocity, error(state), gameProcessedEvent and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_started(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchStarted:Connect(function(touch, gameProcessedEvent)
+		local stackPointer = pushStack(8);
+		store_i32(memory, stackPointer + 0, touch and 1 or 0);
+		store_i32(memory, stackPointer + 4, touch and createPointer(touch) or 0);
+		invokeFunction(stack, vtable, stackPointer + 0, gameProcessedEvent and 1 or 0);
+		popStack(stackPointer, 8);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_swipe(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchSwipe:Connect(function(swipeDirection, numberOfTouches, gameProcessedEvent)
+		invokeFunction(stack, vtable, error(swipeDirection), numberOfTouches, gameProcessedEvent and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_tap(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchTap:Connect(function(touchPositions, gameProcessedEvent)
+		invokeFunction(stack, vtable, error(touchPositions), gameProcessedEvent and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_touch_tap_in_world(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchTapInWorld:Connect(function(position, processedByUI)
+		invokeFunction(stack, vtable, createPointer(position), processedByUI and 1 or 0);
+	end))
+end
+function signal.abi.connect_user_input_service_user_c_frame_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).UserCFrameChanged:Connect(function(type, value)
+		invokeFunction(stack, vtable, error(type), createPointer(value));
+	end))
+end
+function signal.abi.connect_user_input_service_window_focus_released(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).WindowFocusReleased:Connect(function()
+		invokeFunction(stack, vtable);
+	end))
+end
+function signal.abi.connect_user_input_service_window_focused(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).WindowFocused:Connect(function()
+		invokeFunction(stack, vtable);
+	end))
+end
+function signal.abi.connect_vr_service_navigation_requested(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).NavigationRequested:Connect(function(cframe, inputUserCFrame)
+		invokeFunction(stack, vtable, createPointer(cframe), error(inputUserCFrame));
+	end))
+end
+function signal.abi.connect_vr_service_touchpad_mode_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).TouchpadModeChanged:Connect(function(pad, mode)
+		invokeFunction(stack, vtable, error(pad), error(mode));
+	end))
+end
+function signal.abi.connect_vr_service_user_c_frame_changed(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).UserCFrameChanged:Connect(function(type, value)
+		invokeFunction(stack, vtable, error(type), createPointer(value));
+	end))
+end
+function signal.abi.connect_vr_service_user_c_frame_enabled(instance, stack, vtable)
+	return createConnection(stack, vtable, getPointer(instance).UserCFrameEnabled:Connect(function(type, enabled)
+		invokeFunction(stack, vtable, error(type), enabled and 1 or 0);
 	end))
 end
 function signal.abi.connect_bool_value_changed(instance, stack, vtable)

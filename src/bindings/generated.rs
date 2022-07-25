@@ -51,6 +51,11 @@ extern "C" {
 	fn prop_set_accoutrement_attachment_right(instance: u32, value: Vector3);
 	fn prop_accoutrement_attachment_up(instance: u32) -> Vector3;
 	fn prop_set_accoutrement_attachment_up(instance: u32, value: Vector3);
+	fn dyn_analytics_service_fire_custom_event(instance: u32, p_player: Option<Instance>, p_eventCategory: &str);
+	fn dyn_analytics_service_fire_event(instance: u32, p_category: &str);
+	fn dyn_analytics_service_fire_in_game_economy_event(instance: u32, p_player: Option<Instance>, p_itemName: &str, p_itemCategory: &str, p_amount: f64, p_currency: &str);
+	fn dyn_analytics_service_fire_log_event(instance: u32, p_player: Option<Instance>, p_message: &str);
+	fn dyn_analytics_service_fire_player_progression_event(instance: u32, p_player: Option<Instance>, p_category: &str);
 	fn prop_animation_animation_id(instance: u32) -> Content;
 	fn prop_set_animation_animation_id(instance: u32, value: Content);
 	fn prop_animation_clip_loop(instance: u32) -> bool;
@@ -58,6 +63,10 @@ extern "C" {
 	fn dyn_keyframe_sequence_add_keyframe(instance: u32, p_keyframe: Option<Instance>);
 	fn dyn_keyframe_sequence_get_keyframes(instance: u32) -> Objects;
 	fn dyn_keyframe_sequence_remove_keyframe(instance: u32, p_keyframe: Option<Instance>);
+	fn dyn_animation_clip_provider_register_active_animation_clip(instance: u32, p_animationClip: Option<AnimationClip>) -> Content;
+	fn dyn_animation_clip_provider_register_animation_clip(instance: u32, p_animationClip: Option<AnimationClip>) -> Content;
+	fn dyn_animation_clip_provider_get_animation_clip_async(instance: u32, p_assetId: Content) -> Option<AnimationClip>;
+	fn dyn_animation_clip_provider_get_animations(instance: u32, p_userId: f64) -> Option<Instance>;
 	fn dyn_animation_controller_get_playing_animation_tracks(instance: u32);
 	fn dyn_animation_controller_load_animation(instance: u32, p_animation: Option<Animation>) -> Option<AnimationTrack>;
 	fn connect_animation_controller_animation_played(instance: u32, callback: Box<dyn Fn(Option<AnimationTrack>)>) -> u32;
@@ -87,6 +96,15 @@ extern "C" {
 	fn dyn_animator_get_playing_animation_tracks(instance: u32);
 	fn dyn_animator_load_animation(instance: u32, p_animation: Option<Animation>) -> Option<AnimationTrack>;
 	fn connect_animator_animation_played(instance: u32, callback: Box<dyn Fn(Option<AnimationTrack>)>) -> u32;
+	fn connect_asset_import_service_progress_update(instance: u32, callback: Box<dyn Fn(f64)>) -> u32;
+	fn connect_asset_import_service_upload_finished(instance: u32, callback: Box<dyn Fn(bool, ())>) -> u32;
+	fn dyn_asset_service_create_place_async(instance: u32, p_placeName: &str, p_templatePlaceID: f64, p_description: &str) -> f64;
+	fn dyn_asset_service_create_place_in_player_inventory_async(instance: u32, p_player: Option<Instance>, p_placeName: &str, p_templatePlaceID: f64, p_description: &str) -> f64;
+	fn dyn_asset_service_get_asset_ids_for_package(instance: u32, p_packageAssetId: f64);
+	fn dyn_asset_service_get_bundle_details_async(instance: u32, p_bundleId: f64);
+	fn dyn_asset_service_get_creator_asset_id(instance: u32, p_creationID: f64) -> f64;
+	fn dyn_asset_service_get_game_places_async(instance: u32) -> Option<Instance>;
+	fn dyn_asset_service_save_place_async(instance: u32);
 	fn prop_atmosphere_color(instance: u32) -> Color3;
 	fn prop_set_atmosphere_color(instance: u32, value: Color3);
 	fn prop_atmosphere_decay(instance: u32) -> Color3;
@@ -132,6 +150,30 @@ extern "C" {
 	fn prop_set_bone_transform(instance: u32, value: CFrame);
 	fn prop_bone_transformed_c_frame(instance: u32) -> CFrame;
 	fn prop_bone_transformed_world_c_frame(instance: u32) -> CFrame;
+	fn dyn_avatar_editor_service_prompt_allow_inventory_read_access(instance: u32);
+	fn dyn_avatar_editor_service_prompt_create_outfit(instance: u32, p_outfit: Option<HumanoidDescription>);
+	fn dyn_avatar_editor_service_prompt_delete_outfit(instance: u32, p_outfitId: f64);
+	fn dyn_avatar_editor_service_prompt_rename_outfit(instance: u32, p_outfitId: f64);
+	fn dyn_avatar_editor_service_prompt_save_avatar(instance: u32, p_humanoidDescription: Option<HumanoidDescription>);
+	fn dyn_avatar_editor_service_prompt_set_favorite(instance: u32, p_itemId: f64, p_shouldFavorite: bool);
+	fn dyn_avatar_editor_service_prompt_update_outfit(instance: u32, p_outfitId: f64, p_updatedOutfit: Option<HumanoidDescription>);
+	fn dyn_avatar_editor_service_check_apply_default_clothing(instance: u32, p_humanoidDescription: Option<HumanoidDescription>) -> Option<HumanoidDescription>;
+	fn dyn_avatar_editor_service_get_avatar_rules(instance: u32);
+	fn dyn_avatar_editor_service_get_batch_item_details(instance: u32);
+	fn dyn_avatar_editor_service_get_favorite(instance: u32, p_itemId: f64) -> bool;
+	fn dyn_avatar_editor_service_get_inventory(instance: u32) -> Option<InventoryPages>;
+	fn dyn_avatar_editor_service_get_item_details(instance: u32, p_itemId: f64);
+	fn dyn_avatar_editor_service_get_outfits(instance: u32) -> Option<OutfitPages>;
+	fn dyn_avatar_editor_service_get_recommended_assets(instance: u32, p_contextAssetId: f64);
+	fn dyn_avatar_editor_service_get_recommended_bundles(instance: u32, p_bundleId: f64);
+	fn dyn_avatar_editor_service_search_catalog(instance: u32, p_searchParameters: CatalogSearchParams) -> Option<CatalogPages>;
+	fn connect_avatar_editor_service_prompt_allow_inventory_read_access_completed(instance: u32, callback: Box<dyn Fn(())>) -> u32;
+	fn connect_avatar_editor_service_prompt_create_outfit_completed(instance: u32, callback: Box<dyn Fn((), ())>) -> u32;
+	fn connect_avatar_editor_service_prompt_delete_outfit_completed(instance: u32, callback: Box<dyn Fn(())>) -> u32;
+	fn connect_avatar_editor_service_prompt_rename_outfit_completed(instance: u32, callback: Box<dyn Fn(())>) -> u32;
+	fn connect_avatar_editor_service_prompt_save_avatar_completed(instance: u32, callback: Box<dyn Fn((), Option<HumanoidDescription>)>) -> u32;
+	fn connect_avatar_editor_service_prompt_set_favorite_completed(instance: u32, callback: Box<dyn Fn(())>) -> u32;
+	fn connect_avatar_editor_service_prompt_update_outfit_completed(instance: u32, callback: Box<dyn Fn(())>) -> u32;
 	fn prop_backpack_item_texture_id(instance: u32) -> Content;
 	fn prop_set_backpack_item_texture_id(instance: u32, value: Content);
 	fn dyn_tool_activate(instance: u32);
@@ -160,6 +202,12 @@ extern "C" {
 	fn connect_tool_deactivated(instance: u32, callback: Box<dyn Fn()>) -> u32;
 	fn connect_tool_equipped(instance: u32, callback: Box<dyn Fn(Option<Mouse>)>) -> u32;
 	fn connect_tool_unequipped(instance: u32, callback: Box<dyn Fn()>) -> u32;
+	fn dyn_badge_service_award_badge(instance: u32, p_userId: f64, p_badgeId: f64) -> bool;
+	fn dyn_badge_service_get_badge_info_async(instance: u32, p_badgeId: f64);
+	fn dyn_badge_service_is_disabled(instance: u32, p_badgeId: f64) -> bool;
+	fn dyn_badge_service_is_legal(instance: u32, p_badgeId: f64) -> bool;
+	fn dyn_badge_service_user_has_badge(instance: u32, p_userId: f64, p_badgeId: f64) -> bool;
+	fn dyn_badge_service_user_has_badge_async(instance: u32, p_userId: f64, p_badgeId: f64) -> bool;
 	fn dyn_base_player_gui_get_gui_objects_at_position(instance: u32, p_x: f64, p_y: f64) -> Objects;
 	fn dyn_player_gui_get_topbar_transparency(instance: u32) -> f64;
 	fn dyn_player_gui_set_topbar_transparency(instance: u32, p_transparency: f64);
@@ -369,6 +417,19 @@ extern "C" {
 	fn prop_set_shirt_graphic_color_3(instance: u32, value: Color3);
 	fn prop_shirt_graphic_graphic(instance: u32) -> Content;
 	fn prop_set_shirt_graphic_graphic(instance: u32, value: Content);
+	fn dyn_chat_chat(instance: u32, p_partOrCharacter: Option<Instance>, p_message: &str);
+	fn dyn_chat_invoke_chat_callback(instance: u32);
+	fn dyn_chat_register_chat_callback(instance: u32, p_callbackFunction: Function);
+	fn dyn_chat_set_bubble_chat_settings(instance: u32);
+	fn dyn_chat_can_user_chat_async(instance: u32, p_userId: f64) -> bool;
+	fn dyn_chat_can_users_chat_async(instance: u32, p_userIdFrom: f64, p_userIdTo: f64) -> bool;
+	fn dyn_chat_filter_string_async(instance: u32, p_stringToFilter: &str, p_playerFrom: Option<Player>, p_playerTo: Option<Player>) -> String;
+	fn dyn_chat_filter_string_for_broadcast(instance: u32, p_stringToFilter: &str, p_playerFrom: Option<Player>) -> String;
+	fn dyn_chat_filter_string_for_player_async(instance: u32, p_stringToFilter: &str, p_playerToFilterFor: Option<Player>) -> String;
+	fn prop_chat_bubble_chat_enabled(instance: u32) -> bool;
+	fn prop_set_chat_bubble_chat_enabled(instance: u32, value: bool);
+	fn prop_chat_load_default_chat(instance: u32) -> bool;
+	fn connect_chat_chatted(instance: u32, callback: Box<dyn Fn(Option<Instance>, String, ())>) -> u32;
 	fn prop_click_detector_cursor_icon(instance: u32) -> Content;
 	fn prop_set_click_detector_cursor_icon(instance: u32, value: Content);
 	fn prop_click_detector_max_activation_distance(instance: u32) -> f64;
@@ -385,6 +446,19 @@ extern "C" {
 	fn prop_set_clouds_density(instance: u32, value: f64);
 	fn prop_clouds_enabled(instance: u32) -> bool;
 	fn prop_set_clouds_enabled(instance: u32, value: bool);
+	fn dyn_collection_service_add_tag(instance: u32, p_instance: Option<Instance>, p_tag: &str);
+	fn dyn_collection_service_get_all_tags(instance: u32);
+	fn dyn_collection_service_get_collection(instance: u32, p_class: &str) -> Objects;
+	fn dyn_collection_service_get_instance_added_signal(instance: u32, p_tag: &str) -> RbxScriptSignal;
+	fn dyn_collection_service_get_instance_removed_signal(instance: u32, p_tag: &str) -> RbxScriptSignal;
+	fn dyn_collection_service_get_tagged(instance: u32, p_tag: &str) -> Objects;
+	fn dyn_collection_service_get_tags(instance: u32, p_instance: Option<Instance>);
+	fn dyn_collection_service_has_tag(instance: u32, p_instance: Option<Instance>, p_tag: &str) -> bool;
+	fn dyn_collection_service_remove_tag(instance: u32, p_instance: Option<Instance>, p_tag: &str);
+	fn connect_collection_service_item_added(instance: u32, callback: Box<dyn Fn(Option<Instance>)>) -> u32;
+	fn connect_collection_service_item_removed(instance: u32, callback: Box<dyn Fn(Option<Instance>)>) -> u32;
+	fn connect_collection_service_tag_added(instance: u32, callback: Box<dyn Fn(String)>) -> u32;
+	fn connect_collection_service_tag_removed(instance: u32, callback: Box<dyn Fn(String)>) -> u32;
 	fn prop_command_instance_allow_gui_access_points(instance: u32) -> bool;
 	fn prop_command_instance_display_name(instance: u32) -> String;
 	fn prop_set_command_instance_display_name(instance: u32, value: &str);
@@ -644,6 +718,35 @@ extern "C" {
 	fn prop_set_vector_force_apply_at_center_of_mass(instance: u32, value: bool);
 	fn prop_vector_force_force(instance: u32) -> Vector3;
 	fn prop_set_vector_force_force(instance: u32, value: Vector3);
+	fn dyn_content_provider_list_encrypted_assets(instance: u32);
+	fn dyn_content_provider_preload(instance: u32, p_contentId: Content);
+	fn dyn_content_provider_register_default_encryption_key(instance: u32, p_encryptionKey: &str);
+	fn dyn_content_provider_register_default_session_key(instance: u32, p_sessionKey: &str);
+	fn dyn_content_provider_register_encrypted_asset(instance: u32, p_assetId: Content, p_encryptionKey: &str);
+	fn dyn_content_provider_register_session_encrypted_asset(instance: u32, p_contentId: Content, p_sessionKey: &str);
+	fn dyn_content_provider_unregister_default_encryption_key(instance: u32);
+	fn dyn_content_provider_unregister_encrypted_asset(instance: u32, p_assetId: Content);
+	fn dyn_content_provider_preload_async(instance: u32, p_callbackFunction: Function);
+	fn prop_content_provider_base_url(instance: u32) -> String;
+	fn prop_content_provider_request_queue_size(instance: u32) -> f64;
+	fn connect_content_provider_asset_fetch_failed(instance: u32, callback: Box<dyn Fn(Content)>) -> u32;
+	fn dyn_context_action_service_bind_action(instance: u32, p_actionName: &str, p_functionToBind: Function, p_createTouchButton: bool);
+	fn dyn_context_action_service_bind_action_at_priority(instance: u32, p_actionName: &str, p_functionToBind: Function, p_createTouchButton: bool, p_priorityLevel: f64);
+	fn dyn_context_action_service_bind_action_to_input_types(instance: u32, p_actionName: &str, p_functionToBind: Function, p_createTouchButton: bool);
+	fn dyn_context_action_service_bind_activate(instance: u32);
+	fn dyn_context_action_service_get_all_bound_action_info(instance: u32);
+	fn dyn_context_action_service_get_bound_action_info(instance: u32, p_actionName: &str);
+	fn dyn_context_action_service_get_current_local_tool_icon(instance: u32) -> String;
+	fn dyn_context_action_service_set_description(instance: u32, p_actionName: &str, p_description: &str);
+	fn dyn_context_action_service_set_image(instance: u32, p_actionName: &str, p_image: &str);
+	fn dyn_context_action_service_set_position(instance: u32, p_actionName: &str, p_position: UDim2);
+	fn dyn_context_action_service_set_title(instance: u32, p_actionName: &str, p_title: &str);
+	fn dyn_context_action_service_unbind_action(instance: u32, p_actionName: &str);
+	fn dyn_context_action_service_unbind_activate(instance: u32);
+	fn dyn_context_action_service_unbind_all_actions(instance: u32);
+	fn dyn_context_action_service_get_button(instance: u32, p_actionName: &str) -> Option<Instance>;
+	fn connect_context_action_service_local_tool_equipped(instance: u32, callback: Box<dyn Fn(Option<Instance>)>) -> u32;
+	fn connect_context_action_service_local_tool_unequipped(instance: u32, callback: Box<dyn Fn(Option<Instance>)>) -> u32;
 	fn dyn_controller_bind_button(instance: u32, p_caption: &str);
 	fn dyn_controller_get_button(instance: u32) -> bool;
 	fn dyn_controller_unbind_button(instance: u32);
@@ -678,8 +781,16 @@ extern "C" {
 	fn dyn_data_store_options_set_experimental_features(instance: u32);
 	fn prop_data_store_options_all_scopes(instance: u32) -> bool;
 	fn prop_set_data_store_options_all_scopes(instance: u32, value: bool);
+	fn dyn_data_store_service_get_data_store(instance: u32, p_name: &str, p_scope: &str, p_options: Option<Instance>) -> Option<GlobalDataStore>;
+	fn dyn_data_store_service_get_global_data_store(instance: u32) -> Option<GlobalDataStore>;
+	fn dyn_data_store_service_get_ordered_data_store(instance: u32, p_name: &str, p_scope: &str) -> Option<OrderedDataStore>;
+	fn dyn_data_store_service_get_request_budget_for_request_type(instance: u32) -> f64;
+	fn dyn_data_store_service_list_data_stores_async(instance: u32, p_prefix: &str, p_pageSize: f64) -> Option<DataStoreListingPages>;
 	fn dyn_data_store_set_options_get_metadata(instance: u32);
 	fn dyn_data_store_set_options_set_metadata(instance: u32);
+	fn dyn_debris_add_item(instance: u32, p_item: Option<Instance>, p_lifetime: f64);
+	fn prop_debris_max_items(instance: u32) -> f64;
+	fn prop_set_debris_max_items(instance: u32, value: f64);
 	fn dyn_dialog_get_current_players(instance: u32) -> Objects;
 	fn prop_dialog_conversation_distance(instance: u32) -> f64;
 	fn prop_set_dialog_conversation_distance(instance: u32, value: f64);
@@ -708,6 +819,20 @@ extern "C" {
 	fn dyn_dragger_mouse_down(instance: u32, p_mousePart: Option<Instance>, p_pointOnMousePart: Vector3, p_parts: Objects);
 	fn dyn_dragger_mouse_move(instance: u32, p_mouseRay: Ray);
 	fn dyn_dragger_mouse_up(instance: u32);
+	fn prop_dragger_service_align_dragged_objects(instance: u32) -> bool;
+	fn prop_dragger_service_angle_snap_enabled(instance: u32) -> bool;
+	fn prop_dragger_service_angle_snap_increment(instance: u32) -> f64;
+	fn prop_dragger_service_animate_hover(instance: u32) -> bool;
+	fn prop_dragger_service_collisions_enabled(instance: u32) -> bool;
+	fn prop_dragger_service_geometry_snap_color(instance: u32) -> Color3;
+	fn prop_dragger_service_hover_animate_frequency(instance: u32) -> f64;
+	fn prop_dragger_service_hover_thickness(instance: u32) -> f64;
+	fn prop_dragger_service_joints_enabled(instance: u32) -> bool;
+	fn prop_dragger_service_linear_snap_enabled(instance: u32) -> bool;
+	fn prop_dragger_service_linear_snap_increment(instance: u32) -> f64;
+	fn prop_dragger_service_show_hover(instance: u32) -> bool;
+	fn prop_dragger_service_show_pivot_indicator(instance: u32) -> bool;
+	fn prop_set_dragger_service_show_pivot_indicator(instance: u32, value: bool);
 	fn dyn_euler_rotation_curve_get_angles_at_time(instance: u32, p_time: f64);
 	fn dyn_euler_rotation_curve_get_rotation_at_time(instance: u32, p_time: f64) -> CFrame;
 	fn dyn_euler_rotation_curve_x(instance: u32) -> Option<FloatCurve>;
@@ -770,6 +895,7 @@ extern "C" {
 	fn prop_float_curve_length(instance: u32) -> f64;
 	fn prop_force_field_visible(instance: u32) -> bool;
 	fn prop_set_force_field_visible(instance: u32, value: bool);
+	fn dyn_game_pass_service_player_has_pass(instance: u32, p_player: Option<Player>, p_gamePassId: f64) -> bool;
 	fn prop_get_text_bounds_params_font(instance: u32) -> Font;
 	fn prop_set_get_text_bounds_params_font(instance: u32, value: Font);
 	fn prop_get_text_bounds_params_size(instance: u32) -> f64;
@@ -789,6 +915,10 @@ extern "C" {
 	fn dyn_data_store_list_versions_async(instance: u32, p_key: &str, p_minDate: f64, p_maxDate: f64, p_pageSize: f64) -> Option<DataStoreVersionPages>;
 	fn dyn_data_store_remove_version_async(instance: u32, p_key: &str, p_version: &str);
 	fn dyn_ordered_data_store_get_sorted_async(instance: u32, p_ascending: bool, p_pagesize: f64) -> Option<Instance>;
+	fn dyn_group_service_get_allies_async(instance: u32, p_groupId: f64) -> Option<StandardPages>;
+	fn dyn_group_service_get_enemies_async(instance: u32, p_groupId: f64) -> Option<StandardPages>;
+	fn dyn_group_service_get_group_info_async(instance: u32, p_groupId: f64);
+	fn dyn_group_service_get_groups_async(instance: u32, p_userId: f64);
 	fn prop_gui_base_2_d_absolute_position(instance: u32) -> Vector2;
 	fn prop_gui_base_2_d_absolute_rotation(instance: u32) -> f64;
 	fn prop_gui_base_2_d_absolute_size(instance: u32) -> Vector2;
@@ -1258,6 +1388,40 @@ extern "C" {
 	fn prop_set_selection_part_lasso_part(instance: u32, value: Option<BasePart>);
 	fn prop_selection_point_lasso_point(instance: u32) -> Vector3;
 	fn prop_set_selection_point_lasso_point(instance: u32, value: Vector3);
+	fn dyn_gui_service_add_selection_parent(instance: u32, p_selectionName: &str, p_selectionParent: Option<Instance>);
+	fn dyn_gui_service_add_selection_tuple(instance: u32, p_selectionName: &str);
+	fn dyn_gui_service_close_inspect_menu(instance: u32);
+	fn dyn_gui_service_get_emotes_menu_open(instance: u32) -> bool;
+	fn dyn_gui_service_get_gameplay_paused_notification_enabled(instance: u32) -> bool;
+	fn dyn_gui_service_get_gui_inset(instance: u32);
+	fn dyn_gui_service_get_inspect_menu_enabled(instance: u32) -> bool;
+	fn dyn_gui_service_inspect_player_from_humanoid_description(instance: u32, p_humanoidDescription: Option<Instance>, p_name: &str);
+	fn dyn_gui_service_inspect_player_from_user_id(instance: u32, p_userId: f64);
+	fn dyn_gui_service_is_ten_foot_interface(instance: u32) -> bool;
+	fn dyn_gui_service_remove_selection_group(instance: u32, p_selectionName: &str);
+	fn dyn_gui_service_select(instance: u32, p_selectionParent: Option<Instance>);
+	fn dyn_gui_service_set_emotes_menu_open(instance: u32, p_isOpen: bool);
+	fn dyn_gui_service_set_gameplay_paused_notification_enabled(instance: u32, p_enabled: bool);
+	fn dyn_gui_service_set_inspect_menu_enabled(instance: u32, p_enabled: bool);
+	fn prop_gui_service_auto_select_gui_enabled(instance: u32) -> bool;
+	fn prop_set_gui_service_auto_select_gui_enabled(instance: u32, value: bool);
+	fn prop_gui_service_core_gui_navigation_enabled(instance: u32) -> bool;
+	fn prop_set_gui_service_core_gui_navigation_enabled(instance: u32, value: bool);
+	fn prop_gui_service_gui_navigation_enabled(instance: u32) -> bool;
+	fn prop_set_gui_service_gui_navigation_enabled(instance: u32, value: bool);
+	fn prop_gui_service_is_modal_dialog(instance: u32) -> bool;
+	fn prop_gui_service_is_windows(instance: u32) -> bool;
+	fn prop_gui_service_menu_is_open(instance: u32) -> bool;
+	fn prop_gui_service_selected_object(instance: u32) -> Option<GuiObject>;
+	fn prop_set_gui_service_selected_object(instance: u32, value: Option<GuiObject>);
+	fn prop_gui_service_touch_controls_enabled(instance: u32) -> bool;
+	fn prop_set_gui_service_touch_controls_enabled(instance: u32, value: bool);
+	fn connect_gui_service_menu_closed(instance: u32, callback: Box<dyn Fn()>) -> u32;
+	fn connect_gui_service_menu_opened(instance: u32, callback: Box<dyn Fn()>) -> u32;
+	fn dyn_haptic_service_get_motor(instance: u32);
+	fn dyn_haptic_service_is_motor_supported(instance: u32) -> bool;
+	fn dyn_haptic_service_is_vibration_supported(instance: u32) -> bool;
+	fn dyn_haptic_service_set_motor(instance: u32);
 	fn prop_highlight_adornee(instance: u32) -> Option<Instance>;
 	fn prop_set_highlight_adornee(instance: u32, value: Option<Instance>);
 	fn prop_highlight_enabled(instance: u32) -> bool;
@@ -1270,6 +1434,13 @@ extern "C" {
 	fn prop_set_highlight_outline_color(instance: u32, value: Color3);
 	fn prop_highlight_outline_transparency(instance: u32) -> f64;
 	fn prop_set_highlight_outline_transparency(instance: u32, value: f64);
+	fn dyn_http_service_generate_guid(instance: u32, p_wrapInCurlyBraces: bool) -> String;
+	fn dyn_http_service_json_decode(instance: u32, p_input: &str);
+	fn dyn_http_service_json_encode(instance: u32) -> String;
+	fn dyn_http_service_url_encode(instance: u32, p_input: &str) -> String;
+	fn dyn_http_service_get_async(instance: u32, p_url: &str, p_nocache: bool) -> String;
+	fn dyn_http_service_post_async(instance: u32, p_url: &str, p_data: &str, p_compress: bool) -> String;
+	fn dyn_http_service_request_async(instance: u32);
 	fn dyn_humanoid_add_accessory(instance: u32, p_accessory: Option<Instance>);
 	fn dyn_humanoid_add_custom_status(instance: u32, p_status: &str) -> bool;
 	fn dyn_humanoid_add_status(instance: u32) -> bool;
@@ -1518,6 +1689,23 @@ extern "C" {
 	fn prop_set_input_object_delta(instance: u32, value: Vector3);
 	fn prop_input_object_position(instance: u32) -> Vector3;
 	fn prop_set_input_object_position(instance: u32, value: Vector3);
+	fn dyn_insert_service_approve_asset_id(instance: u32, p_assetId: f64);
+	fn dyn_insert_service_approve_asset_version_id(instance: u32, p_assetVersionId: f64);
+	fn dyn_insert_service_insert(instance: u32, p_instance: Option<Instance>);
+	fn dyn_insert_service_get_base_categories(instance: u32);
+	fn dyn_insert_service_get_base_sets(instance: u32);
+	fn dyn_insert_service_get_collection(instance: u32, p_categoryId: f64);
+	fn dyn_insert_service_get_free_decals(instance: u32, p_searchText: &str, p_pageNum: f64);
+	fn dyn_insert_service_get_free_models(instance: u32, p_searchText: &str, p_pageNum: f64);
+	fn dyn_insert_service_get_latest_asset_version_async(instance: u32, p_assetId: f64) -> f64;
+	fn dyn_insert_service_get_user_categories(instance: u32, p_userId: f64);
+	fn dyn_insert_service_get_user_sets(instance: u32, p_userId: f64);
+	fn dyn_insert_service_load_asset(instance: u32, p_assetId: f64) -> Option<Instance>;
+	fn dyn_insert_service_load_asset_version(instance: u32, p_assetVersionId: f64) -> Option<Instance>;
+	fn prop_insert_service_allow_client_insert_models(instance: u32) -> bool;
+	fn prop_set_insert_service_allow_client_insert_models(instance: u32, value: bool);
+	fn prop_insert_service_allow_insert_free_models(instance: u32) -> bool;
+	fn prop_set_insert_service_allow_insert_free_models(instance: u32, value: bool);
 	fn prop_joint_instance_active(instance: u32) -> bool;
 	fn prop_joint_instance_c_0(instance: u32) -> CFrame;
 	fn prop_set_joint_instance_c_0(instance: u32, value: CFrame);
@@ -1566,6 +1754,10 @@ extern "C" {
 	fn prop_set_keyframe_time(instance: u32, value: f64);
 	fn prop_keyframe_marker_value(instance: u32) -> String;
 	fn prop_set_keyframe_marker_value(instance: u32, value: &str);
+	fn dyn_keyframe_sequence_provider_register_active_keyframe_sequence(instance: u32, p_keyframeSequence: Option<Instance>) -> Content;
+	fn dyn_keyframe_sequence_provider_register_keyframe_sequence(instance: u32, p_keyframeSequence: Option<Instance>) -> Content;
+	fn dyn_keyframe_sequence_provider_get_animations(instance: u32, p_userId: f64) -> Option<Instance>;
+	fn dyn_keyframe_sequence_provider_get_keyframe_sequence_async(instance: u32, p_assetId: Content) -> Option<Instance>;
 	fn prop_light_brightness(instance: u32) -> f64;
 	fn prop_set_light_brightness(instance: u32, value: f64);
 	fn prop_light_color(instance: u32) -> Color3;
@@ -1626,6 +1818,14 @@ extern "C" {
 	fn prop_lighting_time_of_day(instance: u32) -> String;
 	fn prop_set_lighting_time_of_day(instance: u32, value: &str);
 	fn connect_lighting_lighting_changed(instance: u32, callback: Box<dyn Fn(bool)>) -> u32;
+	fn dyn_localization_service_get_corescript_localizations(instance: u32) -> Objects;
+	fn dyn_localization_service_get_table_entries(instance: u32, p_instance: Option<Instance>);
+	fn dyn_localization_service_get_translator_for_player(instance: u32, p_player: Option<Instance>) -> Option<Instance>;
+	fn dyn_localization_service_get_country_region_for_player_async(instance: u32, p_player: Option<Instance>) -> String;
+	fn dyn_localization_service_get_translator_for_locale_async(instance: u32, p_locale: &str) -> Option<Instance>;
+	fn dyn_localization_service_get_translator_for_player_async(instance: u32, p_player: Option<Instance>) -> Option<Instance>;
+	fn prop_localization_service_roblox_locale_id(instance: u32) -> String;
+	fn prop_localization_service_system_locale_id(instance: u32) -> String;
 	fn dyn_localization_table_get_contents(instance: u32) -> String;
 	fn dyn_localization_table_get_entries(instance: u32);
 	fn dyn_localization_table_get_string(instance: u32, p_targetLocaleId: &str, p_key: &str) -> String;
@@ -1650,6 +1850,8 @@ extern "C" {
 	fn prop_set_localization_table_source_locale_id(instance: u32, value: &str);
 	fn prop_lod_data_entity_entity_lod_enabled(instance: u32) -> bool;
 	fn prop_set_lod_data_entity_entity_lod_enabled(instance: u32, value: bool);
+	fn dyn_log_service_get_log_history(instance: u32);
+	fn connect_log_service_message_out(instance: u32, callback: Box<dyn Fn(String, ())>) -> u32;
 	fn prop_lua_source_container_current_editor(instance: u32) -> Option<Instance>;
 	fn prop_set_lua_source_container_current_editor(instance: u32, value: Option<Instance>);
 	fn prop_base_script_disabled(instance: u32) -> bool;
@@ -1663,16 +1865,43 @@ extern "C" {
 	fn dyn_marker_curve_insert_marker_at_time(instance: u32, p_time: f64, p_marker: &str);
 	fn dyn_marker_curve_remove_marker_at_index(instance: u32, p_startingIndex: f64, p_count: f64) -> f64;
 	fn prop_marker_curve_length(instance: u32) -> f64;
+	fn dyn_marketplace_service_prompt_bundle_purchase(instance: u32, p_player: Option<Instance>, p_bundleId: f64);
+	fn dyn_marketplace_service_prompt_game_pass_purchase(instance: u32, p_player: Option<Instance>, p_gamePassId: f64);
+	fn dyn_marketplace_service_prompt_premium_purchase(instance: u32, p_player: Option<Instance>);
+	fn dyn_marketplace_service_prompt_product_purchase(instance: u32, p_player: Option<Instance>, p_productId: f64, p_equipIfPurchased: bool);
+	fn dyn_marketplace_service_prompt_purchase(instance: u32, p_player: Option<Instance>, p_assetId: f64, p_equipIfPurchased: bool);
+	fn dyn_marketplace_service_prompt_subscription_cancellation(instance: u32, p_player: Option<Instance>, p_subscriptionId: f64);
+	fn dyn_marketplace_service_prompt_subscription_purchase(instance: u32, p_player: Option<Instance>, p_subscriptionId: f64);
+	fn dyn_marketplace_service_get_developer_products_async(instance: u32) -> Option<Instance>;
+	fn dyn_marketplace_service_get_product_info(instance: u32, p_assetId: f64);
+	fn dyn_marketplace_service_is_player_subscribed(instance: u32, p_player: Option<Instance>, p_subscriptionId: f64) -> bool;
+	fn dyn_marketplace_service_player_owns_asset(instance: u32, p_player: Option<Instance>, p_assetId: f64) -> bool;
+	fn dyn_marketplace_service_player_owns_bundle(instance: u32, p_player: Option<Player>, p_bundleId: f64) -> bool;
+	fn dyn_marketplace_service_user_owns_game_pass_async(instance: u32, p_userId: f64, p_gamePassId: f64) -> bool;
+	fn connect_marketplace_service_prompt_bundle_purchase_finished(instance: u32, callback: Box<dyn Fn(Option<Instance>, f64, bool)>) -> u32;
+	fn connect_marketplace_service_prompt_game_pass_purchase_finished(instance: u32, callback: Box<dyn Fn(Option<Instance>, f64, bool)>) -> u32;
+	fn connect_marketplace_service_prompt_premium_purchase_finished(instance: u32, callback: Box<dyn Fn()>) -> u32;
+	fn connect_marketplace_service_prompt_product_purchase_finished(instance: u32, callback: Box<dyn Fn(f64, f64, bool)>) -> u32;
+	fn connect_marketplace_service_prompt_purchase_finished(instance: u32, callback: Box<dyn Fn(Option<Instance>, f64, bool)>) -> u32;
+	fn connect_marketplace_service_prompt_subscription_cancellation_finished(instance: u32, callback: Box<dyn Fn(Option<Instance>, f64, bool)>) -> u32;
+	fn connect_marketplace_service_prompt_subscription_purchase_finished(instance: u32, callback: Box<dyn Fn(Option<Instance>, f64, bool)>) -> u32;
+	fn dyn_material_service_get_base_material_override(instance: u32) -> String;
+	fn dyn_material_service_get_material_variant(instance: u32, p_name: &str) -> Option<MaterialVariant>;
+	fn dyn_material_service_set_base_material_override(instance: u32, p_name: &str);
 	fn prop_material_variant_studs_per_tile(instance: u32) -> f64;
 	fn prop_set_material_variant_studs_per_tile(instance: u32, value: f64);
 	fn dyn_memory_store_queue_add_async(instance: u32, p_expiration: f64, p_priority: f64);
 	fn dyn_memory_store_queue_read_async(instance: u32, p_count: f64, p_allOrNothing: bool, p_waitTimeout: f64);
 	fn dyn_memory_store_queue_remove_async(instance: u32, p_id: &str);
+	fn dyn_memory_store_service_get_queue(instance: u32, p_name: &str, p_invisibilityTimeout: f64) -> Option<MemoryStoreQueue>;
+	fn dyn_memory_store_service_get_sorted_map(instance: u32, p_name: &str) -> Option<MemoryStoreSortedMap>;
 	fn dyn_memory_store_sorted_map_get_async(instance: u32, p_key: &str);
 	fn dyn_memory_store_sorted_map_get_range_async(instance: u32, p_count: f64, p_exclusiveLowerBound: &str, p_exclusiveUpperBound: &str);
 	fn dyn_memory_store_sorted_map_remove_async(instance: u32, p_key: &str);
 	fn dyn_memory_store_sorted_map_set_async(instance: u32, p_key: &str, p_expiration: f64) -> bool;
 	fn dyn_memory_store_sorted_map_update_async(instance: u32, p_key: &str, p_transformFunction: Function, p_expiration: f64);
+	fn dyn_messaging_service_publish_async(instance: u32, p_topic: &str);
+	fn dyn_messaging_service_subscribe_async(instance: u32, p_topic: &str, p_callback: Function) -> RbxScriptConnection;
 	fn prop_mouse_hit(instance: u32) -> CFrame;
 	fn prop_mouse_icon(instance: u32) -> Content;
 	fn prop_set_mouse_icon(instance: u32, value: Content);
@@ -2059,6 +2288,23 @@ extern "C" {
 	fn prop_set_pathfinding_modifier_label(instance: u32, value: &str);
 	fn prop_pathfinding_modifier_pass_through(instance: u32) -> bool;
 	fn prop_set_pathfinding_modifier_pass_through(instance: u32, value: bool);
+	fn dyn_pathfinding_service_create_path(instance: u32) -> Option<Instance>;
+	fn dyn_pathfinding_service_compute_raw_path_async(instance: u32, p_start: Vector3, p_finish: Vector3, p_maxDistance: f64) -> Option<Instance>;
+	fn dyn_pathfinding_service_compute_smooth_path_async(instance: u32, p_start: Vector3, p_finish: Vector3, p_maxDistance: f64) -> Option<Instance>;
+	fn dyn_pathfinding_service_find_path_async(instance: u32, p_start: Vector3, p_finish: Vector3) -> Option<Instance>;
+	fn prop_pathfinding_service_empty_cutoff(instance: u32) -> f64;
+	fn prop_set_pathfinding_service_empty_cutoff(instance: u32, value: f64);
+	fn dyn_physics_service_collision_group_contains_part(instance: u32, p_name: &str, p_part: Option<BasePart>) -> bool;
+	fn dyn_physics_service_collision_group_set_collidable(instance: u32, p_name1: &str, p_name2: &str, p_collidable: bool);
+	fn dyn_physics_service_collision_groups_are_collidable(instance: u32, p_name1: &str, p_name2: &str) -> bool;
+	fn dyn_physics_service_create_collision_group(instance: u32, p_name: &str) -> f64;
+	fn dyn_physics_service_get_collision_group_id(instance: u32, p_name: &str) -> f64;
+	fn dyn_physics_service_get_collision_group_name(instance: u32, p_name: f64) -> String;
+	fn dyn_physics_service_get_collision_groups(instance: u32);
+	fn dyn_physics_service_get_max_collision_groups(instance: u32) -> f64;
+	fn dyn_physics_service_remove_collision_group(instance: u32, p_name: &str);
+	fn dyn_physics_service_rename_collision_group(instance: u32, p_from: &str, p_to: &str);
+	fn dyn_physics_service_set_part_collision_group(instance: u32, p_part: Option<BasePart>, p_name: &str);
 	fn dyn_player_clear_character_appearance(instance: u32);
 	fn dyn_player_distance_from_character(instance: u32, p_point: Vector3) -> f64;
 	fn dyn_player_get_join_data(instance: u32);
@@ -2167,6 +2413,7 @@ extern "C" {
 	fn connect_players_player_added(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
 	fn connect_players_player_membership_changed(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
 	fn connect_players_player_removing(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
+	fn dyn_policy_service_get_policy_info_for_player_async(instance: u32, p_player: Option<Instance>);
 	fn prop_pose_base_weight(instance: u32) -> f64;
 	fn prop_set_pose_base_weight(instance: u32, value: f64);
 	fn prop_number_pose_value(instance: u32) -> f64;
@@ -2236,6 +2483,16 @@ extern "C" {
 	fn connect_proximity_prompt_prompt_shown(instance: u32, callback: Box<dyn Fn(())>) -> u32;
 	fn connect_proximity_prompt_trigger_ended(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
 	fn connect_proximity_prompt_triggered(instance: u32, callback: Box<dyn Fn(Option<Player>)>) -> u32;
+	fn prop_proximity_prompt_service_enabled(instance: u32) -> bool;
+	fn prop_set_proximity_prompt_service_enabled(instance: u32, value: bool);
+	fn prop_proximity_prompt_service_max_prompts_visible(instance: u32) -> f64;
+	fn prop_set_proximity_prompt_service_max_prompts_visible(instance: u32, value: f64);
+	fn connect_proximity_prompt_service_prompt_button_hold_began(instance: u32, callback: Box<dyn Fn(Option<ProximityPrompt>, Option<Player>)>) -> u32;
+	fn connect_proximity_prompt_service_prompt_button_hold_ended(instance: u32, callback: Box<dyn Fn(Option<ProximityPrompt>, Option<Player>)>) -> u32;
+	fn connect_proximity_prompt_service_prompt_hidden(instance: u32, callback: Box<dyn Fn(Option<ProximityPrompt>)>) -> u32;
+	fn connect_proximity_prompt_service_prompt_shown(instance: u32, callback: Box<dyn Fn(Option<ProximityPrompt>, ())>) -> u32;
+	fn connect_proximity_prompt_service_prompt_trigger_ended(instance: u32, callback: Box<dyn Fn(Option<ProximityPrompt>, Option<Player>)>) -> u32;
+	fn connect_proximity_prompt_service_prompt_triggered(instance: u32, callback: Box<dyn Fn(Option<ProximityPrompt>, Option<Player>)>) -> u32;
 	fn dyn_remote_event_fire_all_clients(instance: u32);
 	fn dyn_remote_event_fire_client(instance: u32, p_player: Option<Player>);
 	fn dyn_remote_event_fire_server(instance: u32);
@@ -2252,6 +2509,20 @@ extern "C" {
 	fn dyn_rotation_curve_remove_key_at_index(instance: u32, p_startingIndex: f64, p_count: f64) -> f64;
 	fn dyn_rotation_curve_set_keys(instance: u32) -> f64;
 	fn prop_rotation_curve_length(instance: u32) -> f64;
+	fn dyn_run_service_bind_to_render_step(instance: u32, p_name: &str, p_priority: f64, p_function: Function);
+	fn dyn_run_service_is_client(instance: u32) -> bool;
+	fn dyn_run_service_is_run_mode(instance: u32) -> bool;
+	fn dyn_run_service_is_running(instance: u32) -> bool;
+	fn dyn_run_service_is_server(instance: u32) -> bool;
+	fn dyn_run_service_is_studio(instance: u32) -> bool;
+	fn dyn_run_service_unbind_from_render_step(instance: u32, p_name: &str);
+	fn connect_run_service_heartbeat(instance: u32, callback: Box<dyn Fn(f64)>) -> u32;
+	fn connect_run_service_post_simulation(instance: u32, callback: Box<dyn Fn(f64)>) -> u32;
+	fn connect_run_service_pre_animation(instance: u32, callback: Box<dyn Fn(f64)>) -> u32;
+	fn connect_run_service_pre_render(instance: u32, callback: Box<dyn Fn(f64)>) -> u32;
+	fn connect_run_service_pre_simulation(instance: u32, callback: Box<dyn Fn(f64)>) -> u32;
+	fn connect_run_service_render_stepped(instance: u32, callback: Box<dyn Fn(f64)>) -> u32;
+	fn connect_run_service_stepped(instance: u32, callback: Box<dyn Fn(f64, f64)>) -> u32;
 	fn prop_screenshot_hud_camera_button_icon(instance: u32) -> Content;
 	fn prop_set_screenshot_hud_camera_button_icon(instance: u32, value: Content);
 	fn prop_screenshot_hud_camera_button_position(instance: u32) -> UDim2;
@@ -2266,6 +2537,7 @@ extern "C" {
 	fn prop_set_screenshot_hud_username_overlay_enabled(instance: u32, value: bool);
 	fn prop_screenshot_hud_visible(instance: u32) -> bool;
 	fn prop_set_screenshot_hud_visible(instance: u32, value: bool);
+	fn connect_script_context_error(instance: u32, callback: Box<dyn Fn(String, String, Option<Instance>)>) -> u32;
 	fn prop_server_script_service_load_string_enabled(instance: u32) -> bool;
 	fn prop_set_server_script_service_load_string_enabled(instance: u32, value: bool);
 	fn dyn_service_provider_find_service(instance: u32, p_className: &str) -> Option<Instance>;
@@ -2331,6 +2603,9 @@ extern "C" {
 	fn prop_set_smoke_size(instance: u32, value: f64);
 	fn prop_smoke_time_scale(instance: u32) -> f64;
 	fn prop_set_smoke_time_scale(instance: u32, value: f64);
+	fn dyn_social_service_prompt_game_invite(instance: u32, p_player: Option<Instance>);
+	fn dyn_social_service_can_send_game_invite_async(instance: u32, p_player: Option<Instance>) -> bool;
+	fn connect_social_service_game_invite_prompt_closed(instance: u32, callback: Box<dyn Fn(Option<Instance>, ())>) -> u32;
 	fn dyn_sound_pause(instance: u32);
 	fn dyn_sound_play(instance: u32);
 	fn dyn_sound_resume(instance: u32);
@@ -2441,6 +2716,17 @@ extern "C" {
 	fn prop_set_tremolo_sound_effect_frequency(instance: u32, value: f64);
 	fn prop_sound_group_volume(instance: u32) -> f64;
 	fn prop_set_sound_group_volume(instance: u32, value: f64);
+	fn dyn_sound_service_get_listener(instance: u32);
+	fn dyn_sound_service_play_local_sound(instance: u32, p_sound: Option<Instance>);
+	fn dyn_sound_service_set_listener(instance: u32);
+	fn prop_sound_service_distance_factor(instance: u32) -> f64;
+	fn prop_set_sound_service_distance_factor(instance: u32, value: f64);
+	fn prop_sound_service_doppler_scale(instance: u32) -> f64;
+	fn prop_set_sound_service_doppler_scale(instance: u32, value: f64);
+	fn prop_sound_service_respect_filtering_enabled(instance: u32) -> bool;
+	fn prop_set_sound_service_respect_filtering_enabled(instance: u32, value: bool);
+	fn prop_sound_service_rolloff_scale(instance: u32) -> f64;
+	fn prop_set_sound_service_rolloff_scale(instance: u32, value: f64);
 	fn prop_sparkles_color(instance: u32) -> Color3;
 	fn prop_set_sparkles_color(instance: u32, value: Color3);
 	fn prop_sparkles_enabled(instance: u32) -> bool;
@@ -2488,6 +2774,18 @@ extern "C" {
 	fn prop_set_starter_player_name_display_distance(instance: u32, value: f64);
 	fn prop_starter_player_user_emotes_enabled(instance: u32) -> bool;
 	fn prop_set_starter_player_user_emotes_enabled(instance: u32, value: bool);
+	fn dyn_stats_get_memory_usage_mb_for_tag(instance: u32) -> f64;
+	fn dyn_stats_get_total_memory_usage_mb(instance: u32) -> f64;
+	fn prop_stats_contacts_count(instance: u32) -> f64;
+	fn prop_stats_data_receive_kbps(instance: u32) -> f64;
+	fn prop_stats_data_send_kbps(instance: u32) -> f64;
+	fn prop_stats_heartbeat_time_ms(instance: u32) -> f64;
+	fn prop_stats_instance_count(instance: u32) -> f64;
+	fn prop_stats_moving_primitives_count(instance: u32) -> f64;
+	fn prop_stats_physics_receive_kbps(instance: u32) -> f64;
+	fn prop_stats_physics_send_kbps(instance: u32) -> f64;
+	fn prop_stats_physics_step_time_ms(instance: u32) -> f64;
+	fn prop_stats_primitives_count(instance: u32) -> f64;
 	fn dyn_team_get_players(instance: u32) -> Objects;
 	fn prop_team_auto_assignable(instance: u32) -> bool;
 	fn prop_set_team_auto_assignable(instance: u32, value: bool);
@@ -2511,6 +2809,23 @@ extern "C" {
 	fn prop_set_teleport_options_server_instance_id(instance: u32, value: &str);
 	fn prop_teleport_options_should_reserve_server(instance: u32) -> bool;
 	fn prop_set_teleport_options_should_reserve_server(instance: u32, value: bool);
+	fn dyn_teleport_service_get_arriving_teleport_gui(instance: u32) -> Option<Instance>;
+	fn dyn_teleport_service_get_local_player_teleport_data(instance: u32);
+	fn dyn_teleport_service_get_teleport_setting(instance: u32, p_setting: &str);
+	fn dyn_teleport_service_set_teleport_gui(instance: u32, p_gui: Option<Instance>);
+	fn dyn_teleport_service_set_teleport_setting(instance: u32, p_setting: &str);
+	fn dyn_teleport_service_teleport(instance: u32, p_placeId: f64, p_player: Option<Instance>, p_customLoadingScreen: Option<Instance>);
+	fn dyn_teleport_service_teleport_to_place_instance(instance: u32, p_placeId: f64, p_instanceId: &str, p_player: Option<Instance>, p_spawnName: &str, p_customLoadingScreen: Option<Instance>);
+	fn dyn_teleport_service_teleport_to_private_server(instance: u32, p_placeId: f64, p_reservedServerAccessCode: &str, p_players: Objects, p_spawnName: &str, p_customLoadingScreen: Option<Instance>);
+	fn dyn_teleport_service_teleport_to_spawn_by_name(instance: u32, p_placeId: f64, p_spawnName: &str, p_player: Option<Instance>, p_customLoadingScreen: Option<Instance>);
+	fn dyn_teleport_service_get_player_place_instance_async(instance: u32, p_userId: f64);
+	fn dyn_teleport_service_reserve_server(instance: u32, p_placeId: f64);
+	fn dyn_teleport_service_teleport_async(instance: u32, p_placeId: f64, p_players: Objects, p_teleportOptions: Option<Instance>) -> Option<Instance>;
+	fn dyn_teleport_service_teleport_party_async(instance: u32, p_placeId: f64, p_players: Objects, p_customLoadingScreen: Option<Instance>) -> String;
+	fn prop_teleport_service_customized_teleport_ui(instance: u32) -> bool;
+	fn prop_set_teleport_service_customized_teleport_ui(instance: u32, value: bool);
+	fn connect_teleport_service_local_player_arrived_from_teleport(instance: u32, callback: Box<dyn Fn(Option<Instance>, ())>) -> u32;
+	fn connect_teleport_service_teleport_init_failed(instance: u32, callback: Box<dyn Fn(Option<Instance>, (), String, f64, Option<Instance>)>) -> u32;
 	fn prop_terrain_detail_studs_per_tile(instance: u32) -> f64;
 	fn prop_set_terrain_detail_studs_per_tile(instance: u32, value: f64);
 	fn prop_terrain_region_is_smooth(instance: u32) -> bool;
@@ -2550,9 +2865,17 @@ extern "C" {
 	fn prop_set_text_chat_message_properties_prefix_text(instance: u32, value: &str);
 	fn prop_text_chat_message_properties_text(instance: u32) -> String;
 	fn prop_set_text_chat_message_properties_text(instance: u32, value: &str);
+	fn prop_text_chat_service_create_default_commands(instance: u32) -> bool;
+	fn prop_text_chat_service_create_default_text_channels(instance: u32) -> bool;
+	fn connect_text_chat_service_message_received(instance: u32, callback: Box<dyn Fn(Option<TextChatMessage>)>) -> u32;
+	fn connect_text_chat_service_sending_message(instance: u32, callback: Box<dyn Fn(Option<TextChatMessage>)>) -> u32;
 	fn dyn_text_filter_result_get_chat_for_user_async(instance: u32, p_toUserId: f64) -> String;
 	fn dyn_text_filter_result_get_non_chat_string_for_broadcast_async(instance: u32) -> String;
 	fn dyn_text_filter_result_get_non_chat_string_for_user_async(instance: u32, p_toUserId: f64) -> String;
+	fn dyn_text_service_get_text_size(instance: u32, p_string: &str, p_fontSize: f64, p_frameSize: Vector2) -> Vector2;
+	fn dyn_text_service_filter_string_async(instance: u32, p_stringToFilter: &str, p_fromUserId: f64) -> Option<Instance>;
+	fn dyn_text_service_get_family_info_async(instance: u32, p_assetId: Content);
+	fn dyn_text_service_get_text_bounds_async(instance: u32, p_params: Option<GetTextBoundsParams>) -> Vector2;
 	fn prop_text_source_can_send(instance: u32) -> bool;
 	fn prop_set_text_source_can_send(instance: u32, value: bool);
 	fn prop_text_source_user_id(instance: u32) -> f64;
@@ -2596,6 +2919,8 @@ extern "C" {
 	fn connect_tween_base_completed(instance: u32, callback: Box<dyn Fn(())>) -> u32;
 	fn prop_tween_instance(instance: u32) -> Option<Instance>;
 	fn prop_tween_tween_info(instance: u32) -> TweenInfo;
+	fn dyn_tween_service_create(instance: u32, p_instance: Option<Instance>, p_tweenInfo: TweenInfo) -> Option<Tween>;
+	fn dyn_tween_service_get_value(instance: u32, p_alpha: f64) -> f64;
 	fn prop_ui_aspect_ratio_constraint_aspect_ratio(instance: u32) -> f64;
 	fn prop_set_ui_aspect_ratio_constraint_aspect_ratio(instance: u32, value: f64);
 	fn prop_ui_size_constraint_max_size(instance: u32) -> Vector2;
@@ -2695,6 +3020,84 @@ extern "C" {
 	fn prop_user_game_settings_vignette_enabled(instance: u32) -> bool;
 	fn connect_user_game_settings_fullscreen_changed(instance: u32, callback: Box<dyn Fn(bool)>) -> u32;
 	fn connect_user_game_settings_studio_mode_changed(instance: u32, callback: Box<dyn Fn(bool)>) -> u32;
+	fn dyn_user_input_service_gamepad_supports(instance: u32) -> bool;
+	fn dyn_user_input_service_get_connected_gamepads(instance: u32);
+	fn dyn_user_input_service_get_device_acceleration(instance: u32) -> Option<InputObject>;
+	fn dyn_user_input_service_get_device_gravity(instance: u32) -> Option<InputObject>;
+	fn dyn_user_input_service_get_device_rotation(instance: u32);
+	fn dyn_user_input_service_get_focused_text_box(instance: u32) -> Option<TextBox>;
+	fn dyn_user_input_service_get_gamepad_connected(instance: u32) -> bool;
+	fn dyn_user_input_service_get_gamepad_state(instance: u32);
+	fn dyn_user_input_service_get_keys_pressed(instance: u32);
+	fn dyn_user_input_service_get_last_input_type(instance: u32);
+	fn dyn_user_input_service_get_mouse_buttons_pressed(instance: u32);
+	fn dyn_user_input_service_get_mouse_delta(instance: u32) -> Vector2;
+	fn dyn_user_input_service_get_mouse_location(instance: u32) -> Vector2;
+	fn dyn_user_input_service_get_navigation_gamepads(instance: u32);
+	fn dyn_user_input_service_get_string_for_key_code(instance: u32) -> String;
+	fn dyn_user_input_service_get_supported_gamepad_key_codes(instance: u32);
+	fn dyn_user_input_service_get_user_c_frame(instance: u32) -> CFrame;
+	fn dyn_user_input_service_is_gamepad_button_down(instance: u32) -> bool;
+	fn dyn_user_input_service_is_key_down(instance: u32) -> bool;
+	fn dyn_user_input_service_is_mouse_button_pressed(instance: u32) -> bool;
+	fn dyn_user_input_service_is_navigation_gamepad(instance: u32) -> bool;
+	fn dyn_user_input_service_recenter_user_head_c_frame(instance: u32);
+	fn dyn_user_input_service_set_navigation_gamepad(instance: u32, p_enabled: bool);
+	fn prop_user_input_service_accelerometer_enabled(instance: u32) -> bool;
+	fn prop_user_input_service_gamepad_enabled(instance: u32) -> bool;
+	fn prop_user_input_service_gyroscope_enabled(instance: u32) -> bool;
+	fn prop_user_input_service_keyboard_enabled(instance: u32) -> bool;
+	fn prop_user_input_service_modal_enabled(instance: u32) -> bool;
+	fn prop_set_user_input_service_modal_enabled(instance: u32, value: bool);
+	fn prop_user_input_service_mouse_delta_sensitivity(instance: u32) -> f64;
+	fn prop_set_user_input_service_mouse_delta_sensitivity(instance: u32, value: f64);
+	fn prop_user_input_service_mouse_enabled(instance: u32) -> bool;
+	fn prop_user_input_service_mouse_icon_enabled(instance: u32) -> bool;
+	fn prop_set_user_input_service_mouse_icon_enabled(instance: u32, value: bool);
+	fn prop_user_input_service_on_screen_keyboard_position(instance: u32) -> Vector2;
+	fn prop_user_input_service_on_screen_keyboard_size(instance: u32) -> Vector2;
+	fn prop_user_input_service_on_screen_keyboard_visible(instance: u32) -> bool;
+	fn prop_user_input_service_touch_enabled(instance: u32) -> bool;
+	fn prop_user_input_service_user_head_c_frame(instance: u32) -> CFrame;
+	fn prop_user_input_service_vr_enabled(instance: u32) -> bool;
+	fn connect_user_input_service_device_acceleration_changed(instance: u32, callback: Box<dyn Fn(Option<InputObject>)>) -> u32;
+	fn connect_user_input_service_device_gravity_changed(instance: u32, callback: Box<dyn Fn(Option<InputObject>)>) -> u32;
+	fn connect_user_input_service_device_rotation_changed(instance: u32, callback: Box<dyn Fn(Option<InputObject>, CFrame)>) -> u32;
+	fn connect_user_input_service_gamepad_connected(instance: u32, callback: Box<dyn Fn(())>) -> u32;
+	fn connect_user_input_service_gamepad_disconnected(instance: u32, callback: Box<dyn Fn(())>) -> u32;
+	fn connect_user_input_service_input_began(instance: u32, callback: Box<dyn Fn(Option<InputObject>, bool)>) -> u32;
+	fn connect_user_input_service_input_changed(instance: u32, callback: Box<dyn Fn(Option<InputObject>, bool)>) -> u32;
+	fn connect_user_input_service_input_ended(instance: u32, callback: Box<dyn Fn(Option<InputObject>, bool)>) -> u32;
+	fn connect_user_input_service_jump_request(instance: u32, callback: Box<dyn Fn()>) -> u32;
+	fn connect_user_input_service_last_input_type_changed(instance: u32, callback: Box<dyn Fn(())>) -> u32;
+	fn connect_user_input_service_pointer_action(instance: u32, callback: Box<dyn Fn(f64, Vector2, f64, bool)>) -> u32;
+	fn connect_user_input_service_text_box_focus_released(instance: u32, callback: Box<dyn Fn(Option<TextBox>)>) -> u32;
+	fn connect_user_input_service_text_box_focused(instance: u32, callback: Box<dyn Fn(Option<TextBox>)>) -> u32;
+	fn connect_user_input_service_touch_ended(instance: u32, callback: Box<dyn Fn(Option<InputObject>, bool)>) -> u32;
+	fn connect_user_input_service_touch_long_press(instance: u32, callback: Box<dyn Fn((), (), bool)>) -> u32;
+	fn connect_user_input_service_touch_moved(instance: u32, callback: Box<dyn Fn(Option<InputObject>, bool)>) -> u32;
+	fn connect_user_input_service_touch_pan(instance: u32, callback: Box<dyn Fn((), Vector2, Vector2, (), bool)>) -> u32;
+	fn connect_user_input_service_touch_pinch(instance: u32, callback: Box<dyn Fn((), f64, f64, (), bool)>) -> u32;
+	fn connect_user_input_service_touch_rotate(instance: u32, callback: Box<dyn Fn((), f64, f64, (), bool)>) -> u32;
+	fn connect_user_input_service_touch_started(instance: u32, callback: Box<dyn Fn(Option<InputObject>, bool)>) -> u32;
+	fn connect_user_input_service_touch_swipe(instance: u32, callback: Box<dyn Fn((), f64, bool)>) -> u32;
+	fn connect_user_input_service_touch_tap(instance: u32, callback: Box<dyn Fn((), bool)>) -> u32;
+	fn connect_user_input_service_touch_tap_in_world(instance: u32, callback: Box<dyn Fn(Vector2, bool)>) -> u32;
+	fn connect_user_input_service_user_c_frame_changed(instance: u32, callback: Box<dyn Fn((), CFrame)>) -> u32;
+	fn connect_user_input_service_window_focus_released(instance: u32, callback: Box<dyn Fn()>) -> u32;
+	fn connect_user_input_service_window_focused(instance: u32, callback: Box<dyn Fn()>) -> u32;
+	fn dyn_user_service_get_user_infos_by_user_ids_async(instance: u32);
+	fn dyn_vr_service_get_touchpad_mode(instance: u32);
+	fn dyn_vr_service_get_user_c_frame(instance: u32) -> CFrame;
+	fn dyn_vr_service_get_user_c_frame_enabled(instance: u32) -> bool;
+	fn dyn_vr_service_recenter_user_head_c_frame(instance: u32);
+	fn dyn_vr_service_request_navigation(instance: u32, p_cframe: CFrame);
+	fn dyn_vr_service_set_touchpad_mode(instance: u32);
+	fn prop_vr_service_vr_enabled(instance: u32) -> bool;
+	fn connect_vr_service_navigation_requested(instance: u32, callback: Box<dyn Fn(CFrame, ())>) -> u32;
+	fn connect_vr_service_touchpad_mode_changed(instance: u32, callback: Box<dyn Fn((), ())>) -> u32;
+	fn connect_vr_service_user_c_frame_changed(instance: u32, callback: Box<dyn Fn((), CFrame)>) -> u32;
+	fn connect_vr_service_user_c_frame_enabled(instance: u32, callback: Box<dyn Fn((), bool)>) -> u32;
 	fn prop_bool_value_value(instance: u32) -> bool;
 	fn prop_set_bool_value_value(instance: u32, value: bool);
 	fn connect_bool_value_changed(instance: u32, callback: Box<dyn Fn(bool)>) -> u32;
@@ -2747,6 +3150,24 @@ extern "C" {
 	fn dyn_vector_3_curve_x(instance: u32) -> Option<FloatCurve>;
 	fn dyn_vector_3_curve_y(instance: u32) -> Option<FloatCurve>;
 	fn dyn_vector_3_curve_z(instance: u32) -> Option<FloatCurve>;
+	fn dyn_voice_chat_internal_get_audio_processing_settings(instance: u32);
+	fn dyn_voice_chat_internal_get_mic_devices(instance: u32);
+	fn dyn_voice_chat_internal_get_participants(instance: u32);
+	fn dyn_voice_chat_internal_get_speaker_devices(instance: u32);
+	fn dyn_voice_chat_internal_get_voice_chat_api_version(instance: u32) -> f64;
+	fn dyn_voice_chat_internal_get_voice_chat_available(instance: u32) -> f64;
+	fn dyn_voice_chat_internal_is_publish_paused(instance: u32) -> bool;
+	fn dyn_voice_chat_internal_is_subscribe_paused(instance: u32, p_userId: f64) -> bool;
+	fn dyn_voice_chat_internal_join_by_group_id(instance: u32, p_groupId: &str, p_isMicMuted: bool) -> bool;
+	fn dyn_voice_chat_internal_join_by_group_id_token(instance: u32, p_groupId: &str, p_isMicMuted: bool) -> bool;
+	fn dyn_voice_chat_internal_leave(instance: u32);
+	fn dyn_voice_chat_internal_publish_pause(instance: u32, p_paused: bool) -> bool;
+	fn dyn_voice_chat_internal_set_mic_device(instance: u32, p_micDeviceName: &str, p_micDeviceGuid: &str);
+	fn dyn_voice_chat_internal_set_speaker_device(instance: u32, p_speakerDeviceName: &str, p_speakerDeviceGuid: &str);
+	fn dyn_voice_chat_internal_subscribe_pause(instance: u32, p_userId: f64, p_paused: bool) -> bool;
+	fn dyn_voice_chat_internal_subscribe_pause_all(instance: u32, p_paused: bool) -> bool;
+	fn dyn_voice_chat_internal_is_voice_enabled_for_user_id_async(instance: u32, p_userId: f64) -> bool;
+	fn dyn_voice_chat_service_is_voice_enabled_for_user_id_async(instance: u32, p_userId: f64) -> bool;
 	fn prop_voice_source_user_id(instance: u32) -> f64;
 	fn prop_weld_constraint_active(instance: u32) -> bool;
 	fn prop_weld_constraint_enabled(instance: u32) -> bool;
@@ -2995,6 +3416,21 @@ macro_rules! impl_hat {
 		}
 	}
 }
+macro_rules! impl_analytics_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_animation {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -3064,6 +3500,33 @@ macro_rules! impl_keyframe_sequence {
 		}
 	}
 }
+macro_rules! impl_animation_clip_provider {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_register_active_animation_clip(&self, animation_clip: Option<AnimationClip>) -> Content {
+				unsafe { dyn_animation_clip_provider_register_active_animation_clip(self.to_ptr(), animation_clip) }
+			}
+			pub fn fn_register_animation_clip(&self, animation_clip: Option<AnimationClip>) -> Content {
+				unsafe { dyn_animation_clip_provider_register_animation_clip(self.to_ptr(), animation_clip) }
+			}
+			pub fn fn_get_animation_clip_async(&self, asset_id: Content) -> Option<AnimationClip> {
+				unsafe { dyn_animation_clip_provider_get_animation_clip_async(self.to_ptr(), asset_id) }
+			}
+			pub fn fn_get_animations(&self, user_id: f64) -> Option<Instance> {
+				unsafe { dyn_animation_clip_provider_get_animations(self.to_ptr(), user_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_animation_controller {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -3076,6 +3539,36 @@ macro_rules! impl_animation_controller {
 			}
 			pub fn on_animation_played<F: 'static + Fn(Option<AnimationTrack>)>(&self, callback: F) -> RbxScriptConnection {
 				unsafe { RbxScriptConnection(connect_animation_controller_animation_played(self.to_ptr(), Box::new(callback))) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_animation_from_video_creator_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_animation_from_video_creator_studio_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -3199,6 +3692,123 @@ macro_rules! impl_animator {
 			}
 			pub fn on_animation_played<F: 'static + Fn(Option<AnimationTrack>)>(&self, callback: F) -> RbxScriptConnection {
 				unsafe { RbxScriptConnection(connect_animator_animation_played(self.to_ptr(), Box::new(callback))) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_app_update_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_asset_counter_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_asset_delivery_proxy {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_asset_import_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn on_progress_update<F: 'static + Fn(f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_asset_import_service_progress_update(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_upload_finished<F: 'static + Fn(bool, ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_asset_import_service_upload_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_asset_manager_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_asset_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_create_place_async(&self, place_name: &str, template_place_id: f64, description: &str) -> f64 {
+				unsafe { dyn_asset_service_create_place_async(self.to_ptr(), place_name, template_place_id, description) }
+			}
+			pub fn fn_create_place_in_player_inventory_async(&self, player: Option<Instance>, place_name: &str, template_place_id: f64, description: &str) -> f64 {
+				unsafe { dyn_asset_service_create_place_in_player_inventory_async(self.to_ptr(), player, place_name, template_place_id, description) }
+			}
+			pub fn fn_get_asset_ids_for_package(&self, package_asset_id: f64) {
+				unsafe { dyn_asset_service_get_asset_ids_for_package(self.to_ptr(), package_asset_id) }
+			}
+			pub fn fn_get_bundle_details_async(&self, bundle_id: f64) {
+				unsafe { dyn_asset_service_get_bundle_details_async(self.to_ptr(), bundle_id) }
+			}
+			pub fn fn_get_creator_asset_id(&self, creation_id: f64) -> f64 {
+				unsafe { dyn_asset_service_get_creator_asset_id(self.to_ptr(), creation_id) }
+			}
+			pub fn fn_get_game_places_async(&self) -> Option<Instance> {
+				unsafe { dyn_asset_service_get_game_places_async(self.to_ptr()) }
+			}
+			pub fn fn_save_place_async(&self) {
+				unsafe { dyn_asset_service_save_place_async(self.to_ptr()) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -3379,6 +3989,78 @@ macro_rules! impl_bone {
 		}
 	}
 }
+macro_rules! impl_avatar_editor_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_prompt_allow_inventory_read_access(&self) {
+				unsafe { dyn_avatar_editor_service_prompt_allow_inventory_read_access(self.to_ptr()) }
+			}
+			pub fn fn_prompt_delete_outfit(&self, outfit_id: f64) {
+				unsafe { dyn_avatar_editor_service_prompt_delete_outfit(self.to_ptr(), outfit_id) }
+			}
+			pub fn fn_prompt_rename_outfit(&self, outfit_id: f64) {
+				unsafe { dyn_avatar_editor_service_prompt_rename_outfit(self.to_ptr(), outfit_id) }
+			}
+			pub fn fn_check_apply_default_clothing(&self, humanoid_description: Option<HumanoidDescription>) -> Option<HumanoidDescription> {
+				unsafe { dyn_avatar_editor_service_check_apply_default_clothing(self.to_ptr(), humanoid_description) }
+			}
+			pub fn fn_get_avatar_rules(&self) {
+				unsafe { dyn_avatar_editor_service_get_avatar_rules(self.to_ptr()) }
+			}
+			pub fn fn_get_recommended_bundles(&self, bundle_id: f64) {
+				unsafe { dyn_avatar_editor_service_get_recommended_bundles(self.to_ptr(), bundle_id) }
+			}
+			pub fn fn_search_catalog(&self, search_parameters: CatalogSearchParams) -> Option<CatalogPages> {
+				unsafe { dyn_avatar_editor_service_search_catalog(self.to_ptr(), search_parameters) }
+			}
+			pub fn on_prompt_allow_inventory_read_access_completed<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_avatar_editor_service_prompt_allow_inventory_read_access_completed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_create_outfit_completed<F: 'static + Fn((), ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_avatar_editor_service_prompt_create_outfit_completed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_delete_outfit_completed<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_avatar_editor_service_prompt_delete_outfit_completed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_rename_outfit_completed<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_avatar_editor_service_prompt_rename_outfit_completed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_save_avatar_completed<F: 'static + Fn((), Option<HumanoidDescription>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_avatar_editor_service_prompt_save_avatar_completed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_set_favorite_completed<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_avatar_editor_service_prompt_set_favorite_completed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_update_outfit_completed<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_avatar_editor_service_prompt_update_outfit_completed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_avatar_import_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_backpack {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -3495,6 +4177,39 @@ macro_rules! impl_tool {
 		impl From<$name> for BackpackItem {
 			fn from(value: $name) -> BackpackItem {
 				BackpackItem(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_badge_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_award_badge(&self, user_id: f64, badge_id: f64) -> bool {
+				unsafe { dyn_badge_service_award_badge(self.to_ptr(), user_id, badge_id) }
+			}
+			pub fn fn_get_badge_info_async(&self, badge_id: f64) {
+				unsafe { dyn_badge_service_get_badge_info_async(self.to_ptr(), badge_id) }
+			}
+			pub fn fn_is_disabled(&self, badge_id: f64) -> bool {
+				unsafe { dyn_badge_service_is_disabled(self.to_ptr(), badge_id) }
+			}
+			pub fn fn_is_legal(&self, badge_id: f64) -> bool {
+				unsafe { dyn_badge_service_is_legal(self.to_ptr(), badge_id) }
+			}
+			pub fn fn_user_has_badge(&self, user_id: f64, badge_id: f64) -> bool {
+				unsafe { dyn_badge_service_user_has_badge(self.to_ptr(), user_id, badge_id) }
+			}
+			pub fn fn_user_has_badge_async(&self, user_id: f64, badge_id: f64) -> bool {
+				unsafe { dyn_badge_service_user_has_badge_async(self.to_ptr(), user_id, badge_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
 			}
 		}
 	}
@@ -4408,6 +5123,48 @@ macro_rules! impl_shirt_graphic {
 		}
 	}
 }
+macro_rules! impl_chat {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn bubble_chat_enabled(&self) -> bool {
+				unsafe { prop_chat_bubble_chat_enabled(self.to_ptr()) }
+			}
+			pub fn set_bubble_chat_enabled(&self, value: bool) {
+				unsafe { prop_set_chat_bubble_chat_enabled(self.to_ptr(), value) }
+			}
+			pub fn load_default_chat(&self) -> bool {
+				unsafe { prop_chat_load_default_chat(self.to_ptr()) }
+			}
+			pub fn fn_can_user_chat_async(&self, user_id: f64) -> bool {
+				unsafe { dyn_chat_can_user_chat_async(self.to_ptr(), user_id) }
+			}
+			pub fn fn_can_users_chat_async(&self, user_id_from: f64, user_id_to: f64) -> bool {
+				unsafe { dyn_chat_can_users_chat_async(self.to_ptr(), user_id_from, user_id_to) }
+			}
+			pub fn fn_filter_string_async(&self, string_to_filter: &str, player_from: Option<Player>, player_to: Option<Player>) -> String {
+				unsafe { dyn_chat_filter_string_async(self.to_ptr(), string_to_filter, player_from, player_to) }
+			}
+			pub fn fn_filter_string_for_broadcast(&self, string_to_filter: &str, player_from: Option<Player>) -> String {
+				unsafe { dyn_chat_filter_string_for_broadcast(self.to_ptr(), string_to_filter, player_from) }
+			}
+			pub fn fn_filter_string_for_player_async(&self, string_to_filter: &str, player_to_filter_for: Option<Player>) -> String {
+				unsafe { dyn_chat_filter_string_for_player_async(self.to_ptr(), string_to_filter, player_to_filter_for) }
+			}
+			pub fn on_chatted<F: 'static + Fn(Option<Instance>, String, ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_chat_chatted(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_click_detector {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -4480,6 +5237,60 @@ macro_rules! impl_clouds {
 		}
 	}
 }
+macro_rules! impl_collection_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_add_tag(&self, instance: Option<Instance>, tag: &str) {
+				unsafe { dyn_collection_service_add_tag(self.to_ptr(), instance, tag) }
+			}
+			pub fn fn_get_all_tags(&self) {
+				unsafe { dyn_collection_service_get_all_tags(self.to_ptr()) }
+			}
+			pub fn fn_get_collection(&self, class: &str) -> Objects {
+				unsafe { dyn_collection_service_get_collection(self.to_ptr(), class) }
+			}
+			pub fn fn_get_instance_added_signal(&self, tag: &str) -> RbxScriptSignal {
+				unsafe { dyn_collection_service_get_instance_added_signal(self.to_ptr(), tag) }
+			}
+			pub fn fn_get_instance_removed_signal(&self, tag: &str) -> RbxScriptSignal {
+				unsafe { dyn_collection_service_get_instance_removed_signal(self.to_ptr(), tag) }
+			}
+			pub fn fn_get_tagged(&self, tag: &str) -> Objects {
+				unsafe { dyn_collection_service_get_tagged(self.to_ptr(), tag) }
+			}
+			pub fn fn_get_tags(&self, instance: Option<Instance>) {
+				unsafe { dyn_collection_service_get_tags(self.to_ptr(), instance) }
+			}
+			pub fn fn_has_tag(&self, instance: Option<Instance>, tag: &str) -> bool {
+				unsafe { dyn_collection_service_has_tag(self.to_ptr(), instance, tag) }
+			}
+			pub fn fn_remove_tag(&self, instance: Option<Instance>, tag: &str) {
+				unsafe { dyn_collection_service_remove_tag(self.to_ptr(), instance, tag) }
+			}
+			pub fn on_item_added<F: 'static + Fn(Option<Instance>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_collection_service_item_added(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_item_removed<F: 'static + Fn(Option<Instance>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_collection_service_item_removed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_tag_added<F: 'static + Fn(String)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_collection_service_tag_added(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_tag_removed<F: 'static + Fn(String)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_collection_service_tag_removed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_command_instance {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -4492,6 +5303,21 @@ macro_rules! impl_command_instance {
 			}
 			pub fn set_display_name(&self, value: &str) {
 				unsafe { prop_set_command_instance_display_name(self.to_ptr(), value) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_command_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -5521,6 +6347,105 @@ macro_rules! impl_vector_force {
 		}
 	}
 }
+macro_rules! impl_content_provider {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn base_url(&self) -> String {
+				unsafe { prop_content_provider_base_url(self.to_ptr()) }
+			}
+			pub fn request_queue_size(&self) -> f64 {
+				unsafe { prop_content_provider_request_queue_size(self.to_ptr()) }
+			}
+			pub fn fn_list_encrypted_assets(&self) {
+				unsafe { dyn_content_provider_list_encrypted_assets(self.to_ptr()) }
+			}
+			pub fn fn_preload(&self, content_id: Content) {
+				unsafe { dyn_content_provider_preload(self.to_ptr(), content_id) }
+			}
+			pub fn fn_register_default_encryption_key(&self, encryption_key: &str) {
+				unsafe { dyn_content_provider_register_default_encryption_key(self.to_ptr(), encryption_key) }
+			}
+			pub fn fn_register_default_session_key(&self, session_key: &str) {
+				unsafe { dyn_content_provider_register_default_session_key(self.to_ptr(), session_key) }
+			}
+			pub fn fn_register_encrypted_asset(&self, asset_id: Content, encryption_key: &str) {
+				unsafe { dyn_content_provider_register_encrypted_asset(self.to_ptr(), asset_id, encryption_key) }
+			}
+			pub fn fn_register_session_encrypted_asset(&self, content_id: Content, session_key: &str) {
+				unsafe { dyn_content_provider_register_session_encrypted_asset(self.to_ptr(), content_id, session_key) }
+			}
+			pub fn fn_unregister_default_encryption_key(&self) {
+				unsafe { dyn_content_provider_unregister_default_encryption_key(self.to_ptr()) }
+			}
+			pub fn fn_unregister_encrypted_asset(&self, asset_id: Content) {
+				unsafe { dyn_content_provider_unregister_encrypted_asset(self.to_ptr(), asset_id) }
+			}
+			pub fn on_asset_fetch_failed<F: 'static + Fn(Content)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_content_provider_asset_fetch_failed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_context_action_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_all_bound_action_info(&self) {
+				unsafe { dyn_context_action_service_get_all_bound_action_info(self.to_ptr()) }
+			}
+			pub fn fn_get_bound_action_info(&self, action_name: &str) {
+				unsafe { dyn_context_action_service_get_bound_action_info(self.to_ptr(), action_name) }
+			}
+			pub fn fn_get_current_local_tool_icon(&self) -> String {
+				unsafe { dyn_context_action_service_get_current_local_tool_icon(self.to_ptr()) }
+			}
+			pub fn fn_set_description(&self, action_name: &str, description: &str) {
+				unsafe { dyn_context_action_service_set_description(self.to_ptr(), action_name, description) }
+			}
+			pub fn fn_set_image(&self, action_name: &str, image: &str) {
+				unsafe { dyn_context_action_service_set_image(self.to_ptr(), action_name, image) }
+			}
+			pub fn fn_set_position(&self, action_name: &str, position: UDim2) {
+				unsafe { dyn_context_action_service_set_position(self.to_ptr(), action_name, position) }
+			}
+			pub fn fn_set_title(&self, action_name: &str, title: &str) {
+				unsafe { dyn_context_action_service_set_title(self.to_ptr(), action_name, title) }
+			}
+			pub fn fn_unbind_action(&self, action_name: &str) {
+				unsafe { dyn_context_action_service_unbind_action(self.to_ptr(), action_name) }
+			}
+			pub fn fn_unbind_all_actions(&self) {
+				unsafe { dyn_context_action_service_unbind_all_actions(self.to_ptr()) }
+			}
+			pub fn fn_get_button(&self, action_name: &str) -> Option<Instance> {
+				unsafe { dyn_context_action_service_get_button(self.to_ptr(), action_name) }
+			}
+			pub fn on_local_tool_equipped<F: 'static + Fn(Option<Instance>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_context_action_service_local_tool_equipped(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_local_tool_unequipped<F: 'static + Fn(Option<Instance>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_context_action_service_local_tool_unequipped(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_controller {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -5577,6 +6502,21 @@ macro_rules! impl_vehicle_controller {
 		impl From<$name> for Controller {
 			fn from(value: $name) -> Controller {
 				Controller(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_controller_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
 			}
 		}
 	}
@@ -5800,12 +6740,63 @@ macro_rules! impl_data_store_options {
 		}
 	}
 }
+macro_rules! impl_data_store_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_data_store(&self, name: &str, scope: &str, options: Option<Instance>) -> Option<GlobalDataStore> {
+				unsafe { dyn_data_store_service_get_data_store(self.to_ptr(), name, scope, options) }
+			}
+			pub fn fn_get_global_data_store(&self) -> Option<GlobalDataStore> {
+				unsafe { dyn_data_store_service_get_global_data_store(self.to_ptr()) }
+			}
+			pub fn fn_get_ordered_data_store(&self, name: &str, scope: &str) -> Option<OrderedDataStore> {
+				unsafe { dyn_data_store_service_get_ordered_data_store(self.to_ptr(), name, scope) }
+			}
+			pub fn fn_list_data_stores_async(&self, prefix: &str, page_size: f64) -> Option<DataStoreListingPages> {
+				unsafe { dyn_data_store_service_list_data_stores_async(self.to_ptr(), prefix, page_size) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_data_store_set_options {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
 		impl $name {
 			pub fn fn_get_metadata(&self) {
 				unsafe { dyn_data_store_set_options_get_metadata(self.to_ptr()) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_debris {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn max_items(&self) -> f64 {
+				unsafe { prop_debris_max_items(self.to_ptr()) }
+			}
+			pub fn set_max_items(&self, value: f64) {
+				unsafe { prop_set_debris_max_items(self.to_ptr(), value) }
+			}
+			pub fn fn_add_item(&self, item: Option<Instance>, lifetime: f64) {
+				unsafe { dyn_debris_add_item(self.to_ptr(), item, lifetime) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -5923,6 +6914,63 @@ macro_rules! impl_dragger {
 			}
 			pub fn fn_mouse_up(&self) {
 				unsafe { dyn_dragger_mouse_up(self.to_ptr()) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_dragger_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn align_dragged_objects(&self) -> bool {
+				unsafe { prop_dragger_service_align_dragged_objects(self.to_ptr()) }
+			}
+			pub fn angle_snap_enabled(&self) -> bool {
+				unsafe { prop_dragger_service_angle_snap_enabled(self.to_ptr()) }
+			}
+			pub fn angle_snap_increment(&self) -> f64 {
+				unsafe { prop_dragger_service_angle_snap_increment(self.to_ptr()) }
+			}
+			pub fn animate_hover(&self) -> bool {
+				unsafe { prop_dragger_service_animate_hover(self.to_ptr()) }
+			}
+			pub fn collisions_enabled(&self) -> bool {
+				unsafe { prop_dragger_service_collisions_enabled(self.to_ptr()) }
+			}
+			pub fn geometry_snap_color(&self) -> Color3 {
+				unsafe { prop_dragger_service_geometry_snap_color(self.to_ptr()) }
+			}
+			pub fn hover_animate_frequency(&self) -> f64 {
+				unsafe { prop_dragger_service_hover_animate_frequency(self.to_ptr()) }
+			}
+			pub fn hover_thickness(&self) -> f64 {
+				unsafe { prop_dragger_service_hover_thickness(self.to_ptr()) }
+			}
+			pub fn joints_enabled(&self) -> bool {
+				unsafe { prop_dragger_service_joints_enabled(self.to_ptr()) }
+			}
+			pub fn linear_snap_enabled(&self) -> bool {
+				unsafe { prop_dragger_service_linear_snap_enabled(self.to_ptr()) }
+			}
+			pub fn linear_snap_increment(&self) -> f64 {
+				unsafe { prop_dragger_service_linear_snap_increment(self.to_ptr()) }
+			}
+			pub fn show_hover(&self) -> bool {
+				unsafe { prop_dragger_service_show_hover(self.to_ptr()) }
+			}
+			pub fn show_pivot_indicator(&self) -> bool {
+				unsafe { prop_dragger_service_show_pivot_indicator(self.to_ptr()) }
+			}
+			pub fn set_show_pivot_indicator(&self, value: bool) {
+				unsafe { prop_set_dragger_service_show_pivot_indicator(self.to_ptr(), value) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -6235,6 +7283,24 @@ macro_rules! impl_force_field {
 		}
 	}
 }
+macro_rules! impl_game_pass_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_player_has_pass(&self, player: Option<Player>, game_pass_id: f64) -> bool {
+				unsafe { dyn_game_pass_service_player_has_pass(self.to_ptr(), player, game_pass_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_get_text_bounds_params {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -6324,6 +7390,33 @@ macro_rules! impl_ordered_data_store {
 		impl From<$name> for GlobalDataStore {
 			fn from(value: $name) -> GlobalDataStore {
 				GlobalDataStore(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_group_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_allies_async(&self, group_id: f64) -> Option<StandardPages> {
+				unsafe { dyn_group_service_get_allies_async(self.to_ptr(), group_id) }
+			}
+			pub fn fn_get_enemies_async(&self, group_id: f64) -> Option<StandardPages> {
+				unsafe { dyn_group_service_get_enemies_async(self.to_ptr(), group_id) }
+			}
+			pub fn fn_get_group_info_async(&self, group_id: f64) {
+				unsafe { dyn_group_service_get_group_info_async(self.to_ptr(), group_id) }
+			}
+			pub fn fn_get_groups_async(&self, user_id: f64) {
+				unsafe { dyn_group_service_get_groups_async(self.to_ptr(), user_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
 			}
 		}
 	}
@@ -8218,6 +9311,123 @@ macro_rules! impl_selection_point_lasso {
 		}
 	}
 }
+macro_rules! impl_gui_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn auto_select_gui_enabled(&self) -> bool {
+				unsafe { prop_gui_service_auto_select_gui_enabled(self.to_ptr()) }
+			}
+			pub fn set_auto_select_gui_enabled(&self, value: bool) {
+				unsafe { prop_set_gui_service_auto_select_gui_enabled(self.to_ptr(), value) }
+			}
+			pub fn core_gui_navigation_enabled(&self) -> bool {
+				unsafe { prop_gui_service_core_gui_navigation_enabled(self.to_ptr()) }
+			}
+			pub fn set_core_gui_navigation_enabled(&self, value: bool) {
+				unsafe { prop_set_gui_service_core_gui_navigation_enabled(self.to_ptr(), value) }
+			}
+			pub fn gui_navigation_enabled(&self) -> bool {
+				unsafe { prop_gui_service_gui_navigation_enabled(self.to_ptr()) }
+			}
+			pub fn set_gui_navigation_enabled(&self, value: bool) {
+				unsafe { prop_set_gui_service_gui_navigation_enabled(self.to_ptr(), value) }
+			}
+			pub fn is_modal_dialog(&self) -> bool {
+				unsafe { prop_gui_service_is_modal_dialog(self.to_ptr()) }
+			}
+			pub fn is_windows(&self) -> bool {
+				unsafe { prop_gui_service_is_windows(self.to_ptr()) }
+			}
+			pub fn menu_is_open(&self) -> bool {
+				unsafe { prop_gui_service_menu_is_open(self.to_ptr()) }
+			}
+			pub fn selected_object(&self) -> Option<GuiObject> {
+				unsafe { prop_gui_service_selected_object(self.to_ptr()) }
+			}
+			pub fn set_selected_object(&self, value: Option<GuiObject>) {
+				unsafe { prop_set_gui_service_selected_object(self.to_ptr(), value) }
+			}
+			pub fn touch_controls_enabled(&self) -> bool {
+				unsafe { prop_gui_service_touch_controls_enabled(self.to_ptr()) }
+			}
+			pub fn set_touch_controls_enabled(&self, value: bool) {
+				unsafe { prop_set_gui_service_touch_controls_enabled(self.to_ptr(), value) }
+			}
+			pub fn fn_add_selection_parent(&self, selection_name: &str, selection_parent: Option<Instance>) {
+				unsafe { dyn_gui_service_add_selection_parent(self.to_ptr(), selection_name, selection_parent) }
+			}
+			pub fn fn_close_inspect_menu(&self) {
+				unsafe { dyn_gui_service_close_inspect_menu(self.to_ptr()) }
+			}
+			pub fn fn_get_emotes_menu_open(&self) -> bool {
+				unsafe { dyn_gui_service_get_emotes_menu_open(self.to_ptr()) }
+			}
+			pub fn fn_get_gameplay_paused_notification_enabled(&self) -> bool {
+				unsafe { dyn_gui_service_get_gameplay_paused_notification_enabled(self.to_ptr()) }
+			}
+			pub fn fn_get_gui_inset(&self) {
+				unsafe { dyn_gui_service_get_gui_inset(self.to_ptr()) }
+			}
+			pub fn fn_get_inspect_menu_enabled(&self) -> bool {
+				unsafe { dyn_gui_service_get_inspect_menu_enabled(self.to_ptr()) }
+			}
+			pub fn fn_inspect_player_from_humanoid_description(&self, humanoid_description: Option<Instance>, name: &str) {
+				unsafe { dyn_gui_service_inspect_player_from_humanoid_description(self.to_ptr(), humanoid_description, name) }
+			}
+			pub fn fn_inspect_player_from_user_id(&self, user_id: f64) {
+				unsafe { dyn_gui_service_inspect_player_from_user_id(self.to_ptr(), user_id) }
+			}
+			pub fn fn_is_ten_foot_interface(&self) -> bool {
+				unsafe { dyn_gui_service_is_ten_foot_interface(self.to_ptr()) }
+			}
+			pub fn fn_remove_selection_group(&self, selection_name: &str) {
+				unsafe { dyn_gui_service_remove_selection_group(self.to_ptr(), selection_name) }
+			}
+			pub fn fn_select(&self, selection_parent: Option<Instance>) {
+				unsafe { dyn_gui_service_select(self.to_ptr(), selection_parent) }
+			}
+			pub fn fn_set_emotes_menu_open(&self, is_open: bool) {
+				unsafe { dyn_gui_service_set_emotes_menu_open(self.to_ptr(), is_open) }
+			}
+			pub fn fn_set_gameplay_paused_notification_enabled(&self, enabled: bool) {
+				unsafe { dyn_gui_service_set_gameplay_paused_notification_enabled(self.to_ptr(), enabled) }
+			}
+			pub fn fn_set_inspect_menu_enabled(&self, enabled: bool) {
+				unsafe { dyn_gui_service_set_inspect_menu_enabled(self.to_ptr(), enabled) }
+			}
+			pub fn on_menu_closed<F: 'static + Fn()>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_gui_service_menu_closed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_menu_opened<F: 'static + Fn()>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_gui_service_menu_opened(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_haptic_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_highlight {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -8257,6 +9467,30 @@ macro_rules! impl_highlight {
 			}
 			pub fn set_outline_transparency(&self, value: f64) {
 				unsafe { prop_set_highlight_outline_transparency(self.to_ptr(), value) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_http_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_generate_guid(&self, wrap_in_curly_braces: bool) -> String {
+				unsafe { dyn_http_service_generate_guid(self.to_ptr(), wrap_in_curly_braces) }
+			}
+			pub fn fn_json_decode(&self, input: &str) {
+				unsafe { dyn_http_service_json_decode(self.to_ptr(), input) }
+			}
+			pub fn fn_url_encode(&self, input: &str) -> String {
+				unsafe { dyn_http_service_url_encode(self.to_ptr(), input) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -9067,6 +10301,72 @@ macro_rules! impl_input_object {
 		}
 	}
 }
+macro_rules! impl_insert_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn allow_client_insert_models(&self) -> bool {
+				unsafe { prop_insert_service_allow_client_insert_models(self.to_ptr()) }
+			}
+			pub fn set_allow_client_insert_models(&self, value: bool) {
+				unsafe { prop_set_insert_service_allow_client_insert_models(self.to_ptr(), value) }
+			}
+			pub fn allow_insert_free_models(&self) -> bool {
+				unsafe { prop_insert_service_allow_insert_free_models(self.to_ptr()) }
+			}
+			pub fn set_allow_insert_free_models(&self, value: bool) {
+				unsafe { prop_set_insert_service_allow_insert_free_models(self.to_ptr(), value) }
+			}
+			pub fn fn_approve_asset_id(&self, asset_id: f64) {
+				unsafe { dyn_insert_service_approve_asset_id(self.to_ptr(), asset_id) }
+			}
+			pub fn fn_approve_asset_version_id(&self, asset_version_id: f64) {
+				unsafe { dyn_insert_service_approve_asset_version_id(self.to_ptr(), asset_version_id) }
+			}
+			pub fn fn_insert(&self, instance: Option<Instance>) {
+				unsafe { dyn_insert_service_insert(self.to_ptr(), instance) }
+			}
+			pub fn fn_get_base_categories(&self) {
+				unsafe { dyn_insert_service_get_base_categories(self.to_ptr()) }
+			}
+			pub fn fn_get_base_sets(&self) {
+				unsafe { dyn_insert_service_get_base_sets(self.to_ptr()) }
+			}
+			pub fn fn_get_collection(&self, category_id: f64) {
+				unsafe { dyn_insert_service_get_collection(self.to_ptr(), category_id) }
+			}
+			pub fn fn_get_free_decals(&self, search_text: &str, page_num: f64) {
+				unsafe { dyn_insert_service_get_free_decals(self.to_ptr(), search_text, page_num) }
+			}
+			pub fn fn_get_free_models(&self, search_text: &str, page_num: f64) {
+				unsafe { dyn_insert_service_get_free_models(self.to_ptr(), search_text, page_num) }
+			}
+			pub fn fn_get_latest_asset_version_async(&self, asset_id: f64) -> f64 {
+				unsafe { dyn_insert_service_get_latest_asset_version_async(self.to_ptr(), asset_id) }
+			}
+			pub fn fn_get_user_categories(&self, user_id: f64) {
+				unsafe { dyn_insert_service_get_user_categories(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_user_sets(&self, user_id: f64) {
+				unsafe { dyn_insert_service_get_user_sets(self.to_ptr(), user_id) }
+			}
+			pub fn fn_load_asset(&self, asset_id: f64) -> Option<Instance> {
+				unsafe { dyn_insert_service_load_asset(self.to_ptr(), asset_id) }
+			}
+			pub fn fn_load_asset_version(&self, asset_version_id: f64) -> Option<Instance> {
+				unsafe { dyn_insert_service_load_asset_version(self.to_ptr(), asset_version_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_joint_instance {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -9253,6 +10553,21 @@ macro_rules! impl_velocity_motor {
 		}
 	}
 }
+macro_rules! impl_joints_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_keyframe {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -9298,6 +10613,33 @@ macro_rules! impl_keyframe_marker {
 			}
 			pub fn set_value(&self, value: &str) {
 				unsafe { prop_set_keyframe_marker_value(self.to_ptr(), value) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_keyframe_sequence_provider {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_register_active_keyframe_sequence(&self, keyframe_sequence: Option<Instance>) -> Content {
+				unsafe { dyn_keyframe_sequence_provider_register_active_keyframe_sequence(self.to_ptr(), keyframe_sequence) }
+			}
+			pub fn fn_register_keyframe_sequence(&self, keyframe_sequence: Option<Instance>) -> Content {
+				unsafe { dyn_keyframe_sequence_provider_register_keyframe_sequence(self.to_ptr(), keyframe_sequence) }
+			}
+			pub fn fn_get_animations(&self, user_id: f64) -> Option<Instance> {
+				unsafe { dyn_keyframe_sequence_provider_get_animations(self.to_ptr(), user_id) }
+			}
+			pub fn fn_get_keyframe_sequence_async(&self, asset_id: Content) -> Option<Instance> {
+				unsafe { dyn_keyframe_sequence_provider_get_keyframe_sequence_async(self.to_ptr(), asset_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -9550,6 +10892,45 @@ macro_rules! impl_lighting {
 		}
 	}
 }
+macro_rules! impl_localization_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn roblox_locale_id(&self) -> String {
+				unsafe { prop_localization_service_roblox_locale_id(self.to_ptr()) }
+			}
+			pub fn system_locale_id(&self) -> String {
+				unsafe { prop_localization_service_system_locale_id(self.to_ptr()) }
+			}
+			pub fn fn_get_corescript_localizations(&self) -> Objects {
+				unsafe { dyn_localization_service_get_corescript_localizations(self.to_ptr()) }
+			}
+			pub fn fn_get_table_entries(&self, instance: Option<Instance>) {
+				unsafe { dyn_localization_service_get_table_entries(self.to_ptr(), instance) }
+			}
+			pub fn fn_get_translator_for_player(&self, player: Option<Instance>) -> Option<Instance> {
+				unsafe { dyn_localization_service_get_translator_for_player(self.to_ptr(), player) }
+			}
+			pub fn fn_get_country_region_for_player_async(&self, player: Option<Instance>) -> String {
+				unsafe { dyn_localization_service_get_country_region_for_player_async(self.to_ptr(), player) }
+			}
+			pub fn fn_get_translator_for_locale_async(&self, locale: &str) -> Option<Instance> {
+				unsafe { dyn_localization_service_get_translator_for_locale_async(self.to_ptr(), locale) }
+			}
+			pub fn fn_get_translator_for_player_async(&self, player: Option<Instance>) -> Option<Instance> {
+				unsafe { dyn_localization_service_get_translator_for_player_async(self.to_ptr(), player) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_localization_table {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -9634,6 +11015,27 @@ macro_rules! impl_lod_data_entity {
 			}
 			pub fn set_entity_lod_enabled(&self, value: bool) {
 				unsafe { prop_set_lod_data_entity_entity_lod_enabled(self.to_ptr(), value) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_log_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_log_history(&self) {
+				unsafe { dyn_log_service_get_log_history(self.to_ptr()) }
+			}
+			pub fn on_message_out<F: 'static + Fn(String, ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_log_service_message_out(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -9754,6 +11156,87 @@ macro_rules! impl_marker_curve {
 		}
 	}
 }
+macro_rules! impl_marketplace_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_prompt_bundle_purchase(&self, player: Option<Instance>, bundle_id: f64) {
+				unsafe { dyn_marketplace_service_prompt_bundle_purchase(self.to_ptr(), player, bundle_id) }
+			}
+			pub fn fn_prompt_game_pass_purchase(&self, player: Option<Instance>, game_pass_id: f64) {
+				unsafe { dyn_marketplace_service_prompt_game_pass_purchase(self.to_ptr(), player, game_pass_id) }
+			}
+			pub fn fn_prompt_premium_purchase(&self, player: Option<Instance>) {
+				unsafe { dyn_marketplace_service_prompt_premium_purchase(self.to_ptr(), player) }
+			}
+			pub fn fn_prompt_subscription_cancellation(&self, player: Option<Instance>, subscription_id: f64) {
+				unsafe { dyn_marketplace_service_prompt_subscription_cancellation(self.to_ptr(), player, subscription_id) }
+			}
+			pub fn fn_prompt_subscription_purchase(&self, player: Option<Instance>, subscription_id: f64) {
+				unsafe { dyn_marketplace_service_prompt_subscription_purchase(self.to_ptr(), player, subscription_id) }
+			}
+			pub fn fn_get_developer_products_async(&self) -> Option<Instance> {
+				unsafe { dyn_marketplace_service_get_developer_products_async(self.to_ptr()) }
+			}
+			pub fn fn_is_player_subscribed(&self, player: Option<Instance>, subscription_id: f64) -> bool {
+				unsafe { dyn_marketplace_service_is_player_subscribed(self.to_ptr(), player, subscription_id) }
+			}
+			pub fn fn_player_owns_asset(&self, player: Option<Instance>, asset_id: f64) -> bool {
+				unsafe { dyn_marketplace_service_player_owns_asset(self.to_ptr(), player, asset_id) }
+			}
+			pub fn fn_player_owns_bundle(&self, player: Option<Player>, bundle_id: f64) -> bool {
+				unsafe { dyn_marketplace_service_player_owns_bundle(self.to_ptr(), player, bundle_id) }
+			}
+			pub fn fn_user_owns_game_pass_async(&self, user_id: f64, game_pass_id: f64) -> bool {
+				unsafe { dyn_marketplace_service_user_owns_game_pass_async(self.to_ptr(), user_id, game_pass_id) }
+			}
+			pub fn on_prompt_bundle_purchase_finished<F: 'static + Fn(Option<Instance>, f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_marketplace_service_prompt_bundle_purchase_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_game_pass_purchase_finished<F: 'static + Fn(Option<Instance>, f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_marketplace_service_prompt_game_pass_purchase_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_premium_purchase_finished<F: 'static + Fn()>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_marketplace_service_prompt_premium_purchase_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_product_purchase_finished<F: 'static + Fn(f64, f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_marketplace_service_prompt_product_purchase_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_purchase_finished<F: 'static + Fn(Option<Instance>, f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_marketplace_service_prompt_purchase_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_subscription_cancellation_finished<F: 'static + Fn(Option<Instance>, f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_marketplace_service_prompt_subscription_cancellation_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_subscription_purchase_finished<F: 'static + Fn(Option<Instance>, f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_marketplace_service_prompt_subscription_purchase_finished(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_material_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_material_variant {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -9790,6 +11273,27 @@ macro_rules! impl_memory_store_queue {
 		}
 	}
 }
+macro_rules! impl_memory_store_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_queue(&self, name: &str, invisibility_timeout: f64) -> Option<MemoryStoreQueue> {
+				unsafe { dyn_memory_store_service_get_queue(self.to_ptr(), name, invisibility_timeout) }
+			}
+			pub fn fn_get_sorted_map(&self, name: &str) -> Option<MemoryStoreSortedMap> {
+				unsafe { dyn_memory_store_service_get_sorted_map(self.to_ptr(), name) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_memory_store_sorted_map {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -9802,6 +11306,24 @@ macro_rules! impl_memory_store_sorted_map {
 			}
 			pub fn fn_update_async(&self, key: &str, transform_function: Function, expiration: f64) {
 				unsafe { dyn_memory_store_sorted_map_update_async(self.to_ptr(), key, transform_function, expiration) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_messaging_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_subscribe_async(&self, topic: &str, callback: Function) -> RbxScriptConnection {
+				unsafe { dyn_messaging_service_subscribe_async(self.to_ptr(), topic, callback) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -11437,6 +12959,84 @@ macro_rules! impl_pathfinding_modifier {
 		}
 	}
 }
+macro_rules! impl_pathfinding_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn empty_cutoff(&self) -> f64 {
+				unsafe { prop_pathfinding_service_empty_cutoff(self.to_ptr()) }
+			}
+			pub fn set_empty_cutoff(&self, value: f64) {
+				unsafe { prop_set_pathfinding_service_empty_cutoff(self.to_ptr(), value) }
+			}
+			pub fn fn_compute_raw_path_async(&self, start: Vector3, finish: Vector3, max_distance: f64) -> Option<Instance> {
+				unsafe { dyn_pathfinding_service_compute_raw_path_async(self.to_ptr(), start, finish, max_distance) }
+			}
+			pub fn fn_compute_smooth_path_async(&self, start: Vector3, finish: Vector3, max_distance: f64) -> Option<Instance> {
+				unsafe { dyn_pathfinding_service_compute_smooth_path_async(self.to_ptr(), start, finish, max_distance) }
+			}
+			pub fn fn_find_path_async(&self, start: Vector3, finish: Vector3) -> Option<Instance> {
+				unsafe { dyn_pathfinding_service_find_path_async(self.to_ptr(), start, finish) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_physics_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_collision_group_contains_part(&self, name: &str, part: Option<BasePart>) -> bool {
+				unsafe { dyn_physics_service_collision_group_contains_part(self.to_ptr(), name, part) }
+			}
+			pub fn fn_collision_group_set_collidable(&self, name_1: &str, name_2: &str, collidable: bool) {
+				unsafe { dyn_physics_service_collision_group_set_collidable(self.to_ptr(), name_1, name_2, collidable) }
+			}
+			pub fn fn_collision_groups_are_collidable(&self, name_1: &str, name_2: &str) -> bool {
+				unsafe { dyn_physics_service_collision_groups_are_collidable(self.to_ptr(), name_1, name_2) }
+			}
+			pub fn fn_create_collision_group(&self, name: &str) -> f64 {
+				unsafe { dyn_physics_service_create_collision_group(self.to_ptr(), name) }
+			}
+			pub fn fn_get_collision_group_id(&self, name: &str) -> f64 {
+				unsafe { dyn_physics_service_get_collision_group_id(self.to_ptr(), name) }
+			}
+			pub fn fn_get_collision_group_name(&self, name: f64) -> String {
+				unsafe { dyn_physics_service_get_collision_group_name(self.to_ptr(), name) }
+			}
+			pub fn fn_get_collision_groups(&self) {
+				unsafe { dyn_physics_service_get_collision_groups(self.to_ptr()) }
+			}
+			pub fn fn_get_max_collision_groups(&self) -> f64 {
+				unsafe { dyn_physics_service_get_max_collision_groups(self.to_ptr()) }
+			}
+			pub fn fn_remove_collision_group(&self, name: &str) {
+				unsafe { dyn_physics_service_remove_collision_group(self.to_ptr(), name) }
+			}
+			pub fn fn_rename_collision_group(&self, from: &str, to: &str) {
+				unsafe { dyn_physics_service_rename_collision_group(self.to_ptr(), from, to) }
+			}
+			pub fn fn_set_part_collision_group(&self, part: Option<BasePart>, name: &str) {
+				unsafe { dyn_physics_service_set_part_collision_group(self.to_ptr(), part, name) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_player {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -11782,6 +13382,24 @@ macro_rules! impl_players {
 		}
 	}
 }
+macro_rules! impl_policy_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_policy_info_for_player_async(&self, player: Option<Instance>) {
+				unsafe { dyn_policy_service_get_policy_info_for_player_async(self.to_ptr(), player) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_pose_base {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -12109,6 +13727,51 @@ macro_rules! impl_proximity_prompt {
 		}
 	}
 }
+macro_rules! impl_proximity_prompt_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn enabled(&self) -> bool {
+				unsafe { prop_proximity_prompt_service_enabled(self.to_ptr()) }
+			}
+			pub fn set_enabled(&self, value: bool) {
+				unsafe { prop_set_proximity_prompt_service_enabled(self.to_ptr(), value) }
+			}
+			pub fn max_prompts_visible(&self) -> f64 {
+				unsafe { prop_proximity_prompt_service_max_prompts_visible(self.to_ptr()) }
+			}
+			pub fn set_max_prompts_visible(&self, value: f64) {
+				unsafe { prop_set_proximity_prompt_service_max_prompts_visible(self.to_ptr(), value) }
+			}
+			pub fn on_prompt_button_hold_began<F: 'static + Fn(Option<ProximityPrompt>, Option<Player>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_proximity_prompt_service_prompt_button_hold_began(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_button_hold_ended<F: 'static + Fn(Option<ProximityPrompt>, Option<Player>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_proximity_prompt_service_prompt_button_hold_ended(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_hidden<F: 'static + Fn(Option<ProximityPrompt>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_proximity_prompt_service_prompt_hidden(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_shown<F: 'static + Fn(Option<ProximityPrompt>, ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_proximity_prompt_service_prompt_shown(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_trigger_ended<F: 'static + Fn(Option<ProximityPrompt>, Option<Player>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_proximity_prompt_service_prompt_trigger_ended(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_prompt_triggered<F: 'static + Fn(Option<ProximityPrompt>, Option<Player>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_proximity_prompt_service_prompt_triggered(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_remote_event {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -12205,6 +13868,63 @@ macro_rules! impl_rotation_curve {
 		}
 	}
 }
+macro_rules! impl_run_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_bind_to_render_step(&self, name: &str, priority: f64, function: Function) {
+				unsafe { dyn_run_service_bind_to_render_step(self.to_ptr(), name, priority, function) }
+			}
+			pub fn fn_is_client(&self) -> bool {
+				unsafe { dyn_run_service_is_client(self.to_ptr()) }
+			}
+			pub fn fn_is_run_mode(&self) -> bool {
+				unsafe { dyn_run_service_is_run_mode(self.to_ptr()) }
+			}
+			pub fn fn_is_running(&self) -> bool {
+				unsafe { dyn_run_service_is_running(self.to_ptr()) }
+			}
+			pub fn fn_is_server(&self) -> bool {
+				unsafe { dyn_run_service_is_server(self.to_ptr()) }
+			}
+			pub fn fn_is_studio(&self) -> bool {
+				unsafe { dyn_run_service_is_studio(self.to_ptr()) }
+			}
+			pub fn fn_unbind_from_render_step(&self, name: &str) {
+				unsafe { dyn_run_service_unbind_from_render_step(self.to_ptr(), name) }
+			}
+			pub fn on_heartbeat<F: 'static + Fn(f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_run_service_heartbeat(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_post_simulation<F: 'static + Fn(f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_run_service_post_simulation(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_pre_animation<F: 'static + Fn(f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_run_service_pre_animation(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_pre_render<F: 'static + Fn(f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_run_service_pre_render(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_pre_simulation<F: 'static + Fn(f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_run_service_pre_simulation(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_render_stepped<F: 'static + Fn(f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_run_service_render_stepped(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_stepped<F: 'static + Fn(f64, f64)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_run_service_stepped(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_screenshot_hud {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -12250,6 +13970,24 @@ macro_rules! impl_screenshot_hud {
 			}
 			pub fn set_visible(&self, value: bool) {
 				unsafe { prop_set_screenshot_hud_visible(self.to_ptr(), value) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_script_context {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn on_error<F: 'static + Fn(String, String, Option<Instance>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_script_context_error(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -12544,6 +14282,30 @@ macro_rules! impl_smoke {
 			}
 			pub fn set_time_scale(&self, value: f64) {
 				unsafe { prop_set_smoke_time_scale(self.to_ptr(), value) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_social_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_prompt_game_invite(&self, player: Option<Instance>) {
+				unsafe { dyn_social_service_prompt_game_invite(self.to_ptr(), player) }
+			}
+			pub fn fn_can_send_game_invite_async(&self, player: Option<Instance>) -> bool {
+				unsafe { dyn_social_service_can_send_game_invite_async(self.to_ptr(), player) }
+			}
+			pub fn on_game_invite_prompt_closed<F: 'static + Fn(Option<Instance>, ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_social_service_game_invite_prompt_closed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -13051,6 +14813,51 @@ macro_rules! impl_sound_group {
 		}
 	}
 }
+macro_rules! impl_sound_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn distance_factor(&self) -> f64 {
+				unsafe { prop_sound_service_distance_factor(self.to_ptr()) }
+			}
+			pub fn set_distance_factor(&self, value: f64) {
+				unsafe { prop_set_sound_service_distance_factor(self.to_ptr(), value) }
+			}
+			pub fn doppler_scale(&self) -> f64 {
+				unsafe { prop_sound_service_doppler_scale(self.to_ptr()) }
+			}
+			pub fn set_doppler_scale(&self, value: f64) {
+				unsafe { prop_set_sound_service_doppler_scale(self.to_ptr(), value) }
+			}
+			pub fn respect_filtering_enabled(&self) -> bool {
+				unsafe { prop_sound_service_respect_filtering_enabled(self.to_ptr()) }
+			}
+			pub fn set_respect_filtering_enabled(&self, value: bool) {
+				unsafe { prop_set_sound_service_respect_filtering_enabled(self.to_ptr(), value) }
+			}
+			pub fn rolloff_scale(&self) -> f64 {
+				unsafe { prop_sound_service_rolloff_scale(self.to_ptr()) }
+			}
+			pub fn set_rolloff_scale(&self, value: f64) {
+				unsafe { prop_set_sound_service_rolloff_scale(self.to_ptr(), value) }
+			}
+			pub fn fn_get_listener(&self) {
+				unsafe { dyn_sound_service_get_listener(self.to_ptr()) }
+			}
+			pub fn fn_play_local_sound(&self, sound: Option<Instance>) {
+				unsafe { dyn_sound_service_play_local_sound(self.to_ptr(), sound) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_sparkles {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -13282,6 +15089,54 @@ macro_rules! impl_starter_character_scripts {
 		}
 	}
 }
+macro_rules! impl_stats {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn contacts_count(&self) -> f64 {
+				unsafe { prop_stats_contacts_count(self.to_ptr()) }
+			}
+			pub fn data_receive_kbps(&self) -> f64 {
+				unsafe { prop_stats_data_receive_kbps(self.to_ptr()) }
+			}
+			pub fn data_send_kbps(&self) -> f64 {
+				unsafe { prop_stats_data_send_kbps(self.to_ptr()) }
+			}
+			pub fn heartbeat_time_ms(&self) -> f64 {
+				unsafe { prop_stats_heartbeat_time_ms(self.to_ptr()) }
+			}
+			pub fn instance_count(&self) -> f64 {
+				unsafe { prop_stats_instance_count(self.to_ptr()) }
+			}
+			pub fn moving_primitives_count(&self) -> f64 {
+				unsafe { prop_stats_moving_primitives_count(self.to_ptr()) }
+			}
+			pub fn physics_receive_kbps(&self) -> f64 {
+				unsafe { prop_stats_physics_receive_kbps(self.to_ptr()) }
+			}
+			pub fn physics_send_kbps(&self) -> f64 {
+				unsafe { prop_stats_physics_send_kbps(self.to_ptr()) }
+			}
+			pub fn physics_step_time_ms(&self) -> f64 {
+				unsafe { prop_stats_physics_step_time_ms(self.to_ptr()) }
+			}
+			pub fn primitives_count(&self) -> f64 {
+				unsafe { prop_stats_primitives_count(self.to_ptr()) }
+			}
+			pub fn fn_get_total_memory_usage_mb(&self) -> f64 {
+				unsafe { dyn_stats_get_total_memory_usage_mb(self.to_ptr()) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_surface_appearance {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -13411,6 +15266,84 @@ macro_rules! impl_teleport_options {
 		}
 	}
 }
+macro_rules! impl_teleport_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn customized_teleport_ui(&self) -> bool {
+				unsafe { prop_teleport_service_customized_teleport_ui(self.to_ptr()) }
+			}
+			pub fn set_customized_teleport_ui(&self, value: bool) {
+				unsafe { prop_set_teleport_service_customized_teleport_ui(self.to_ptr(), value) }
+			}
+			pub fn fn_get_arriving_teleport_gui(&self) -> Option<Instance> {
+				unsafe { dyn_teleport_service_get_arriving_teleport_gui(self.to_ptr()) }
+			}
+			pub fn fn_get_local_player_teleport_data(&self) {
+				unsafe { dyn_teleport_service_get_local_player_teleport_data(self.to_ptr()) }
+			}
+			pub fn fn_get_teleport_setting(&self, setting: &str) {
+				unsafe { dyn_teleport_service_get_teleport_setting(self.to_ptr(), setting) }
+			}
+			pub fn fn_set_teleport_gui(&self, gui: Option<Instance>) {
+				unsafe { dyn_teleport_service_set_teleport_gui(self.to_ptr(), gui) }
+			}
+			pub fn fn_get_player_place_instance_async(&self, user_id: f64) {
+				unsafe { dyn_teleport_service_get_player_place_instance_async(self.to_ptr(), user_id) }
+			}
+			pub fn fn_reserve_server(&self, place_id: f64) {
+				unsafe { dyn_teleport_service_reserve_server(self.to_ptr(), place_id) }
+			}
+			pub fn fn_teleport_async(&self, place_id: f64, players: Objects, teleport_options: Option<Instance>) -> Option<Instance> {
+				unsafe { dyn_teleport_service_teleport_async(self.to_ptr(), place_id, players, teleport_options) }
+			}
+			pub fn on_local_player_arrived_from_teleport<F: 'static + Fn(Option<Instance>, ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_teleport_service_local_player_arrived_from_teleport(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_teleport_init_failed<F: 'static + Fn(Option<Instance>, (), String, f64, Option<Instance>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_teleport_service_teleport_init_failed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_temporary_cage_mesh_provider {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_temporary_script_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_terrain_detail {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -13438,6 +15371,21 @@ macro_rules! impl_terrain_region {
 			}
 			pub fn size_in_cells(&self) -> Vector3 {
 				unsafe { prop_terrain_region_size_in_cells(self.to_ptr()) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_text_box_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -13636,6 +15584,33 @@ macro_rules! impl_text_chat_message_properties {
 		}
 	}
 }
+macro_rules! impl_text_chat_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn create_default_commands(&self) -> bool {
+				unsafe { prop_text_chat_service_create_default_commands(self.to_ptr()) }
+			}
+			pub fn create_default_text_channels(&self) -> bool {
+				unsafe { prop_text_chat_service_create_default_text_channels(self.to_ptr()) }
+			}
+			pub fn on_message_received<F: 'static + Fn(Option<TextChatMessage>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_text_chat_service_message_received(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_sending_message<F: 'static + Fn(Option<TextChatMessage>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_text_chat_service_sending_message(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_text_filter_result {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -13648,6 +15623,27 @@ macro_rules! impl_text_filter_result {
 			}
 			pub fn fn_get_non_chat_string_for_user_async(&self, to_user_id: f64) -> String {
 				unsafe { dyn_text_filter_result_get_non_chat_string_for_user_async(self.to_ptr(), to_user_id) }
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_text_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_family_info_async(&self, asset_id: Content) {
+				unsafe { dyn_text_service_get_family_info_async(self.to_ptr(), asset_id) }
+			}
+			pub fn fn_get_text_bounds_async(&self, params: Option<GetTextBoundsParams>) -> Vector2 {
+				unsafe { dyn_text_service_get_text_bounds_async(self.to_ptr(), params) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
 			}
 		}
 		impl From<$name> for Instance {
@@ -13851,6 +15847,21 @@ macro_rules! impl_tween {
 		impl From<$name> for TweenBase {
 			fn from(value: $name) -> TweenBase {
 				TweenBase(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_tween_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
 			}
 		}
 	}
@@ -14368,6 +16379,234 @@ macro_rules! impl_user_game_settings {
 		}
 	}
 }
+macro_rules! impl_user_input_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn accelerometer_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_accelerometer_enabled(self.to_ptr()) }
+			}
+			pub fn gamepad_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_gamepad_enabled(self.to_ptr()) }
+			}
+			pub fn gyroscope_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_gyroscope_enabled(self.to_ptr()) }
+			}
+			pub fn keyboard_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_keyboard_enabled(self.to_ptr()) }
+			}
+			pub fn modal_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_modal_enabled(self.to_ptr()) }
+			}
+			pub fn set_modal_enabled(&self, value: bool) {
+				unsafe { prop_set_user_input_service_modal_enabled(self.to_ptr(), value) }
+			}
+			pub fn mouse_delta_sensitivity(&self) -> f64 {
+				unsafe { prop_user_input_service_mouse_delta_sensitivity(self.to_ptr()) }
+			}
+			pub fn set_mouse_delta_sensitivity(&self, value: f64) {
+				unsafe { prop_set_user_input_service_mouse_delta_sensitivity(self.to_ptr(), value) }
+			}
+			pub fn mouse_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_mouse_enabled(self.to_ptr()) }
+			}
+			pub fn mouse_icon_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_mouse_icon_enabled(self.to_ptr()) }
+			}
+			pub fn set_mouse_icon_enabled(&self, value: bool) {
+				unsafe { prop_set_user_input_service_mouse_icon_enabled(self.to_ptr(), value) }
+			}
+			pub fn on_screen_keyboard_position(&self) -> Vector2 {
+				unsafe { prop_user_input_service_on_screen_keyboard_position(self.to_ptr()) }
+			}
+			pub fn on_screen_keyboard_size(&self) -> Vector2 {
+				unsafe { prop_user_input_service_on_screen_keyboard_size(self.to_ptr()) }
+			}
+			pub fn on_screen_keyboard_visible(&self) -> bool {
+				unsafe { prop_user_input_service_on_screen_keyboard_visible(self.to_ptr()) }
+			}
+			pub fn touch_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_touch_enabled(self.to_ptr()) }
+			}
+			pub fn user_head_c_frame(&self) -> CFrame {
+				unsafe { prop_user_input_service_user_head_c_frame(self.to_ptr()) }
+			}
+			pub fn vr_enabled(&self) -> bool {
+				unsafe { prop_user_input_service_vr_enabled(self.to_ptr()) }
+			}
+			pub fn fn_get_connected_gamepads(&self) {
+				unsafe { dyn_user_input_service_get_connected_gamepads(self.to_ptr()) }
+			}
+			pub fn fn_get_device_acceleration(&self) -> Option<InputObject> {
+				unsafe { dyn_user_input_service_get_device_acceleration(self.to_ptr()) }
+			}
+			pub fn fn_get_device_gravity(&self) -> Option<InputObject> {
+				unsafe { dyn_user_input_service_get_device_gravity(self.to_ptr()) }
+			}
+			pub fn fn_get_device_rotation(&self) {
+				unsafe { dyn_user_input_service_get_device_rotation(self.to_ptr()) }
+			}
+			pub fn fn_get_focused_text_box(&self) -> Option<TextBox> {
+				unsafe { dyn_user_input_service_get_focused_text_box(self.to_ptr()) }
+			}
+			pub fn fn_get_keys_pressed(&self) {
+				unsafe { dyn_user_input_service_get_keys_pressed(self.to_ptr()) }
+			}
+			pub fn fn_get_last_input_type(&self) {
+				unsafe { dyn_user_input_service_get_last_input_type(self.to_ptr()) }
+			}
+			pub fn fn_get_mouse_buttons_pressed(&self) {
+				unsafe { dyn_user_input_service_get_mouse_buttons_pressed(self.to_ptr()) }
+			}
+			pub fn fn_get_mouse_delta(&self) -> Vector2 {
+				unsafe { dyn_user_input_service_get_mouse_delta(self.to_ptr()) }
+			}
+			pub fn fn_get_mouse_location(&self) -> Vector2 {
+				unsafe { dyn_user_input_service_get_mouse_location(self.to_ptr()) }
+			}
+			pub fn fn_get_navigation_gamepads(&self) {
+				unsafe { dyn_user_input_service_get_navigation_gamepads(self.to_ptr()) }
+			}
+			pub fn fn_recenter_user_head_c_frame(&self) {
+				unsafe { dyn_user_input_service_recenter_user_head_c_frame(self.to_ptr()) }
+			}
+			pub fn on_device_acceleration_changed<F: 'static + Fn(Option<InputObject>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_device_acceleration_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_device_gravity_changed<F: 'static + Fn(Option<InputObject>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_device_gravity_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_device_rotation_changed<F: 'static + Fn(Option<InputObject>, CFrame)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_device_rotation_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_gamepad_connected<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_gamepad_connected(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_gamepad_disconnected<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_gamepad_disconnected(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_input_began<F: 'static + Fn(Option<InputObject>, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_input_began(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_input_changed<F: 'static + Fn(Option<InputObject>, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_input_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_input_ended<F: 'static + Fn(Option<InputObject>, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_input_ended(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_jump_request<F: 'static + Fn()>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_jump_request(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_last_input_type_changed<F: 'static + Fn(())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_last_input_type_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_pointer_action<F: 'static + Fn(f64, Vector2, f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_pointer_action(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_text_box_focus_released<F: 'static + Fn(Option<TextBox>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_text_box_focus_released(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_text_box_focused<F: 'static + Fn(Option<TextBox>)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_text_box_focused(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_ended<F: 'static + Fn(Option<InputObject>, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_ended(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_long_press<F: 'static + Fn((), (), bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_long_press(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_moved<F: 'static + Fn(Option<InputObject>, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_moved(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_pan<F: 'static + Fn((), Vector2, Vector2, (), bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_pan(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_pinch<F: 'static + Fn((), f64, f64, (), bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_pinch(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_rotate<F: 'static + Fn((), f64, f64, (), bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_rotate(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_started<F: 'static + Fn(Option<InputObject>, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_started(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_swipe<F: 'static + Fn((), f64, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_swipe(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_tap<F: 'static + Fn((), bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_tap(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touch_tap_in_world<F: 'static + Fn(Vector2, bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_touch_tap_in_world(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_user_c_frame_changed<F: 'static + Fn((), CFrame)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_user_c_frame_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_window_focus_released<F: 'static + Fn()>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_window_focus_released(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_window_focused<F: 'static + Fn()>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_user_input_service_window_focused(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_user_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_vr_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn vr_enabled(&self) -> bool {
+				unsafe { prop_vr_service_vr_enabled(self.to_ptr()) }
+			}
+			pub fn fn_recenter_user_head_c_frame(&self) {
+				unsafe { dyn_vr_service_recenter_user_head_c_frame(self.to_ptr()) }
+			}
+			pub fn on_navigation_requested<F: 'static + Fn(CFrame, ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_vr_service_navigation_requested(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_touchpad_mode_changed<F: 'static + Fn((), ())>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_vr_service_touchpad_mode_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_user_c_frame_changed<F: 'static + Fn((), CFrame)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_vr_service_user_c_frame_changed(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn on_user_c_frame_enabled<F: 'static + Fn((), bool)>(&self, callback: F) -> RbxScriptConnection {
+				unsafe { RbxScriptConnection(connect_vr_service_user_c_frame_enabled(self.to_ptr(), Box::new(callback))) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_value_base {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -14704,6 +16943,90 @@ macro_rules! impl_voice_channel {
 		}
 	}
 }
+macro_rules! impl_voice_chat_internal {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_get_audio_processing_settings(&self) {
+				unsafe { dyn_voice_chat_internal_get_audio_processing_settings(self.to_ptr()) }
+			}
+			pub fn fn_get_mic_devices(&self) {
+				unsafe { dyn_voice_chat_internal_get_mic_devices(self.to_ptr()) }
+			}
+			pub fn fn_get_participants(&self) {
+				unsafe { dyn_voice_chat_internal_get_participants(self.to_ptr()) }
+			}
+			pub fn fn_get_speaker_devices(&self) {
+				unsafe { dyn_voice_chat_internal_get_speaker_devices(self.to_ptr()) }
+			}
+			pub fn fn_get_voice_chat_api_version(&self) -> f64 {
+				unsafe { dyn_voice_chat_internal_get_voice_chat_api_version(self.to_ptr()) }
+			}
+			pub fn fn_get_voice_chat_available(&self) -> f64 {
+				unsafe { dyn_voice_chat_internal_get_voice_chat_available(self.to_ptr()) }
+			}
+			pub fn fn_is_publish_paused(&self) -> bool {
+				unsafe { dyn_voice_chat_internal_is_publish_paused(self.to_ptr()) }
+			}
+			pub fn fn_is_subscribe_paused(&self, user_id: f64) -> bool {
+				unsafe { dyn_voice_chat_internal_is_subscribe_paused(self.to_ptr(), user_id) }
+			}
+			pub fn fn_join_by_group_id(&self, group_id: &str, is_mic_muted: bool) -> bool {
+				unsafe { dyn_voice_chat_internal_join_by_group_id(self.to_ptr(), group_id, is_mic_muted) }
+			}
+			pub fn fn_join_by_group_id_token(&self, group_id: &str, is_mic_muted: bool) -> bool {
+				unsafe { dyn_voice_chat_internal_join_by_group_id_token(self.to_ptr(), group_id, is_mic_muted) }
+			}
+			pub fn fn_leave(&self) {
+				unsafe { dyn_voice_chat_internal_leave(self.to_ptr()) }
+			}
+			pub fn fn_publish_pause(&self, paused: bool) -> bool {
+				unsafe { dyn_voice_chat_internal_publish_pause(self.to_ptr(), paused) }
+			}
+			pub fn fn_set_mic_device(&self, mic_device_name: &str, mic_device_guid: &str) {
+				unsafe { dyn_voice_chat_internal_set_mic_device(self.to_ptr(), mic_device_name, mic_device_guid) }
+			}
+			pub fn fn_set_speaker_device(&self, speaker_device_name: &str, speaker_device_guid: &str) {
+				unsafe { dyn_voice_chat_internal_set_speaker_device(self.to_ptr(), speaker_device_name, speaker_device_guid) }
+			}
+			pub fn fn_subscribe_pause(&self, user_id: f64, paused: bool) -> bool {
+				unsafe { dyn_voice_chat_internal_subscribe_pause(self.to_ptr(), user_id, paused) }
+			}
+			pub fn fn_subscribe_pause_all(&self, paused: bool) -> bool {
+				unsafe { dyn_voice_chat_internal_subscribe_pause_all(self.to_ptr(), paused) }
+			}
+			pub fn fn_is_voice_enabled_for_user_id_async(&self, user_id: f64) -> bool {
+				unsafe { dyn_voice_chat_internal_is_voice_enabled_for_user_id_async(self.to_ptr(), user_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
+macro_rules! impl_voice_chat_service {
+	($name:ident) => {
+		impl_instance_exclusive!($name);
+		impl $name {
+			pub fn fn_is_voice_enabled_for_user_id_async(&self, user_id: f64) -> bool {
+				unsafe { dyn_voice_chat_service_is_voice_enabled_for_user_id_async(self.to_ptr(), user_id) }
+			}
+			pub fn instance() -> $name {
+				$name(DataModel::instance().fn_get_service(stringify!($name)).unwrap().to_ptr())
+			}
+		}
+		impl From<$name> for Instance {
+			fn from(value: $name) -> Instance {
+				Instance(value.to_ptr())
+			}
+		}
+	}
+}
 macro_rules! impl_voice_source {
 	($name:ident) => {
 		impl_instance_exclusive!($name);
@@ -14756,21 +17079,34 @@ impl_instance!(Instance);
 impl_accoutrement!(Accoutrement);
 impl_accessory!(Accessory);
 impl_hat!(Hat);
+impl_analytics_service!(AnalyticsService);
 impl_animation!(Animation);
 impl_animation_clip!(AnimationClip);
 impl_curve_animation!(CurveAnimation);
 impl_keyframe_sequence!(KeyframeSequence);
+impl_animation_clip_provider!(AnimationClipProvider);
 impl_animation_controller!(AnimationController);
+impl_animation_from_video_creator_service!(AnimationFromVideoCreatorService);
+impl_animation_from_video_creator_studio_service!(AnimationFromVideoCreatorStudioService);
 impl_animation_rig_data!(AnimationRigData);
 impl_animation_stream_track!(AnimationStreamTrack);
 impl_animation_track!(AnimationTrack);
 impl_animator!(Animator);
+impl_app_update_service!(AppUpdateService);
+impl_asset_counter_service!(AssetCounterService);
+impl_asset_delivery_proxy!(AssetDeliveryProxy);
+impl_asset_import_service!(AssetImportService);
+impl_asset_manager_service!(AssetManagerService);
+impl_asset_service!(AssetService);
 impl_atmosphere!(Atmosphere);
 impl_attachment!(Attachment);
 impl_bone!(Bone);
+impl_avatar_editor_service!(AvatarEditorService);
+impl_avatar_import_service!(AvatarImportService);
 impl_backpack!(Backpack);
 impl_backpack_item!(BackpackItem);
 impl_tool!(Tool);
+impl_badge_service!(BadgeService);
 impl_base_player_gui!(BasePlayerGui);
 impl_player_gui!(PlayerGui);
 impl_starter_gui!(StarterGui);
@@ -14796,9 +17132,12 @@ impl_clothing!(Clothing);
 impl_pants!(Pants);
 impl_shirt!(Shirt);
 impl_shirt_graphic!(ShirtGraphic);
+impl_chat!(Chat);
 impl_click_detector!(ClickDetector);
 impl_clouds!(Clouds);
+impl_collection_service!(CollectionService);
 impl_command_instance!(CommandInstance);
+impl_command_service!(CommandService);
 impl_constraint!(Constraint);
 impl_align_orientation!(AlignOrientation);
 impl_align_position!(AlignPosition);
@@ -14820,10 +17159,13 @@ impl_torque!(Torque);
 impl_torsion_spring_constraint!(TorsionSpringConstraint);
 impl_universal_constraint!(UniversalConstraint);
 impl_vector_force!(VectorForce);
+impl_content_provider!(ContentProvider);
+impl_context_action_service!(ContextActionService);
 impl_controller!(Controller);
 impl_humanoid_controller!(HumanoidController);
 impl_skateboard_controller!(SkateboardController);
 impl_vehicle_controller!(VehicleController);
+impl_controller_service!(ControllerService);
 impl_data_model_mesh!(DataModelMesh);
 impl_bevel_mesh!(BevelMesh);
 impl_block_mesh!(BlockMesh);
@@ -14836,10 +17178,13 @@ impl_data_store_key!(DataStoreKey);
 impl_data_store_key_info!(DataStoreKeyInfo);
 impl_data_store_object_version_info!(DataStoreObjectVersionInfo);
 impl_data_store_options!(DataStoreOptions);
+impl_data_store_service!(DataStoreService);
 impl_data_store_set_options!(DataStoreSetOptions);
+impl_debris!(Debris);
 impl_dialog!(Dialog);
 impl_dialog_choice!(DialogChoice);
 impl_dragger!(Dragger);
+impl_dragger_service!(DraggerService);
 impl_euler_rotation_curve!(EulerRotationCurve);
 impl_explosion!(Explosion);
 impl_face_instance!(FaceInstance);
@@ -14850,10 +17195,12 @@ impl_fire!(Fire);
 impl_float_curve!(FloatCurve);
 impl_folder!(Folder);
 impl_force_field!(ForceField);
+impl_game_pass_service!(GamePassService);
 impl_get_text_bounds_params!(GetTextBoundsParams);
 impl_global_data_store!(GlobalDataStore);
 impl_data_store!(DataStore);
 impl_ordered_data_store!(OrderedDataStore);
+impl_group_service!(GroupService);
 impl_gui_base!(GuiBase);
 impl_gui_base_2_d!(GuiBase2d);
 impl_gui_object!(GuiObject);
@@ -14895,7 +17242,10 @@ impl_surface_selection!(SurfaceSelection);
 impl_selection_lasso!(SelectionLasso);
 impl_selection_part_lasso!(SelectionPartLasso);
 impl_selection_point_lasso!(SelectionPointLasso);
+impl_gui_service!(GuiService);
+impl_haptic_service!(HapticService);
 impl_highlight!(Highlight);
+impl_http_service!(HttpService);
 impl_humanoid!(Humanoid);
 impl_humanoid_description!(HumanoidDescription);
 impl_importer_base_settings!(ImporterBaseSettings);
@@ -14904,30 +17254,39 @@ impl_importer_material_settings!(ImporterMaterialSettings);
 impl_importer_mesh_settings!(ImporterMeshSettings);
 impl_importer_root_settings!(ImporterRootSettings);
 impl_input_object!(InputObject);
+impl_insert_service!(InsertService);
 impl_joint_instance!(JointInstance);
 impl_dynamic_rotate!(DynamicRotate);
 impl_glue!(Glue);
 impl_motor!(Motor);
 impl_motor_6_d!(Motor6D);
 impl_velocity_motor!(VelocityMotor);
+impl_joints_service!(JointsService);
 impl_keyframe!(Keyframe);
 impl_keyframe_marker!(KeyframeMarker);
+impl_keyframe_sequence_provider!(KeyframeSequenceProvider);
 impl_light!(Light);
 impl_point_light!(PointLight);
 impl_spot_light!(SpotLight);
 impl_surface_light!(SurfaceLight);
 impl_lighting!(Lighting);
+impl_localization_service!(LocalizationService);
 impl_localization_table!(LocalizationTable);
 impl_lod_data_entity!(LodDataEntity);
+impl_log_service!(LogService);
 impl_lua_source_container!(LuaSourceContainer);
 impl_base_script!(BaseScript);
 impl_script!(Script);
 impl_local_script!(LocalScript);
 impl_module_script!(ModuleScript);
 impl_marker_curve!(MarkerCurve);
+impl_marketplace_service!(MarketplaceService);
+impl_material_service!(MaterialService);
 impl_material_variant!(MaterialVariant);
 impl_memory_store_queue!(MemoryStoreQueue);
+impl_memory_store_service!(MemoryStoreService);
 impl_memory_store_sorted_map!(MemoryStoreSortedMap);
+impl_messaging_service!(MessagingService);
 impl_mouse!(Mouse);
 impl_player_mouse!(PlayerMouse);
 impl_network_marker!(NetworkMarker);
@@ -14971,9 +17330,12 @@ impl_particle_emitter!(ParticleEmitter);
 impl_path!(Path);
 impl_pathfinding_link!(PathfindingLink);
 impl_pathfinding_modifier!(PathfindingModifier);
+impl_pathfinding_service!(PathfindingService);
+impl_physics_service!(PhysicsService);
 impl_player!(Player);
 impl_player_scripts!(PlayerScripts);
 impl_players!(Players);
+impl_policy_service!(PolicyService);
 impl_pose_base!(PoseBase);
 impl_number_pose!(NumberPose);
 impl_pose!(Pose);
@@ -14984,12 +17346,15 @@ impl_color_correction_effect!(ColorCorrectionEffect);
 impl_depth_of_field_effect!(DepthOfFieldEffect);
 impl_sun_rays_effect!(SunRaysEffect);
 impl_proximity_prompt!(ProximityPrompt);
+impl_proximity_prompt_service!(ProximityPromptService);
 impl_remote_event!(RemoteEvent);
 impl_remote_function!(RemoteFunction);
 impl_replicated_first!(ReplicatedFirst);
 impl_replicated_storage!(ReplicatedStorage);
 impl_rotation_curve!(RotationCurve);
+impl_run_service!(RunService);
 impl_screenshot_hud!(ScreenshotHud);
+impl_script_context!(ScriptContext);
 impl_server_script_service!(ServerScriptService);
 impl_server_storage!(ServerStorage);
 impl_service_provider!(ServiceProvider);
@@ -14998,6 +17363,7 @@ impl_generic_settings!(GenericSettings);
 impl_user_settings!(UserSettings);
 impl_sky!(Sky);
 impl_smoke!(Smoke);
+impl_social_service!(SocialService);
 impl_sound!(Sound);
 impl_sound_effect!(SoundEffect);
 impl_chorus_sound_effect!(ChorusSoundEffect);
@@ -15012,6 +17378,7 @@ impl_pitch_shift_sound_effect!(PitchShiftSoundEffect);
 impl_reverb_sound_effect!(ReverbSoundEffect);
 impl_tremolo_sound_effect!(TremoloSoundEffect);
 impl_sound_group!(SoundGroup);
+impl_sound_service!(SoundService);
 impl_sparkles!(Sparkles);
 impl_speaker!(Speaker);
 impl_starter_gear!(StarterGear);
@@ -15019,13 +17386,18 @@ impl_starter_pack!(StarterPack);
 impl_starter_player!(StarterPlayer);
 impl_starter_player_scripts!(StarterPlayerScripts);
 impl_starter_character_scripts!(StarterCharacterScripts);
+impl_stats!(Stats);
 impl_surface_appearance!(SurfaceAppearance);
 impl_team!(Team);
 impl_teams!(Teams);
 impl_teleport_async_result!(TeleportAsyncResult);
 impl_teleport_options!(TeleportOptions);
+impl_teleport_service!(TeleportService);
+impl_temporary_cage_mesh_provider!(TemporaryCageMeshProvider);
+impl_temporary_script_service!(TemporaryScriptService);
 impl_terrain_detail!(TerrainDetail);
 impl_terrain_region!(TerrainRegion);
+impl_text_box_service!(TextBoxService);
 impl_text_channel!(TextChannel);
 impl_text_chat_command!(TextChatCommand);
 impl_text_chat_configurations!(TextChatConfigurations);
@@ -15033,13 +17405,16 @@ impl_chat_input_bar_configuration!(ChatInputBarConfiguration);
 impl_chat_window_configuration!(ChatWindowConfiguration);
 impl_text_chat_message!(TextChatMessage);
 impl_text_chat_message_properties!(TextChatMessageProperties);
+impl_text_chat_service!(TextChatService);
 impl_text_filter_result!(TextFilterResult);
+impl_text_service!(TextService);
 impl_text_source!(TextSource);
 impl_touch_transmitter!(TouchTransmitter);
 impl_trail!(Trail);
 impl_translator!(Translator);
 impl_tween_base!(TweenBase);
 impl_tween!(Tween);
+impl_tween_service!(TweenService);
 impl_ui_base!(UIBase);
 impl_ui_component!(UIComponent);
 impl_ui_constraint!(UIConstraint);
@@ -15058,6 +17433,9 @@ impl_ui_padding!(UIPadding);
 impl_ui_scale!(UIScale);
 impl_ui_stroke!(UIStroke);
 impl_user_game_settings!(UserGameSettings);
+impl_user_input_service!(UserInputService);
+impl_user_service!(UserService);
+impl_vr_service!(VRService);
 impl_value_base!(ValueBase);
 impl_bool_value!(BoolValue);
 impl_brick_color_value!(BrickColorValue);
@@ -15073,6 +17451,8 @@ impl_string_value!(StringValue);
 impl_vector_3_value!(Vector3Value);
 impl_vector_3_curve!(Vector3Curve);
 impl_voice_channel!(VoiceChannel);
+impl_voice_chat_internal!(VoiceChatInternal);
+impl_voice_chat_service!(VoiceChatService);
 impl_voice_source!(VoiceSource);
 impl_weld_constraint!(WeldConstraint);
-creatable!(Accoutrement Accessory Hat Animation CurveAnimation KeyframeSequence AnimationController AnimationRigData Animator Atmosphere Attachment Bone Backpack Tool WrapLayer WrapTarget Beam BindableEvent BindableFunction BodyAngularVelocity BodyForce BodyGyro BodyPosition BodyThrust BodyVelocity RocketPropulsion Camera BodyColors CharacterMesh Pants Shirt ShirtGraphic ClickDetector Clouds AlignOrientation AlignPosition AngularVelocity BallSocketConstraint HingeConstraint LineForce LinearVelocity PlaneConstraint Plane RigidConstraint RodConstraint RopeConstraint CylindricalConstraint PrismaticConstraint SpringConstraint Torque TorsionSpringConstraint UniversalConstraint VectorForce HumanoidController SkateboardController VehicleController BlockMesh CylinderMesh FileMesh SpecialMesh DataStoreIncrementOptions DataStoreOptions DataStoreSetOptions Dialog DialogChoice Dragger EulerRotationCurve Explosion Decal Texture Fire FloatCurve Folder ForceField GetTextBoundsParams CanvasGroup Frame ImageButton TextButton ImageLabel TextLabel ScrollingFrame TextBox VideoFrame ViewportFrame BillboardGui ScreenGui SurfaceGui FloorWire SelectionBox BoxHandleAdornment ConeHandleAdornment CylinderHandleAdornment ImageHandleAdornment LineHandleAdornment SphereHandleAdornment ParabolaAdornment SelectionSphere ArcHandles Handles SurfaceSelection SelectionPartLasso SelectionPointLasso Highlight Humanoid HumanoidDescription Glue Motor Motor6D VelocityMotor Keyframe KeyframeMarker PointLight SpotLight SurfaceLight LocalizationTable Script LocalScript ModuleScript MarkerCurve MaterialVariant NoCollisionConstraint CornerWedgePart Part Seat SkateboardPlatform SpawnLocation WedgePart MeshPart PartOperation NegateOperation UnionOperation TrussPart VehicleSeat Model Actor WorldModel ParticleEmitter PathfindingLink PathfindingModifier Player NumberPose Pose BloomEffect BlurEffect ColorCorrectionEffect DepthOfFieldEffect SunRaysEffect ProximityPrompt RemoteEvent RemoteFunction RotationCurve Sky Smoke Sound ChorusSoundEffect CompressorSoundEffect ChannelSelectorSoundEffect DistortionSoundEffect EchoSoundEffect EqualizerSoundEffect FlangeSoundEffect PitchShiftSoundEffect ReverbSoundEffect TremoloSoundEffect SoundGroup Sparkles Speaker StarterGear SurfaceAppearance Team TeleportOptions TerrainDetail TerrainRegion TextChannel TextChatCommand TextChatMessageProperties Trail Tween UIAspectRatioConstraint UISizeConstraint UITextSizeConstraint UICorner UIGradient UIGridLayout UIListLayout UIPageLayout UITableLayout UIPadding UIScale UIStroke BoolValue BrickColorValue CFrameValue Color3Value DoubleConstrainedValue IntConstrainedValue IntValue NumberValue ObjectValue RayValue StringValue Vector3Value Vector3Curve VoiceChannel WeldConstraint);
+creatable!(Accoutrement Accessory Hat AnalyticsService Animation CurveAnimation KeyframeSequence AnimationController AnimationRigData Animator Atmosphere Attachment Bone Backpack Tool WrapLayer WrapTarget Beam BindableEvent BindableFunction BodyAngularVelocity BodyForce BodyGyro BodyPosition BodyThrust BodyVelocity RocketPropulsion Camera BodyColors CharacterMesh Pants Shirt ShirtGraphic ClickDetector Clouds AlignOrientation AlignPosition AngularVelocity BallSocketConstraint HingeConstraint LineForce LinearVelocity PlaneConstraint Plane RigidConstraint RodConstraint RopeConstraint CylindricalConstraint PrismaticConstraint SpringConstraint Torque TorsionSpringConstraint UniversalConstraint VectorForce HumanoidController SkateboardController VehicleController BlockMesh CylinderMesh FileMesh SpecialMesh DataStoreIncrementOptions DataStoreOptions DataStoreSetOptions Dialog DialogChoice Dragger EulerRotationCurve Explosion Decal Texture Fire FloatCurve Folder ForceField GetTextBoundsParams CanvasGroup Frame ImageButton TextButton ImageLabel TextLabel ScrollingFrame TextBox VideoFrame ViewportFrame BillboardGui ScreenGui SurfaceGui FloorWire SelectionBox BoxHandleAdornment ConeHandleAdornment CylinderHandleAdornment ImageHandleAdornment LineHandleAdornment SphereHandleAdornment ParabolaAdornment SelectionSphere ArcHandles Handles SurfaceSelection SelectionPartLasso SelectionPointLasso Highlight Humanoid HumanoidDescription Glue Motor Motor6D VelocityMotor Keyframe KeyframeMarker PointLight SpotLight SurfaceLight LocalizationTable Script LocalScript ModuleScript MarkerCurve MaterialVariant MemoryStoreService NoCollisionConstraint CornerWedgePart Part Seat SkateboardPlatform SpawnLocation WedgePart MeshPart PartOperation NegateOperation UnionOperation TrussPart VehicleSeat Model Actor WorldModel ParticleEmitter PathfindingLink PathfindingModifier Player NumberPose Pose BloomEffect BlurEffect ColorCorrectionEffect DepthOfFieldEffect SunRaysEffect ProximityPrompt ProximityPromptService RemoteEvent RemoteFunction RotationCurve Sky Smoke Sound ChorusSoundEffect CompressorSoundEffect ChannelSelectorSoundEffect DistortionSoundEffect EchoSoundEffect EqualizerSoundEffect FlangeSoundEffect PitchShiftSoundEffect ReverbSoundEffect TremoloSoundEffect SoundGroup Sparkles Speaker StarterGear SurfaceAppearance Team TeleportOptions TerrainDetail TerrainRegion TextChannel TextChatCommand TextChatMessageProperties Trail Tween UIAspectRatioConstraint UISizeConstraint UITextSizeConstraint UICorner UIGradient UIGridLayout UIListLayout UIPageLayout UITableLayout UIPadding UIScale UIStroke BoolValue BrickColorValue CFrameValue Color3Value DoubleConstrainedValue IntConstrainedValue IntValue NumberValue ObjectValue RayValue StringValue Vector3Value Vector3Curve VoiceChannel WeldConstraint);
