@@ -2,10 +2,14 @@ return function(rt, wasm, memory)
 	local function_table = wasm.table_list.__indirect_function_table;
 	local stackPtr = wasm.global_list.__stack_pointer;
 
-	local id = 0;
-	local pointers = {};
+	local pointers = { last = 0 };
 	local function createPointer(value)
-		id += 1;
+		local id = pointers.last;
+		if (id == 0) then
+			id = #pointers + 1;
+		else
+			pointers.last = pointers[id];
+		end
 		pointers[id] = value;
 		return id;
 	end
@@ -15,7 +19,8 @@ return function(rt, wasm, memory)
 	end
 
 	local function dropPointer(id)
-		pointers[id] = nil;
+		pointers[id] = pointers.last;
+		pointers.last = id;
 	end
 
 	local function pushStack(bytes)
@@ -29,17 +34,17 @@ return function(rt, wasm, memory)
 		stackPtr.value = stack_loc + bytes;
 	end
 
-	local function invokeFunction(stack, vtable, ...)
-		function_table.data[rt.load.i32(memory, vtable + 12)](stack, ...);
+	local function invokeFunction(data, vtable, ...)
+		function_table.data[rt.load.i32(memory, vtable + 12)](data, ...);
 	end
 
-	local function dropFunctionRef(stack, vtable)
-		wasm.func_list.__drop_box_dyn_fn(stack, vtable);
+	local function dropFunctionRef(data, vtable)
+		wasm.func_list.__drop_box_dyn_fn(data, vtable);
 	end
 
-	local function invokeOnce(stack, vtable, ...)
-		invokeFunction(stack, vtable, ...);
-		dropFunctionRef(stack, vtable);
+	local function invokeOnce(data, vtable, ...)
+		invokeFunction(data, vtable, ...);
+		dropFunctionRef(data, vtable);
 	end
 
 	local function allocString(text)

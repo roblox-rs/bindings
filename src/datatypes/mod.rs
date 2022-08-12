@@ -17,7 +17,7 @@ macro_rules! impl_datatype_drop {
         impl Drop for $name {
             fn drop(&mut $self) {
                 $body;
-                unsafe { $crate::bindings::drop_pointer($self.to_ptr()) }
+                unsafe { $crate::drop_pointer($self.to_ptr()) }
             }
         }
     };

@@ -24,7 +24,7 @@ unimplemented_datatype!(Region3);
 unimplemented_datatype!(Vector2);
 unimplemented_datatype!(Ray);
 unimplemented_datatype!(RbxScriptSignal);
-unimplemented_datatype!(RbxScriptConnection);
+// unimplemented_datatype!(RbxScriptConnection);
 unimplemented_datatype!(Objects);
 unimplemented_datatype!(Rect);
 unimplemented_datatype!(Axes);
