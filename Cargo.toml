@@ -1,8 +1,9 @@
 [package]
-name = "lua-wasm"
+name = "roblox_rs"
 version = "0.1.0"
 authors = ["Firebolt <24422634+Fireboltofdeath@users.noreply.github.com>"]
 edition = "2018"
+build = "./build/main.rs"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -10,6 +11,13 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 # Smaller allocator
 wee_alloc = { version = "0.4.5" }
+
+[build_dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_with = "1.14.0"
+convert_case = "0.5"
+lazy_static = "1.4"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
