@@ -245,7 +245,7 @@ fn generate_classes(writer: &mut Stream, dump: &Dump) {
 }
 
 fn generate_abi_start(writer: &mut Stream) {
-    let paths = HashMap::<&'static str, &'static str>::from_iter(vec![
+    let paths = vec![
         ("getPointer", "util.getPointer"),
         ("createPointer", "util.createPointer"),
         ("memory", "wasm.memory_list.memory"),
@@ -254,7 +254,7 @@ fn generate_abi_start(writer: &mut Stream) {
         ("allocString", "wasm.func_list.__heap_alloc_string"),
         ("invokeFunction", "util.invokeFunction"),
         ("dropFunctionRef", "util.dropFunctionRef"),
-    ]);
+    ];
 
     let names = paths
         .clone()
