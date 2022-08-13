@@ -77,7 +77,7 @@ fn generate_extern(writer: &mut Stream, dump: &Dump) {
                         }
                     );
                 }
-                _ => continue,
+                ClassMember::Callback(_) => continue,
             }
         }
     }

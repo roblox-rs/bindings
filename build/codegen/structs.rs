@@ -242,8 +242,12 @@ impl ValueType {
             ValueType::DataType(kind) => format!("&{:?}", kind),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
             ValueType::Primitive(PrimitiveKind::String) => "&str".to_string(),
-            ValueType::Primitive(PrimitiveKind::Float | PrimitiveKind::Double) => "f64".to_string(),
-            ValueType::Primitive(PrimitiveKind::Int | PrimitiveKind::Int64) => "f64".to_string(),
+            ValueType::Primitive(
+                PrimitiveKind::Float
+                | PrimitiveKind::Double
+                | PrimitiveKind::Int
+                | PrimitiveKind::Int64,
+            ) => "f64".to_string(),
             ValueType::Optional(value_type) => {
                 format!("Option<{}>", value_type.rust_input_type())
             }
@@ -258,8 +262,12 @@ impl ValueType {
             ValueType::DataType(kind) => format!("{:?}", kind),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
             ValueType::Primitive(PrimitiveKind::String) => "String".to_string(),
-            ValueType::Primitive(PrimitiveKind::Float | PrimitiveKind::Double) => "f64".to_string(),
-            ValueType::Primitive(PrimitiveKind::Int | PrimitiveKind::Int64) => "f64".to_string(),
+            ValueType::Primitive(
+                PrimitiveKind::Float
+                | PrimitiveKind::Double
+                | PrimitiveKind::Int
+                | PrimitiveKind::Int64,
+            ) => "f64".to_string(),
             ValueType::Optional(value_type) => {
                 format!("Option<{}>", value_type.rust_output_type())
             }
@@ -273,8 +281,12 @@ impl ValueType {
             ValueType::Class(_) | ValueType::DataType(_) => "u32".to_string(),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
             ValueType::Primitive(PrimitiveKind::String) => "RustStr".to_string(),
-            ValueType::Primitive(PrimitiveKind::Float | PrimitiveKind::Double) => "f64".to_string(),
-            ValueType::Primitive(PrimitiveKind::Int | PrimitiveKind::Int64) => "f64".to_string(),
+            ValueType::Primitive(
+                PrimitiveKind::Float
+                | PrimitiveKind::Double
+                | PrimitiveKind::Int
+                | PrimitiveKind::Int64,
+            ) => "f64".to_string(),
             ValueType::Optional(value_type) => {
                 format!("RustOption<{}>", value_type.ffi_input_type())
             }
@@ -289,8 +301,12 @@ impl ValueType {
             ValueType::Class(_) | ValueType::DataType(_) => "u32".to_string(),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
             ValueType::Primitive(PrimitiveKind::String) => "RustStr".to_string(),
-            ValueType::Primitive(PrimitiveKind::Float | PrimitiveKind::Double) => "f64".to_string(),
-            ValueType::Primitive(PrimitiveKind::Int | PrimitiveKind::Int64) => "f64".to_string(),
+            ValueType::Primitive(
+                PrimitiveKind::Float
+                | PrimitiveKind::Double
+                | PrimitiveKind::Int
+                | PrimitiveKind::Int64,
+            ) => "f64".to_string(),
             ValueType::Optional(value_type) => {
                 format!("RustOption<{}>", value_type.ffi_output_type())
             }
