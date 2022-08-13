@@ -1,7 +1,8 @@
 use core::panic;
 
 use crate::codegen::{
-    stream::{note, pull, push, swap, Stream},
+    constants::rust::{EXCLUSIVE_INSTANCE, ROBLOX_CREATABLE, RUST_OPTION, RUST_STR},
+    stream::{note, pull, push, Stream},
     structs::{
         Class, ClassEventMember, ClassFunctionMember, ClassFunctionParameter, ClassMember,
         ClassPropertyMember, Dump, PrimitiveKind, ValueType,
@@ -83,113 +84,11 @@ fn generate_extern(writer: &mut Stream, dump: &Dump) {
     pull!(writer, "}}");
 }
 
-fn generate_rust_option(writer: &mut Stream) {
-    // pub struct RustOption
-    note!(writer);
-    note!(writer, "#[repr(C)]");
-    push!(writer, "pub enum RustOption<T> {{");
-    note!(writer, "None,");
-    note!(writer, "Some(T),");
-    pull!(writer, "}}");
-
-    // impl From<Option> for RustOption
-    note!(writer);
-    push!(writer, "impl<T> From<Option<T>> for RustOption<T> {{");
-    push!(writer, "fn from(option: Option<T>) -> RustOption<T> {{");
-    push!(writer, "match option {{");
-    note!(writer, "Some(value) => RustOption::Some(value),");
-    note!(writer, "None => RustOption::None,");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-
-    // impl From<RustOption> for Option
-    note!(writer);
-    push!(writer, "impl<T> From<RustOption<T>> for Option<T> {{");
-    push!(writer, "fn from(option: RustOption<T>) -> Option<T> {{");
-    push!(writer, "match option {{");
-    note!(writer, "RustOption::Some(value) => Some(value),");
-    note!(writer, "RustOption::None => None,");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-}
-
-fn generate_rust_string(writer: &mut Stream) {
-    // pub struct RustStr
-    note!(writer);
-    note!(writer, "#[repr(C)]");
-    push!(writer, "pub struct RustStr {{");
-    note!(writer, "content: *const u8,");
-    note!(writer, "length: usize,");
-    pull!(writer, "}}");
-
-    // impl From<&str> for RustStr
-    note!(writer);
-    push!(writer, "impl From<&str> for RustStr {{");
-    push!(writer, "fn from(string: &str) -> RustStr {{");
-    push!(writer, "RustStr {{");
-    note!(writer, "content: string.as_ptr(),");
-    note!(writer, "length: string.len(),");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-
-    // impl From<RustStr> for String
-    note!(writer);
-    push!(writer, "impl From<RustStr> for String {{");
-    push!(writer, "fn from(string: RustStr) -> String {{");
-    push!(writer, "unsafe {{");
-    note!(
-        writer,
-        "std::str::from_utf8(std::slice::from_raw_parts(string.content, string.length)).unwrap().to_string()"
-    );
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-}
-
-fn generate_roblox_creatable(writer: &mut Stream) {
-    push!(writer, "pub trait RobloxCreatable {{");
-    note!(writer, "fn new() -> Self;");
-    pull!(writer, "}}");
-
-    push!(writer, "macro_rules! creatable {{");
-    push!(writer, "($($name:ident)*) => {{");
-    push!(writer, "$(");
-    push!(writer, "impl RobloxCreatable for $name {{");
-    push!(writer, "fn new() -> $name {{");
-    note!(writer, "unsafe {{ Self(instance_new(stringify!($name))) }}");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-    pull!(writer, ")*");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-}
-
-/// Generates the `impl_instance_exclusive` macro which applies for direct children of the Instance class.
-fn generate_exclusive_instance(writer: &mut Stream) {
-    note!(writer);
-    push!(writer, "macro_rules! impl_instance_exclusive {{");
-    push!(writer, "($name:ident) => {{");
-    note!(writer, "impl_instance!($name);");
-
-    push!(writer, "impl std::convert::TryFrom<Instance> for $name {{");
-    note!(writer, "type Error = ();");
-    push!(
-        writer,
-        "fn try_from(value: Instance) -> Result<Self, Self::Error> {{"
-    );
-    push!(writer, "if value.is_a(stringify!($name)) {{");
-    note!(writer, "Ok($name(value.to_ptr()))");
-    swap!(writer, "}} else {{");
-    note!(writer, "Err(())");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-    pull!(writer, "}}");
-
-    pull!(writer, "}}");
-    pull!(writer, "}}");
+fn generate_const_text(writer: &mut Stream) {
+    note!(writer, "{}", RUST_OPTION);
+    note!(writer, "{}", RUST_STR);
+    note!(writer, "{}", ROBLOX_CREATABLE);
+    note!(writer, "{}", EXCLUSIVE_INSTANCE);
 }
 
 fn generate_class_event(
@@ -408,7 +307,6 @@ fn generate_custom_impl(writer: &mut Stream, class: &Class) {
         note!(
             writer,
             "unsafe {{ std::mem::transmute::<_, Self>(DataModel::instance().get_service(stringify!($name)).unwrap()) }}"
-            // "Self(DataModel::instance().get_service(stringify!($name)).unwrap().to_ptr())"
         );
         pull!(writer, "}}");
     }
@@ -467,13 +365,14 @@ fn generate_impl(writer: &mut Stream, dump: &Dump) {
 
 pub fn generate(dump: &Dump) -> String {
     let mut writer = Stream::new();
-    note!(writer, "// Generated by wlausam-bindings");
+    note!(
+        writer,
+        "// Generated by wlausam-bindings at {}",
+        chrono::offset::Local::now().format("%A, %B %Y %r")
+    );
     note!(writer, "pub use super::*;");
     generate_extern(&mut writer, dump);
-    generate_rust_option(&mut writer);
-    generate_rust_string(&mut writer);
-    generate_roblox_creatable(&mut writer);
-    generate_exclusive_instance(&mut writer);
+    generate_const_text(&mut writer);
     generate_impl_macros(&mut writer, dump);
     generate_impl(&mut writer, dump);
     writer.stream

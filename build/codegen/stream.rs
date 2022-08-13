@@ -11,12 +11,6 @@ impl Stream {
         }
     }
 
-    pub fn swap(&mut self, str: &str) {
-        self.indent_level -= 1;
-        self.write(str);
-        self.indent_level += 1;
-    }
-
     pub fn push(&mut self, str: &str) {
         self.write(str);
         self.indent_level += 1;
@@ -58,13 +52,6 @@ macro_rules! pull {
 	}
 }
 
-macro_rules! swap {
-    ($name:ident, $($tts:tt)*) => {
-		$name.swap(&format!($($tts)*));
-	}
-}
-
 pub(crate) use note;
 pub(crate) use pull;
 pub(crate) use push;
-pub(crate) use swap;

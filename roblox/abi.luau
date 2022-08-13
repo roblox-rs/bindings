@@ -13,7 +13,7 @@ end
 function abi.ffi.disconnect_connection(connection)
 	local func = connections[connection];
 	if not func then return end
-	
+
 	getPointer(connection):Disconnect();
 	dropFunctionRef(func[1], func[2]);
 	connections[connection] = nil;

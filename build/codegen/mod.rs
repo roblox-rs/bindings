@@ -1,6 +1,8 @@
+pub mod constants;
 pub mod lang;
 pub mod stream;
 pub mod structs;
+
 use structs::{
     Class, ClassEventMember, ClassFunctionMember, ClassFunctionParameter, ClassMember,
     ClassPropertyMember, DataTypeKind, Dump, PrimitiveKind, Security, ValueType,

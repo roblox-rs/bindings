@@ -1,6 +1,5 @@
-use std::{collections::HashMap, iter::FromIterator};
-
 use crate::codegen::{
+    constants::luau::{LUAU_CREATE_CONNECTION, LUAU_DISCONNECT_CONNECTION},
     stream::{note, pull, push, Stream},
     structs::{
         Class, ClassEventMember, ClassFunctionMember, ClassMember, ClassPropertyMember, Dump,
@@ -274,27 +273,13 @@ fn generate_abi_start(writer: &mut Stream) {
     note!(writer, "local {names};");
     note!(writer, "local connections = {{}};");
 
-    push!(
-        writer,
-        "local function createConnection(stack, vtable, connection)"
-    );
-    note!(writer, "local id = createPointer(connection);");
-    note!(writer, "connections[id] = {{ stack, vtable }};");
-    note!(writer, "return id;");
-    pull!(writer, "end");
+    note!(writer, "{}", LUAU_CREATE_CONNECTION);
 
     push!(writer, "function abi.load(wasm, rt, util)");
     note!(writer, "{names} = {values};");
     pull!(writer, "end");
 
-    push!(writer, "function abi.ffi.disconnect_connection(connection)");
-    note!(writer, "local func = connections[connection];");
-    note!(writer, "if not func then return end");
-    note!(writer);
-    note!(writer, "getPointer(connection):Disconnect();");
-    note!(writer, "dropFunctionRef(func[1], func[2]);");
-    note!(writer, "connections[connection] = nil;");
-    pull!(writer, "end");
+    note!(writer, "{}", LUAU_DISCONNECT_CONNECTION);
 }
 
 fn generate_abi_tail(writer: &mut Stream) {
