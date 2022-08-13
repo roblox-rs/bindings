@@ -245,7 +245,7 @@ fn transform_class_member(dump: &Dump, class: &Class, member: &ClassMember) -> O
         ClassMember::Property(property) => transform_class_property(dump, property),
         ClassMember::Function(function) => transform_class_function(dump, class, function),
         ClassMember::Event(event) => transform_class_event(dump, class, event),
-        _ => None,
+        ClassMember::Callback(_) => None,
     }
 }
 

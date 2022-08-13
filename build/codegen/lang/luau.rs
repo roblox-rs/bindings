@@ -233,7 +233,7 @@ fn generate_class(writer: &mut Stream, class: &Class) {
             ClassMember::Property(property) => generate_class_property(writer, class, property),
             ClassMember::Function(function) => generate_class_function(writer, class, function),
             ClassMember::Event(event) => generate_class_event(writer, class, event),
-            _ => {}
+            ClassMember::Callback(_) => {}
         }
     }
 }
