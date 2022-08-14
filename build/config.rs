@@ -14,6 +14,18 @@ lazy_static::lazy_static!(
 );
 
 lazy_static::lazy_static!(
+    pub static ref OPTIONAL_FUNCTION_PARAMETERS: HashMap<&'static str, &'static [usize]> = {
+        let items: Vec<(&str, &[usize])> = vec![
+            // ("Instance.IsDescendantOf", &[0]),
+        ];
+
+        let mut map = HashMap::<&'static str, &'static [usize]>::new();
+        for item in items { map.insert(item.0, item.1); };
+        map
+    };
+);
+
+lazy_static::lazy_static!(
     // Classes copied from https://github.com/roblox-ts/types/blob/master/src/class/ClassGenerator.ts
     pub static ref CLASS_BLACKLIST: HashSet<&'static str> = {
         let items = vec![

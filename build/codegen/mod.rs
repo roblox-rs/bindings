@@ -8,7 +8,10 @@ use structs::{
     ClassPropertyMember, DataTypeKind, Dump, PrimitiveKind, Security, ValueType,
 };
 
-use crate::{config::NON_OPTIONAL_EVENT_PARAMETERS, CLASS_BLACKLIST};
+use crate::{
+    config::{NON_OPTIONAL_EVENT_PARAMETERS, OPTIONAL_FUNCTION_PARAMETERS},
+    CLASS_BLACKLIST,
+};
 
 use self::lang::{is_camel_case, to_snake};
 
@@ -76,6 +79,15 @@ fn transform_value_type(value_type: &ValueType) -> ValueType {
         ValueType::Class(kind) => ValueType::Optional(Box::new(ValueType::Class(kind.clone()))),
         _ => value_type.clone(),
     }
+}
+
+fn transform_parameter_value_type(value_type: &ValueType) -> ValueType {
+    // Function arguments should not have optional-by-default arguments.
+    if let ValueType::Class(_) = value_type {
+        return value_type.clone();
+    }
+
+    transform_value_type(value_type)
 }
 
 fn is_valid_class_member(class: &Class, member: &ClassMember) -> bool {
@@ -151,7 +163,7 @@ fn transform_class_function(
             .parameters
             .iter()
             .map(|v| ClassFunctionParameter {
-                value_type: transform_value_type(&v.value_type),
+                value_type: transform_parameter_value_type(&v.value_type),
                 ..v.clone()
             })
             .collect(),
@@ -172,6 +184,25 @@ fn transform_class_function(
     {
         function.func_name = Some(function.name.clone());
         function.name = format!("Fn{}", function.name);
+    }
+
+    let qualified_name = format!("{}.{}", &class.name, &function.name);
+    if let Some(optional) = OPTIONAL_FUNCTION_PARAMETERS.get(qualified_name.as_str()) {
+        function.parameters = function
+            .parameters
+            .into_iter()
+            .enumerate()
+            .map(|(i, v)| {
+                if optional.contains(&i) {
+                    ClassFunctionParameter {
+                        name: v.name,
+                        value_type: ValueType::Optional(Box::new(v.value_type)),
+                    }
+                } else {
+                    v
+                }
+            })
+            .collect();
     }
 
     // Clone is shadowed by impl Clone and Move is a keyword.

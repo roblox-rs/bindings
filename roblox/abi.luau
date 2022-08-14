@@ -143,19 +143,11 @@ function abi.ffi.dyn_fn_instance_is_a(instance, p_className0, p_className1)
 	end
 	return getPointer(instance):IsA(stringpClassName0) and 1 or 0;
 end
-function abi.ffi.dyn_fn_instance_is_ancestor_of(instance, p_descendant0, p_descendant1)
-	local valuepDescendant0;
-	if p_descendant0 == 1 then
-		valuepDescendant0 = getPointer(p_descendant1);
-	end
-	return getPointer(instance):IsAncestorOf(valuepDescendant0) and 1 or 0;
+function abi.ffi.dyn_fn_instance_is_ancestor_of(instance, p_descendant0)
+	return getPointer(instance):IsAncestorOf(getPointer(p_descendant0)) and 1 or 0;
 end
-function abi.ffi.dyn_fn_instance_is_descendant_of(instance, p_ancestor0, p_ancestor1)
-	local valuepAncestor0;
-	if p_ancestor0 == 1 then
-		valuepAncestor0 = getPointer(p_ancestor1);
-	end
-	return getPointer(instance):IsDescendantOf(valuepAncestor0) and 1 or 0;
+function abi.ffi.dyn_fn_instance_is_descendant_of(instance, p_ancestor0)
+	return getPointer(instance):IsDescendantOf(getPointer(p_ancestor0)) and 1 or 0;
 end
 function abi.ffi.dyn_fn_instance_wait_for_child(instance, p_childName0, p_childName1, p_timeOut0)
 	local stringpChildName0 = "";
@@ -263,33 +255,17 @@ end
 function abi.ffi.prop_set_animation_clip_loop(instance, p_Loop0)
 	getPointer(instance).Loop = p_Loop0 == 1;
 end
-function abi.ffi.dyn_fn_keyframe_sequence_add_keyframe(instance, p_keyframe0, p_keyframe1)
-	local valuepKeyframe0;
-	if p_keyframe0 == 1 then
-		valuepKeyframe0 = getPointer(p_keyframe1);
-	end
-	return getPointer(instance):AddKeyframe(valuepKeyframe0);
+function abi.ffi.dyn_fn_keyframe_sequence_add_keyframe(instance, p_keyframe0)
+	return getPointer(instance):AddKeyframe(getPointer(p_keyframe0));
 end
-function abi.ffi.dyn_fn_keyframe_sequence_remove_keyframe(instance, p_keyframe0, p_keyframe1)
-	local valuepKeyframe0;
-	if p_keyframe0 == 1 then
-		valuepKeyframe0 = getPointer(p_keyframe1);
-	end
-	return getPointer(instance):RemoveKeyframe(valuepKeyframe0);
+function abi.ffi.dyn_fn_keyframe_sequence_remove_keyframe(instance, p_keyframe0)
+	return getPointer(instance):RemoveKeyframe(getPointer(p_keyframe0));
 end
-function abi.ffi.dyn_fn_animation_clip_provider_register_active_animation_clip(instance, p_animationClip0, p_animationClip1)
-	local valuepAnimationClip0;
-	if p_animationClip0 == 1 then
-		valuepAnimationClip0 = getPointer(p_animationClip1);
-	end
-	return createPointer(getPointer(instance):RegisterActiveAnimationClip(valuepAnimationClip0));
+function abi.ffi.dyn_fn_animation_clip_provider_register_active_animation_clip(instance, p_animationClip0)
+	return createPointer(getPointer(instance):RegisterActiveAnimationClip(getPointer(p_animationClip0)));
 end
-function abi.ffi.dyn_fn_animation_clip_provider_register_animation_clip(instance, p_animationClip0, p_animationClip1)
-	local valuepAnimationClip0;
-	if p_animationClip0 == 1 then
-		valuepAnimationClip0 = getPointer(p_animationClip1);
-	end
-	return createPointer(getPointer(instance):RegisterAnimationClip(valuepAnimationClip0));
+function abi.ffi.dyn_fn_animation_clip_provider_register_animation_clip(instance, p_animationClip0)
+	return createPointer(getPointer(instance):RegisterAnimationClip(getPointer(p_animationClip0)));
 end
 function abi.ffi.dyn_fn_animation_clip_provider_get_animation_clip_async(instance, p_assetId0)
 	local valueReturn0 = getPointer(instance):GetAnimationClipAsync(getPointer(p_assetId0));
@@ -378,12 +354,8 @@ function abi.ffi.connect_animation_track_stopped(instance, data, vtable)
 		invokeFunction(data, vtable);
 	end))
 end
-function abi.ffi.dyn_fn_animator_load_animation(instance, p_animation0, p_animation1)
-	local valuepAnimation0;
-	if p_animation0 == 1 then
-		valuepAnimation0 = getPointer(p_animation1);
-	end
-	local valueReturn0 = getPointer(instance):LoadAnimation(valuepAnimation0);
+function abi.ffi.dyn_fn_animator_load_animation(instance, p_animation0)
+	local valueReturn0 = getPointer(instance):LoadAnimation(getPointer(p_animation0));
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
 function abi.ffi.connect_animator_animation_played(instance, data, vtable)
@@ -408,11 +380,7 @@ function abi.ffi.dyn_fn_asset_service_create_place_async(instance, p_placeName0,
 	end
 	return getPointer(instance):CreatePlaceAsync(stringpPlaceName0, p_templatePlaceID0, stringpDescription0);
 end
-function abi.ffi.dyn_fn_asset_service_create_place_in_player_inventory_async(instance, p_player0, p_player1, p_placeName0, p_placeName1, p_templatePlaceID0, p_description0, p_description1)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
+function abi.ffi.dyn_fn_asset_service_create_place_in_player_inventory_async(instance, p_player0, p_placeName0, p_placeName1, p_templatePlaceID0, p_description0, p_description1)
 	local stringpPlaceName0 = "";
 	for i = 1, p_placeName1 do
 		stringpPlaceName0 ..= string.char(loadU8(memory, p_placeName0 + (i - 1)))
@@ -421,7 +389,7 @@ function abi.ffi.dyn_fn_asset_service_create_place_in_player_inventory_async(ins
 	for i = 1, p_description1 do
 		stringpDescription0 ..= string.char(loadU8(memory, p_description0 + (i - 1)))
 	end
-	return getPointer(instance):CreatePlaceInPlayerInventoryAsync(valuepPlayer0, stringpPlaceName0, p_templatePlaceID0, stringpDescription0);
+	return getPointer(instance):CreatePlaceInPlayerInventoryAsync(getPointer(p_player0), stringpPlaceName0, p_templatePlaceID0, stringpDescription0);
 end
 function abi.ffi.dyn_fn_asset_service_get_game_places_async(instance)
 	local valueReturn0 = getPointer(instance):GetGamePlacesAsync();
@@ -553,12 +521,8 @@ end
 function abi.ffi.dyn_fn_avatar_editor_service_prompt_rename_outfit(instance, p_outfitId0)
 	return getPointer(instance):PromptRenameOutfit(p_outfitId0);
 end
-function abi.ffi.dyn_fn_avatar_editor_service_check_apply_default_clothing(instance, p_humanoidDescription0, p_humanoidDescription1)
-	local valuepHumanoidDescription0;
-	if p_humanoidDescription0 == 1 then
-		valuepHumanoidDescription0 = getPointer(p_humanoidDescription1);
-	end
-	local valueReturn0 = getPointer(instance):CheckApplyDefaultClothing(valuepHumanoidDescription0);
+function abi.ffi.dyn_fn_avatar_editor_service_check_apply_default_clothing(instance, p_humanoidDescription0)
+	local valueReturn0 = getPointer(instance):CheckApplyDefaultClothing(getPointer(p_humanoidDescription0));
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
 function abi.ffi.dyn_fn_avatar_editor_service_search_catalog(instance, p_searchParameters0)
@@ -1304,36 +1268,24 @@ end
 function abi.ffi.dyn_fn_chat_can_users_chat_async(instance, p_userIdFrom0, p_userIdTo0)
 	return getPointer(instance):CanUsersChatAsync(p_userIdFrom0, p_userIdTo0) and 1 or 0;
 end
-function abi.ffi.dyn_fn_chat_filter_string_async(instance, p_stringToFilter0, p_stringToFilter1, p_playerFrom0, p_playerFrom1, p_playerTo0, p_playerTo1)
+function abi.ffi.dyn_fn_chat_filter_string_async(instance, p_stringToFilter0, p_stringToFilter1, p_playerFrom0, p_playerTo0)
 	local stringpStringToFilter0 = "";
 	for i = 1, p_stringToFilter1 do
 		stringpStringToFilter0 ..= string.char(loadU8(memory, p_stringToFilter0 + (i - 1)))
 	end
-	local valuepPlayerFrom0;
-	if p_playerFrom0 == 1 then
-		valuepPlayerFrom0 = getPointer(p_playerFrom1);
-	end
-	local valuepPlayerTo0;
-	if p_playerTo0 == 1 then
-		valuepPlayerTo0 = getPointer(p_playerTo1);
-	end
-	local valueReturn0 = getPointer(instance):FilterStringAsync(stringpStringToFilter0, valuepPlayerFrom0, valuepPlayerTo0);
+	local valueReturn0 = getPointer(instance):FilterStringAsync(stringpStringToFilter0, getPointer(p_playerFrom0), getPointer(p_playerTo0));
 	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
 	for i = 1, stringLengthReturn0 do
 		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
 	end
 	return stringContentReturn0, stringLengthReturn0;
 end
-function abi.ffi.dyn_fn_chat_filter_string_for_broadcast(instance, p_stringToFilter0, p_stringToFilter1, p_playerFrom0, p_playerFrom1)
+function abi.ffi.dyn_fn_chat_filter_string_for_broadcast(instance, p_stringToFilter0, p_stringToFilter1, p_playerFrom0)
 	local stringpStringToFilter0 = "";
 	for i = 1, p_stringToFilter1 do
 		stringpStringToFilter0 ..= string.char(loadU8(memory, p_stringToFilter0 + (i - 1)))
 	end
-	local valuepPlayerFrom0;
-	if p_playerFrom0 == 1 then
-		valuepPlayerFrom0 = getPointer(p_playerFrom1);
-	end
-	local valueReturn0 = getPointer(instance):FilterStringForBroadcast(stringpStringToFilter0, valuepPlayerFrom0);
+	local valueReturn0 = getPointer(instance):FilterStringForBroadcast(stringpStringToFilter0, getPointer(p_playerFrom0));
 	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
 	for i = 1, stringLengthReturn0 do
 		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
@@ -1400,38 +1352,26 @@ end
 function abi.ffi.prop_set_clouds_enabled(instance, p_Enabled0)
 	getPointer(instance).Enabled = p_Enabled0 == 1;
 end
-function abi.ffi.dyn_fn_collection_service_add_tag(instance, p_instance0, p_instance1, p_tag0, p_tag1)
-	local valuepInstance0;
-	if p_instance0 == 1 then
-		valuepInstance0 = getPointer(p_instance1);
-	end
+function abi.ffi.dyn_fn_collection_service_add_tag(instance, p_instance0, p_tag0, p_tag1)
 	local stringpTag0 = "";
 	for i = 1, p_tag1 do
 		stringpTag0 ..= string.char(loadU8(memory, p_tag0 + (i - 1)))
 	end
-	return getPointer(instance):AddTag(valuepInstance0, stringpTag0);
+	return getPointer(instance):AddTag(getPointer(p_instance0), stringpTag0);
 end
-function abi.ffi.dyn_fn_collection_service_has_tag(instance, p_instance0, p_instance1, p_tag0, p_tag1)
-	local valuepInstance0;
-	if p_instance0 == 1 then
-		valuepInstance0 = getPointer(p_instance1);
-	end
+function abi.ffi.dyn_fn_collection_service_has_tag(instance, p_instance0, p_tag0, p_tag1)
 	local stringpTag0 = "";
 	for i = 1, p_tag1 do
 		stringpTag0 ..= string.char(loadU8(memory, p_tag0 + (i - 1)))
 	end
-	return getPointer(instance):HasTag(valuepInstance0, stringpTag0) and 1 or 0;
+	return getPointer(instance):HasTag(getPointer(p_instance0), stringpTag0) and 1 or 0;
 end
-function abi.ffi.dyn_fn_collection_service_remove_tag(instance, p_instance0, p_instance1, p_tag0, p_tag1)
-	local valuepInstance0;
-	if p_instance0 == 1 then
-		valuepInstance0 = getPointer(p_instance1);
-	end
+function abi.ffi.dyn_fn_collection_service_remove_tag(instance, p_instance0, p_tag0, p_tag1)
 	local stringpTag0 = "";
 	for i = 1, p_tag1 do
 		stringpTag0 ..= string.char(loadU8(memory, p_tag0 + (i - 1)))
 	end
-	return getPointer(instance):RemoveTag(valuepInstance0, stringpTag0);
+	return getPointer(instance):RemoveTag(getPointer(p_instance0), stringpTag0);
 end
 function abi.ffi.connect_collection_service_tag_added(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).TagAdded:Connect(function(p_tag)
@@ -2473,7 +2413,7 @@ end
 function abi.ffi.prop_set_data_store_options_all_scopes(instance, p_AllScopes0)
 	getPointer(instance).AllScopes = p_AllScopes0 == 1;
 end
-function abi.ffi.dyn_fn_data_store_service_get_data_store(instance, p_name0, p_name1, p_scope0, p_scope1, p_options0, p_options1)
+function abi.ffi.dyn_fn_data_store_service_get_data_store(instance, p_name0, p_name1, p_scope0, p_scope1, p_options0)
 	local stringpName0 = "";
 	for i = 1, p_name1 do
 		stringpName0 ..= string.char(loadU8(memory, p_name0 + (i - 1)))
@@ -2482,11 +2422,7 @@ function abi.ffi.dyn_fn_data_store_service_get_data_store(instance, p_name0, p_n
 	for i = 1, p_scope1 do
 		stringpScope0 ..= string.char(loadU8(memory, p_scope0 + (i - 1)))
 	end
-	local valuepOptions0;
-	if p_options0 == 1 then
-		valuepOptions0 = getPointer(p_options1);
-	end
-	local valueReturn0 = getPointer(instance):GetDataStore(stringpName0, stringpScope0, valuepOptions0);
+	local valueReturn0 = getPointer(instance):GetDataStore(stringpName0, stringpScope0, getPointer(p_options0));
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
 function abi.ffi.dyn_fn_data_store_service_get_global_data_store(instance)
@@ -2513,12 +2449,8 @@ function abi.ffi.dyn_fn_data_store_service_list_data_stores_async(instance, p_pr
 	local valueReturn0 = getPointer(instance):ListDataStoresAsync(stringpPrefix0, p_pageSize0);
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
-function abi.ffi.dyn_fn_debris_add_item(instance, p_item0, p_item1, p_lifetime0)
-	local valuepItem0;
-	if p_item0 == 1 then
-		valuepItem0 = getPointer(p_item1);
-	end
-	return getPointer(instance):AddItem(valuepItem0, p_lifetime0);
+function abi.ffi.dyn_fn_debris_add_item(instance, p_item0, p_lifetime0)
+	return getPointer(instance):AddItem(getPointer(p_item0), p_lifetime0);
 end
 function abi.ffi.prop_get_dialog_conversation_distance(instance)
 	return getPointer(instance).ConversationDistance;
@@ -4376,16 +4308,12 @@ end
 function abi.ffi.prop_set_gui_service_touch_controls_enabled(instance, p_TouchControlsEnabled0)
 	getPointer(instance).TouchControlsEnabled = p_TouchControlsEnabled0 == 1;
 end
-function abi.ffi.dyn_fn_gui_service_add_selection_parent(instance, p_selectionName0, p_selectionName1, p_selectionParent0, p_selectionParent1)
+function abi.ffi.dyn_fn_gui_service_add_selection_parent(instance, p_selectionName0, p_selectionName1, p_selectionParent0)
 	local stringpSelectionName0 = "";
 	for i = 1, p_selectionName1 do
 		stringpSelectionName0 ..= string.char(loadU8(memory, p_selectionName0 + (i - 1)))
 	end
-	local valuepSelectionParent0;
-	if p_selectionParent0 == 1 then
-		valuepSelectionParent0 = getPointer(p_selectionParent1);
-	end
-	return getPointer(instance):AddSelectionParent(stringpSelectionName0, valuepSelectionParent0);
+	return getPointer(instance):AddSelectionParent(stringpSelectionName0, getPointer(p_selectionParent0));
 end
 function abi.ffi.dyn_fn_gui_service_close_inspect_menu(instance)
 	return getPointer(instance):CloseInspectMenu();
@@ -4399,16 +4327,12 @@ end
 function abi.ffi.dyn_fn_gui_service_get_inspect_menu_enabled(instance)
 	return getPointer(instance):GetInspectMenuEnabled() and 1 or 0;
 end
-function abi.ffi.dyn_fn_gui_service_inspect_player_from_humanoid_description(instance, p_humanoidDescription0, p_humanoidDescription1, p_name0, p_name1)
-	local valuepHumanoidDescription0;
-	if p_humanoidDescription0 == 1 then
-		valuepHumanoidDescription0 = getPointer(p_humanoidDescription1);
-	end
+function abi.ffi.dyn_fn_gui_service_inspect_player_from_humanoid_description(instance, p_humanoidDescription0, p_name0, p_name1)
 	local stringpName0 = "";
 	for i = 1, p_name1 do
 		stringpName0 ..= string.char(loadU8(memory, p_name0 + (i - 1)))
 	end
-	return getPointer(instance):InspectPlayerFromHumanoidDescription(valuepHumanoidDescription0, stringpName0);
+	return getPointer(instance):InspectPlayerFromHumanoidDescription(getPointer(p_humanoidDescription0), stringpName0);
 end
 function abi.ffi.dyn_fn_gui_service_inspect_player_from_user_id(instance, p_userId0)
 	return getPointer(instance):InspectPlayerFromUserId(p_userId0);
@@ -4423,12 +4347,8 @@ function abi.ffi.dyn_fn_gui_service_remove_selection_group(instance, p_selection
 	end
 	return getPointer(instance):RemoveSelectionGroup(stringpSelectionName0);
 end
-function abi.ffi.dyn_fn_gui_service_select(instance, p_selectionParent0, p_selectionParent1)
-	local valuepSelectionParent0;
-	if p_selectionParent0 == 1 then
-		valuepSelectionParent0 = getPointer(p_selectionParent1);
-	end
-	return getPointer(instance):Select(valuepSelectionParent0);
+function abi.ffi.dyn_fn_gui_service_select(instance, p_selectionParent0)
+	return getPointer(instance):Select(getPointer(p_selectionParent0));
 end
 function abi.ffi.dyn_fn_gui_service_set_emotes_menu_open(instance, p_isOpen0)
 	return getPointer(instance):SetEmotesMenuOpen(p_isOpen0 == 1);
@@ -4673,22 +4593,14 @@ end
 function abi.ffi.prop_set_humanoid_walk_to_point(instance, p_WalkToPoint0)
 	getPointer(instance).WalkToPoint = getPointer(p_WalkToPoint0);
 end
-function abi.ffi.dyn_fn_humanoid_add_accessory(instance, p_accessory0, p_accessory1)
-	local valuepAccessory0;
-	if p_accessory0 == 1 then
-		valuepAccessory0 = getPointer(p_accessory1);
-	end
-	return getPointer(instance):AddAccessory(valuepAccessory0);
+function abi.ffi.dyn_fn_humanoid_add_accessory(instance, p_accessory0)
+	return getPointer(instance):AddAccessory(getPointer(p_accessory0));
 end
 function abi.ffi.dyn_fn_humanoid_build_rig_from_attachments(instance)
 	return getPointer(instance):BuildRigFromAttachments();
 end
-function abi.ffi.dyn_fn_humanoid_equip_tool(instance, p_tool0, p_tool1)
-	local valuepTool0;
-	if p_tool0 == 1 then
-		valuepTool0 = getPointer(p_tool1);
-	end
-	return getPointer(instance):EquipTool(valuepTool0);
+function abi.ffi.dyn_fn_humanoid_equip_tool(instance, p_tool0)
+	return getPointer(instance):EquipTool(getPointer(p_tool0));
 end
 function abi.ffi.dyn_fn_humanoid_get_applied_description(instance)
 	local valueReturn0 = getPointer(instance):GetAppliedDescription();
@@ -4697,12 +4609,8 @@ end
 function abi.ffi.dyn_fn_humanoid_fn_move(instance, p_moveDirection0, p_relativeToCamera0)
 	return getPointer(instance):FnMove(getPointer(p_moveDirection0), p_relativeToCamera0 == 1);
 end
-function abi.ffi.dyn_fn_humanoid_move_to(instance, p_location0, p_part0, p_part1)
-	local valuepPart0;
-	if p_part0 == 1 then
-		valuepPart0 = getPointer(p_part1);
-	end
-	return getPointer(instance):MoveTo(getPointer(p_location0), valuepPart0);
+function abi.ffi.dyn_fn_humanoid_move_to(instance, p_location0, p_part0)
+	return getPointer(instance):MoveTo(getPointer(p_location0), getPointer(p_part0));
 end
 function abi.ffi.dyn_fn_humanoid_remove_accessories(instance)
 	return getPointer(instance):RemoveAccessories();
@@ -5414,33 +5322,17 @@ end
 function abi.ffi.prop_set_keyframe_time(instance, p_Time0)
 	getPointer(instance).Time = p_Time0;
 end
-function abi.ffi.dyn_fn_keyframe_add_marker(instance, p_marker0, p_marker1)
-	local valuepMarker0;
-	if p_marker0 == 1 then
-		valuepMarker0 = getPointer(p_marker1);
-	end
-	return getPointer(instance):AddMarker(valuepMarker0);
+function abi.ffi.dyn_fn_keyframe_add_marker(instance, p_marker0)
+	return getPointer(instance):AddMarker(getPointer(p_marker0));
 end
-function abi.ffi.dyn_fn_keyframe_add_pose(instance, p_pose0, p_pose1)
-	local valuepPose0;
-	if p_pose0 == 1 then
-		valuepPose0 = getPointer(p_pose1);
-	end
-	return getPointer(instance):AddPose(valuepPose0);
+function abi.ffi.dyn_fn_keyframe_add_pose(instance, p_pose0)
+	return getPointer(instance):AddPose(getPointer(p_pose0));
 end
-function abi.ffi.dyn_fn_keyframe_remove_marker(instance, p_marker0, p_marker1)
-	local valuepMarker0;
-	if p_marker0 == 1 then
-		valuepMarker0 = getPointer(p_marker1);
-	end
-	return getPointer(instance):RemoveMarker(valuepMarker0);
+function abi.ffi.dyn_fn_keyframe_remove_marker(instance, p_marker0)
+	return getPointer(instance):RemoveMarker(getPointer(p_marker0));
 end
-function abi.ffi.dyn_fn_keyframe_remove_pose(instance, p_pose0, p_pose1)
-	local valuepPose0;
-	if p_pose0 == 1 then
-		valuepPose0 = getPointer(p_pose1);
-	end
-	return getPointer(instance):RemovePose(valuepPose0);
+function abi.ffi.dyn_fn_keyframe_remove_pose(instance, p_pose0)
+	return getPointer(instance):RemovePose(getPointer(p_pose0));
 end
 function abi.ffi.prop_get_keyframe_marker_value(instance)
 	local valueProp0 = getPointer(instance).Value;
@@ -5457,19 +5349,11 @@ function abi.ffi.prop_set_keyframe_marker_value(instance, p_Value0, p_Value1)
 	end
 	getPointer(instance).Value = stringvalue0;
 end
-function abi.ffi.dyn_fn_keyframe_sequence_provider_register_active_keyframe_sequence(instance, p_keyframeSequence0, p_keyframeSequence1)
-	local valuepKeyframeSequence0;
-	if p_keyframeSequence0 == 1 then
-		valuepKeyframeSequence0 = getPointer(p_keyframeSequence1);
-	end
-	return createPointer(getPointer(instance):RegisterActiveKeyframeSequence(valuepKeyframeSequence0));
+function abi.ffi.dyn_fn_keyframe_sequence_provider_register_active_keyframe_sequence(instance, p_keyframeSequence0)
+	return createPointer(getPointer(instance):RegisterActiveKeyframeSequence(getPointer(p_keyframeSequence0)));
 end
-function abi.ffi.dyn_fn_keyframe_sequence_provider_register_keyframe_sequence(instance, p_keyframeSequence0, p_keyframeSequence1)
-	local valuepKeyframeSequence0;
-	if p_keyframeSequence0 == 1 then
-		valuepKeyframeSequence0 = getPointer(p_keyframeSequence1);
-	end
-	return createPointer(getPointer(instance):RegisterKeyframeSequence(valuepKeyframeSequence0));
+function abi.ffi.dyn_fn_keyframe_sequence_provider_register_keyframe_sequence(instance, p_keyframeSequence0)
+	return createPointer(getPointer(instance):RegisterKeyframeSequence(getPointer(p_keyframeSequence0)));
 end
 function abi.ffi.dyn_fn_keyframe_sequence_provider_get_animations(instance, p_userId0)
 	local valueReturn0 = getPointer(instance):GetAnimations(p_userId0);
@@ -5674,20 +5558,12 @@ function abi.ffi.prop_get_localization_service_system_locale_id(instance)
 	end
 	return stringContentProp0, stringLengthProp0;
 end
-function abi.ffi.dyn_fn_localization_service_get_translator_for_player(instance, p_player0, p_player1)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	local valueReturn0 = getPointer(instance):GetTranslatorForPlayer(valuepPlayer0);
+function abi.ffi.dyn_fn_localization_service_get_translator_for_player(instance, p_player0)
+	local valueReturn0 = getPointer(instance):GetTranslatorForPlayer(getPointer(p_player0));
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
-function abi.ffi.dyn_fn_localization_service_get_country_region_for_player_async(instance, p_player0, p_player1)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	local valueReturn0 = getPointer(instance):GetCountryRegionForPlayerAsync(valuepPlayer0);
+function abi.ffi.dyn_fn_localization_service_get_country_region_for_player_async(instance, p_player0)
+	local valueReturn0 = getPointer(instance):GetCountryRegionForPlayerAsync(getPointer(p_player0));
 	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
 	for i = 1, stringLengthReturn0 do
 		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
@@ -5702,12 +5578,8 @@ function abi.ffi.dyn_fn_localization_service_get_translator_for_locale_async(ins
 	local valueReturn0 = getPointer(instance):GetTranslatorForLocaleAsync(stringpLocale0);
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
-function abi.ffi.dyn_fn_localization_service_get_translator_for_player_async(instance, p_player0, p_player1)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	local valueReturn0 = getPointer(instance):GetTranslatorForPlayerAsync(valuepPlayer0);
+function abi.ffi.dyn_fn_localization_service_get_translator_for_player_async(instance, p_player0)
+	local valueReturn0 = getPointer(instance):GetTranslatorForPlayerAsync(getPointer(p_player0));
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
 function abi.ffi.prop_get_localization_table_source_locale_id(instance)
@@ -5903,65 +5775,33 @@ end
 function abi.ffi.dyn_fn_marker_curve_remove_marker_at_index(instance, p_startingIndex0, p_count0)
 	return getPointer(instance):RemoveMarkerAtIndex(p_startingIndex0, p_count0);
 end
-function abi.ffi.dyn_fn_marketplace_service_prompt_bundle_purchase(instance, p_player0, p_player1, p_bundleId0)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PromptBundlePurchase(valuepPlayer0, p_bundleId0);
+function abi.ffi.dyn_fn_marketplace_service_prompt_bundle_purchase(instance, p_player0, p_bundleId0)
+	return getPointer(instance):PromptBundlePurchase(getPointer(p_player0), p_bundleId0);
 end
-function abi.ffi.dyn_fn_marketplace_service_prompt_game_pass_purchase(instance, p_player0, p_player1, p_gamePassId0)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PromptGamePassPurchase(valuepPlayer0, p_gamePassId0);
+function abi.ffi.dyn_fn_marketplace_service_prompt_game_pass_purchase(instance, p_player0, p_gamePassId0)
+	return getPointer(instance):PromptGamePassPurchase(getPointer(p_player0), p_gamePassId0);
 end
-function abi.ffi.dyn_fn_marketplace_service_prompt_premium_purchase(instance, p_player0, p_player1)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PromptPremiumPurchase(valuepPlayer0);
+function abi.ffi.dyn_fn_marketplace_service_prompt_premium_purchase(instance, p_player0)
+	return getPointer(instance):PromptPremiumPurchase(getPointer(p_player0));
 end
-function abi.ffi.dyn_fn_marketplace_service_prompt_subscription_cancellation(instance, p_player0, p_player1, p_subscriptionId0)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PromptSubscriptionCancellation(valuepPlayer0, p_subscriptionId0);
+function abi.ffi.dyn_fn_marketplace_service_prompt_subscription_cancellation(instance, p_player0, p_subscriptionId0)
+	return getPointer(instance):PromptSubscriptionCancellation(getPointer(p_player0), p_subscriptionId0);
 end
-function abi.ffi.dyn_fn_marketplace_service_prompt_subscription_purchase(instance, p_player0, p_player1, p_subscriptionId0)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PromptSubscriptionPurchase(valuepPlayer0, p_subscriptionId0);
+function abi.ffi.dyn_fn_marketplace_service_prompt_subscription_purchase(instance, p_player0, p_subscriptionId0)
+	return getPointer(instance):PromptSubscriptionPurchase(getPointer(p_player0), p_subscriptionId0);
 end
 function abi.ffi.dyn_fn_marketplace_service_get_developer_products_async(instance)
 	local valueReturn0 = getPointer(instance):GetDeveloperProductsAsync();
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
-function abi.ffi.dyn_fn_marketplace_service_is_player_subscribed(instance, p_player0, p_player1, p_subscriptionId0)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):IsPlayerSubscribed(valuepPlayer0, p_subscriptionId0) and 1 or 0;
+function abi.ffi.dyn_fn_marketplace_service_is_player_subscribed(instance, p_player0, p_subscriptionId0)
+	return getPointer(instance):IsPlayerSubscribed(getPointer(p_player0), p_subscriptionId0) and 1 or 0;
 end
-function abi.ffi.dyn_fn_marketplace_service_player_owns_asset(instance, p_player0, p_player1, p_assetId0)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PlayerOwnsAsset(valuepPlayer0, p_assetId0) and 1 or 0;
+function abi.ffi.dyn_fn_marketplace_service_player_owns_asset(instance, p_player0, p_assetId0)
+	return getPointer(instance):PlayerOwnsAsset(getPointer(p_player0), p_assetId0) and 1 or 0;
 end
-function abi.ffi.dyn_fn_marketplace_service_player_owns_bundle(instance, p_player0, p_player1, p_bundleId0)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PlayerOwnsBundle(valuepPlayer0, p_bundleId0) and 1 or 0;
+function abi.ffi.dyn_fn_marketplace_service_player_owns_bundle(instance, p_player0, p_bundleId0)
+	return getPointer(instance):PlayerOwnsBundle(getPointer(p_player0), p_bundleId0) and 1 or 0;
 end
 function abi.ffi.dyn_fn_marketplace_service_user_owns_game_pass_async(instance, p_userId0, p_gamePassId0)
 	return getPointer(instance):UserOwnsGamePassAsync(p_userId0, p_gamePassId0) and 1 or 0;
@@ -6348,12 +6188,8 @@ end
 function abi.ffi.dyn_fn_base_part_break_joints(instance)
 	return getPointer(instance):BreakJoints();
 end
-function abi.ffi.dyn_fn_base_part_can_collide_with(instance, p_part0, p_part1)
-	local valuepPart0;
-	if p_part0 == 1 then
-		valuepPart0 = getPointer(p_part1);
-	end
-	return getPointer(instance):CanCollideWith(valuepPart0) and 1 or 0;
+function abi.ffi.dyn_fn_base_part_can_collide_with(instance, p_part0)
+	return getPointer(instance):CanCollideWith(getPointer(p_part0)) and 1 or 0;
 end
 function abi.ffi.dyn_fn_base_part_get_mass(instance)
 	return getPointer(instance):GetMass();
@@ -6378,12 +6214,8 @@ end
 function abi.ffi.dyn_fn_base_part_make_joints(instance)
 	return getPointer(instance):MakeJoints();
 end
-function abi.ffi.dyn_fn_base_part_set_network_owner(instance, p_playerInstance0, p_playerInstance1)
-	local valuepPlayerInstance0;
-	if p_playerInstance0 == 1 then
-		valuepPlayerInstance0 = getPointer(p_playerInstance1);
-	end
-	return getPointer(instance):SetNetworkOwner(valuepPlayerInstance0);
+function abi.ffi.dyn_fn_base_part_set_network_owner(instance, p_playerInstance0)
+	return getPointer(instance):SetNetworkOwner(getPointer(p_playerInstance0));
 end
 function abi.ffi.dyn_fn_base_part_set_network_ownership_auto(instance)
 	return getPointer(instance):SetNetworkOwnershipAuto();
@@ -6409,12 +6241,8 @@ function abi.ffi.prop_get_seat_occupant(instance)
 	local valueProp0 = getPointer(instance).Occupant;
 	return valueProp0 and 1 or 0, valueProp0 and createPointer(valueProp0) or 0;
 end
-function abi.ffi.dyn_fn_seat_sit(instance, p_humanoid0, p_humanoid1)
-	local valuepHumanoid0;
-	if p_humanoid0 == 1 then
-		valuepHumanoid0 = getPointer(p_humanoid1);
-	end
-	return getPointer(instance):Sit(valuepHumanoid0);
+function abi.ffi.dyn_fn_seat_sit(instance, p_humanoid0)
+	return getPointer(instance):Sit(getPointer(p_humanoid0));
 end
 function abi.ffi.prop_get_spawn_location_allow_team_change_on_touch(instance)
 	return getPointer(instance).AllowTeamChangeOnTouch and 1 or 0;
@@ -6495,12 +6323,8 @@ end
 function abi.ffi.dyn_fn_terrain_count_cells(instance)
 	return getPointer(instance):CountCells();
 end
-function abi.ffi.dyn_fn_terrain_paste_region(instance, p_region0, p_region1, p_corner0, p_pasteEmptyCells0)
-	local valuepRegion0;
-	if p_region0 == 1 then
-		valuepRegion0 = getPointer(p_region1);
-	end
-	return getPointer(instance):PasteRegion(valuepRegion0, getPointer(p_corner0), p_pasteEmptyCells0 == 1);
+function abi.ffi.dyn_fn_terrain_paste_region(instance, p_region0, p_corner0, p_pasteEmptyCells0)
+	return getPointer(instance):PasteRegion(getPointer(p_region0), getPointer(p_corner0), p_pasteEmptyCells0 == 1);
 end
 function abi.ffi.dyn_fn_terrain_world_to_cell(instance, p_position0)
 	return createPointer(getPointer(instance):WorldToCell(getPointer(p_position0)));
@@ -6550,12 +6374,8 @@ end
 function abi.ffi.prop_set_mesh_part_texture_id(instance, p_TextureID0)
 	getPointer(instance).TextureID = getPointer(p_TextureID0);
 end
-function abi.ffi.dyn_fn_mesh_part_apply_mesh(instance, p_meshPart0, p_meshPart1)
-	local valuepMeshPart0;
-	if p_meshPart0 == 1 then
-		valuepMeshPart0 = getPointer(p_meshPart1);
-	end
-	return getPointer(instance):ApplyMesh(valuepMeshPart0);
+function abi.ffi.dyn_fn_mesh_part_apply_mesh(instance, p_meshPart0)
+	return getPointer(instance):ApplyMesh(getPointer(p_meshPart0));
 end
 function abi.ffi.prop_get_part_operation_smoothing_angle(instance)
 	return getPointer(instance).SmoothingAngle;
@@ -6633,12 +6453,8 @@ end
 function abi.ffi.prop_set_vehicle_seat_turn_speed(instance, p_TurnSpeed0)
 	getPointer(instance).TurnSpeed = p_TurnSpeed0;
 end
-function abi.ffi.dyn_fn_vehicle_seat_sit(instance, p_humanoid0, p_humanoid1)
-	local valuepHumanoid0;
-	if p_humanoid0 == 1 then
-		valuepHumanoid0 = getPointer(p_humanoid1);
-	end
-	return getPointer(instance):Sit(valuepHumanoid0);
+function abi.ffi.dyn_fn_vehicle_seat_sit(instance, p_humanoid0)
+	return getPointer(instance):Sit(getPointer(p_humanoid0));
 end
 function abi.ffi.prop_get_model_primary_part(instance)
 	local valueProp0 = getPointer(instance).PrimaryPart;
@@ -7011,16 +6827,12 @@ function abi.ffi.dyn_fn_pathfinding_service_find_path_async(instance, p_start0, 
 	local valueReturn0 = getPointer(instance):FindPathAsync(getPointer(p_start0), getPointer(p_finish0));
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
-function abi.ffi.dyn_fn_physics_service_collision_group_contains_part(instance, p_name0, p_name1, p_part0, p_part1)
+function abi.ffi.dyn_fn_physics_service_collision_group_contains_part(instance, p_name0, p_name1, p_part0)
 	local stringpName0 = "";
 	for i = 1, p_name1 do
 		stringpName0 ..= string.char(loadU8(memory, p_name0 + (i - 1)))
 	end
-	local valuepPart0;
-	if p_part0 == 1 then
-		valuepPart0 = getPointer(p_part1);
-	end
-	return getPointer(instance):CollisionGroupContainsPart(stringpName0, valuepPart0) and 1 or 0;
+	return getPointer(instance):CollisionGroupContainsPart(stringpName0, getPointer(p_part0)) and 1 or 0;
 end
 function abi.ffi.dyn_fn_physics_service_collision_group_set_collidable(instance, p_name10, p_name11, p_name20, p_name21, p_collidable0)
 	local stringpName10 = "";
@@ -7087,16 +6899,12 @@ function abi.ffi.dyn_fn_physics_service_rename_collision_group(instance, p_from0
 	end
 	return getPointer(instance):RenameCollisionGroup(stringpFrom0, stringpTo0);
 end
-function abi.ffi.dyn_fn_physics_service_set_part_collision_group(instance, p_part0, p_part1, p_name0, p_name1)
-	local valuepPart0;
-	if p_part0 == 1 then
-		valuepPart0 = getPointer(p_part1);
-	end
+function abi.ffi.dyn_fn_physics_service_set_part_collision_group(instance, p_part0, p_name0, p_name1)
 	local stringpName0 = "";
 	for i = 1, p_name1 do
 		stringpName0 ..= string.char(loadU8(memory, p_name0 + (i - 1)))
 	end
-	return getPointer(instance):SetPartCollisionGroup(valuepPart0, stringpName0);
+	return getPointer(instance):SetPartCollisionGroup(getPointer(p_part0), stringpName0);
 end
 function abi.ffi.prop_get_player_account_age(instance)
 	return getPointer(instance).AccountAge;
@@ -7289,12 +7097,8 @@ end
 function abi.ffi.dyn_fn_player_load_character(instance)
 	return getPointer(instance):LoadCharacter();
 end
-function abi.ffi.dyn_fn_player_load_character_with_humanoid_description(instance, p_humanoidDescription0, p_humanoidDescription1)
-	local valuepHumanoidDescription0;
-	if p_humanoidDescription0 == 1 then
-		valuepHumanoidDescription0 = getPointer(p_humanoidDescription1);
-	end
-	return getPointer(instance):LoadCharacterWithHumanoidDescription(valuepHumanoidDescription0);
+function abi.ffi.dyn_fn_player_load_character_with_humanoid_description(instance, p_humanoidDescription0)
+	return getPointer(instance):LoadCharacterWithHumanoidDescription(getPointer(p_humanoidDescription0));
 end
 function abi.ffi.dyn_fn_player_request_stream_around_async(instance, p_position0, p_timeOut0)
 	return getPointer(instance):RequestStreamAroundAsync(getPointer(p_position0), p_timeOut0);
@@ -7377,12 +7181,8 @@ function abi.ffi.dyn_fn_players_get_player_by_user_id(instance, p_userId0)
 	local valueReturn0 = getPointer(instance):GetPlayerByUserId(p_userId0);
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
-function abi.ffi.dyn_fn_players_get_player_from_character(instance, p_character0, p_character1)
-	local valuepCharacter0;
-	if p_character0 == 1 then
-		valuepCharacter0 = getPointer(p_character1);
-	end
-	local valueReturn0 = getPointer(instance):GetPlayerFromCharacter(valuepCharacter0);
+function abi.ffi.dyn_fn_players_get_player_from_character(instance, p_character0)
+	local valueReturn0 = getPointer(instance):GetPlayerFromCharacter(getPointer(p_character0));
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
 function abi.ffi.dyn_fn_players_create_humanoid_model_from_user_id(instance, p_userId0)
@@ -7452,19 +7252,11 @@ end
 function abi.ffi.prop_set_pose_c_frame(instance, p_CFrame0)
 	getPointer(instance).CFrame = getPointer(p_CFrame0);
 end
-function abi.ffi.dyn_fn_pose_add_sub_pose(instance, p_pose0, p_pose1)
-	local valuepPose0;
-	if p_pose0 == 1 then
-		valuepPose0 = getPointer(p_pose1);
-	end
-	return getPointer(instance):AddSubPose(valuepPose0);
+function abi.ffi.dyn_fn_pose_add_sub_pose(instance, p_pose0)
+	return getPointer(instance):AddSubPose(getPointer(p_pose0));
 end
-function abi.ffi.dyn_fn_pose_remove_sub_pose(instance, p_pose0, p_pose1)
-	local valuepPose0;
-	if p_pose0 == 1 then
-		valuepPose0 = getPointer(p_pose1);
-	end
-	return getPointer(instance):RemoveSubPose(valuepPose0);
+function abi.ffi.dyn_fn_pose_remove_sub_pose(instance, p_pose0)
+	return getPointer(instance):RemoveSubPose(getPointer(p_pose0));
 end
 function abi.ffi.prop_get_post_effect_enabled(instance)
 	return getPointer(instance).Enabled and 1 or 0;
@@ -8050,19 +7842,11 @@ end
 function abi.ffi.prop_set_smoke_time_scale(instance, p_TimeScale0)
 	getPointer(instance).TimeScale = p_TimeScale0;
 end
-function abi.ffi.dyn_fn_social_service_prompt_game_invite(instance, p_player0, p_player1)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):PromptGameInvite(valuepPlayer0);
+function abi.ffi.dyn_fn_social_service_prompt_game_invite(instance, p_player0)
+	return getPointer(instance):PromptGameInvite(getPointer(p_player0));
 end
-function abi.ffi.dyn_fn_social_service_can_send_game_invite_async(instance, p_player0, p_player1)
-	local valuepPlayer0;
-	if p_player0 == 1 then
-		valuepPlayer0 = getPointer(p_player1);
-	end
-	return getPointer(instance):CanSendGameInviteAsync(valuepPlayer0) and 1 or 0;
+function abi.ffi.dyn_fn_social_service_can_send_game_invite_async(instance, p_player0)
+	return getPointer(instance):CanSendGameInviteAsync(getPointer(p_player0)) and 1 or 0;
 end
 function abi.ffi.prop_get_sound_is_loaded(instance)
 	return getPointer(instance).IsLoaded and 1 or 0;
@@ -8453,12 +8237,8 @@ end
 function abi.ffi.prop_set_sound_service_rolloff_scale(instance, p_RolloffScale0)
 	getPointer(instance).RolloffScale = p_RolloffScale0;
 end
-function abi.ffi.dyn_fn_sound_service_play_local_sound(instance, p_sound0, p_sound1)
-	local valuepSound0;
-	if p_sound0 == 1 then
-		valuepSound0 = getPointer(p_sound1);
-	end
-	return getPointer(instance):PlayLocalSound(valuepSound0);
+function abi.ffi.dyn_fn_sound_service_play_local_sound(instance, p_sound0)
+	return getPointer(instance):PlayLocalSound(getPointer(p_sound0));
 end
 function abi.ffi.prop_get_sparkles_color(instance)
 	return createPointer(getPointer(instance).Color);
@@ -8727,12 +8507,8 @@ function abi.ffi.dyn_fn_teleport_service_get_arriving_teleport_gui(instance)
 	local valueReturn0 = getPointer(instance):GetArrivingTeleportGui();
 	return valueReturn0 and 1 or 0, valueReturn0 and createPointer(valueReturn0) or 0;
 end
-function abi.ffi.dyn_fn_teleport_service_set_teleport_gui(instance, p_gui0, p_gui1)
-	local valuepGui0;
-	if p_gui0 == 1 then
-		valuepGui0 = getPointer(p_gui1);
-	end
-	return getPointer(instance):SetTeleportGui(valuepGui0);
+function abi.ffi.dyn_fn_teleport_service_set_teleport_gui(instance, p_gui0)
+	return getPointer(instance):SetTeleportGui(getPointer(p_gui0));
 end
 function abi.ffi.prop_get_terrain_detail_studs_per_tile(instance)
 	return getPointer(instance).StudsPerTile;
@@ -9009,12 +8785,8 @@ function abi.ffi.dyn_fn_text_filter_result_get_non_chat_string_for_user_async(in
 	end
 	return stringContentReturn0, stringLengthReturn0;
 end
-function abi.ffi.dyn_fn_text_service_get_text_bounds_async(instance, p_params0, p_params1)
-	local valuepParams0;
-	if p_params0 == 1 then
-		valuepParams0 = getPointer(p_params1);
-	end
-	return createPointer(getPointer(instance):GetTextBoundsAsync(valuepParams0));
+function abi.ffi.dyn_fn_text_service_get_text_bounds_async(instance, p_params0)
+	return createPointer(getPointer(instance):GetTextBoundsAsync(getPointer(p_params0)));
 end
 function abi.ffi.prop_get_text_source_can_send(instance)
 	return getPointer(instance).CanSend and 1 or 0;
@@ -9136,16 +8908,12 @@ function abi.ffi.prop_get_translator_locale_id(instance)
 	end
 	return stringContentProp0, stringLengthProp0;
 end
-function abi.ffi.dyn_fn_translator_translate(instance, p_context0, p_context1, p_text0, p_text1)
-	local valuepContext0;
-	if p_context0 == 1 then
-		valuepContext0 = getPointer(p_context1);
-	end
+function abi.ffi.dyn_fn_translator_translate(instance, p_context0, p_text0, p_text1)
 	local stringpText0 = "";
 	for i = 1, p_text1 do
 		stringpText0 ..= string.char(loadU8(memory, p_text0 + (i - 1)))
 	end
-	local valueReturn0 = getPointer(instance):Translate(valuepContext0, stringpText0);
+	local valueReturn0 = getPointer(instance):Translate(getPointer(p_context0), stringpText0);
 	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
 	for i = 1, stringLengthReturn0 do
 		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
@@ -9313,12 +9081,8 @@ end
 function abi.ffi.prop_set_ui_page_layout_tween_time(instance, p_TweenTime0)
 	getPointer(instance).TweenTime = p_TweenTime0;
 end
-function abi.ffi.dyn_fn_ui_page_layout_jump_to(instance, p_page0, p_page1)
-	local valuepPage0;
-	if p_page0 == 1 then
-		valuepPage0 = getPointer(p_page1);
-	end
-	return getPointer(instance):JumpTo(valuepPage0);
+function abi.ffi.dyn_fn_ui_page_layout_jump_to(instance, p_page0)
+	return getPointer(instance):JumpTo(getPointer(p_page0));
 end
 function abi.ffi.dyn_fn_ui_page_layout_jump_to_index(instance, p_index0)
 	return getPointer(instance):JumpToIndex(p_index0);
