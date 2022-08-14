@@ -188,21 +188,11 @@ fn transform_class_function(
 
     let qualified_name = format!("{}.{}", &class.name, &function.name);
     if let Some(optional) = OPTIONAL_FUNCTION_PARAMETERS.get(qualified_name.as_str()) {
-        function.parameters = function
-            .parameters
-            .into_iter()
-            .enumerate()
-            .map(|(i, v)| {
-                if optional.contains(&i) {
-                    ClassFunctionParameter {
-                        name: v.name,
-                        value_type: ValueType::Optional(Box::new(v.value_type)),
-                    }
-                } else {
-                    v
-                }
-            })
-            .collect();
+        for (i, v) in function.parameters.iter_mut().enumerate() {
+            if optional.contains(&i) {
+                v.value_type = ValueType::Optional(Box::new(v.value_type.clone()));
+            }
+        }
     }
 
     // Clone is shadowed by impl Clone and Move is a keyword.
@@ -246,24 +236,13 @@ fn transform_class_event(
 
     let qualified_name = format!("{}.{}", &class.name, &event.name);
     if let Some(non_optional) = NON_OPTIONAL_EVENT_PARAMETERS.get(qualified_name.as_str()) {
-        event.parameters = event
-            .parameters
-            .into_iter()
-            .enumerate()
-            .map(|(i, v)| {
-                if non_optional.contains(&i) {
-                    ClassFunctionParameter {
-                        name: v.name,
-                        value_type: match v.value_type {
-                            ValueType::Optional(value_type) => *value_type,
-                            value_type => value_type,
-                        },
-                    }
-                } else {
-                    v
+        for (i, v) in event.parameters.iter_mut().enumerate() {
+            if non_optional.contains(&i) {
+                if let ValueType::Optional(value_type) = &v.value_type {
+                    v.value_type = *value_type.clone();
                 }
-            })
-            .collect();
+            }
+        }
     }
 
     Some(ClassMember::Event(event))
