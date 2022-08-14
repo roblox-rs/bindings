@@ -14,7 +14,6 @@ local function wrapConstructorString(constructor)
 	end
 end
 
-local outputStream = "";
 local env = {
 	-- lbiraries
 	lib_task_delay = function(delay, stack, fn_ptr)
@@ -132,22 +131,10 @@ local env = {
 	end
 }
 
-local withWasm = {}
-local function addModule(moduleInstance)
-	local module = require(moduleInstance);
-	table.insert(withWasm, module);
-
-	for i, v in pairs(module.abi) do
-		if env[i] then
-			warn(i, "is being overriden");
-		end
-		env[i] = v;
-	end
+local abi = require(script.abi);
+for i, v in pairs(abi.ffi) do
+	env[i] = v;
 end
-
-addModule(script.events);
-addModule(script.properties);
-addModule(script.functions);
 
 wasm = require(script.wasm)({
 	env = {
@@ -158,9 +145,7 @@ wasm = require(script.wasm)({
 memory = wasm.memory_list.memory;
 util = require(script.util)(rt, wasm, memory);
 
-for _, module in withWasm do
-	module.withWasm(memory, rt, util);
-end
+abi.load(wasm, rt, util);
 
 createPointer, getPointer, dropPointer, invokeOnce, readString, writeStringReturn =
 	util.createPointer, util.getPointer, util.dropPointer, util.invokeOnce, util.readString, util.writeStringReturn;
@@ -170,5 +155,6 @@ print("start wasm");
 task.wait(0.8);
 
 local start = os.clock();
-wasm.func_list.greet(15);
+wasm.func_list.hook();
+wasm.func_list.main();
 print("Wasm took", (os.clock() - start) * 1000, "ms to execute");
