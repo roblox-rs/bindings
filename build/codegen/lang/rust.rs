@@ -52,7 +52,7 @@ fn generate_extern(writer: &mut Stream, dump: &Dump) {
                 ClassMember::Event(event) => {
                     note!(
                         writer,
-                        "fn {}(instance: u32, callback: Box<dyn Fn({})>) -> u32;",
+                        "fn {}(instance: u32, callback: Box<dyn FnMut({})>) -> u32;",
                         event_extern_name(class, event),
                         &event
                             .parameters
@@ -99,7 +99,7 @@ fn generate_class_event(
 ) {
     push!(
         writer,
-        "pub fn on_{}<F: Fn({}) + 'static>(&self, callback: F) -> RbxScriptConnection {{",
+        "pub fn on_{}<F: FnMut({}) + 'static>(&self, mut callback: F) -> RbxScriptConnection {{",
         to_snake(&event.name),
         &event
             .parameters
