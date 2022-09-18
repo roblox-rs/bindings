@@ -1,5 +1,8 @@
 use crate::codegen::{
-    constants::luau::{LUAU_CREATE_CONNECTION, LUAU_DISCONNECT_CONNECTION},
+    constants::{
+        luau::{LUAU_CREATE_CONNECTION, LUAU_DISCONNECT_CONNECTION},
+        MULTI_VALUE_SUPPORT,
+    },
     stream::{note, pull, push, Stream},
     structs::{
         Class, ClassEventMember, ClassFunctionMember, ClassMember, ClassPropertyMember, Dump,
@@ -32,15 +35,7 @@ fn convert_ffi_input_to_lua_value(
     match value_type {
         ValueType::Class(_) | ValueType::DataType(_) => format!("getPointer({})", parameters[0]),
         ValueType::Primitive(PrimitiveKind::String) => {
-            note!(writer, "local string{suffix} = \"\";");
-            push!(writer, "for i = 1, {} do", parameters[1]);
-            note!(
-                writer,
-                "string{suffix} ..= string.char(loadU8(memory, {} + (i - 1)))",
-                parameters[0]
-            );
-            pull!(writer, "end");
-            format!("string{suffix}")
+            format!("loadString(memory, {}, {})", parameters[0], parameters[1])
         }
         ValueType::Primitive(PrimitiveKind::Bool) => format!("{} == 1", parameters[0]),
         ValueType::Primitive(_) => parameters[0].to_string(),
@@ -69,10 +64,10 @@ fn convert_lua_value_to_ffi_output(
     value: &str,
     raw_suffix: &str,
     increment: i32,
-) -> String {
+) -> Vec<String> {
     let suffix = format!("{raw_suffix}{increment}");
     match value_type {
-        ValueType::Class(_) | ValueType::DataType(_) => format!("createPointer({value})"),
+        ValueType::Class(_) | ValueType::DataType(_) => vec![format!("createPointer({value})")],
         ValueType::Primitive(PrimitiveKind::String) => {
             let variable = format!("value{suffix}");
             note!(writer, "local {variable} = {value};");
@@ -83,29 +78,55 @@ fn convert_lua_value_to_ffi_output(
                 "storeU8(memory, stringContent{suffix} + (i - 1), string.byte({variable}:sub(i, i)));"
             );
             pull!(writer, "end");
-            format!("stringContent{suffix}, stringLength{suffix}")
+            vec![
+                format!("stringContent{suffix}"),
+                format!("stringLength{suffix}"),
+            ]
         }
-        ValueType::Primitive(PrimitiveKind::Bool) => format!("{value} and 1 or 0"),
-        ValueType::Primitive(_) => value.to_string(),
+        ValueType::Primitive(PrimitiveKind::Bool) => vec![format!("{value} and 1 or 0")],
+        ValueType::Primitive(_) => vec![value.to_string()],
         ValueType::Optional(value_type) => {
             let variable = format!("value{suffix}");
             note!(writer, "local {variable} = {};", value);
-            format!(
-                "{variable} and 1 or 0, {variable} and {} or 0",
-                convert_lua_value_to_ffi_output(
-                    writer, value_type, &variable, raw_suffix, increment
-                )
-            )
+
+            let values = convert_lua_value_to_ffi_output(
+                writer, value_type, &variable, raw_suffix, increment,
+            );
+            if values.len() == 1 {
+                vec![
+                    format!("{variable} and 1 or 0"),
+                    format!("{variable} and {} or 0", values[0]),
+                ]
+            } else {
+                unimplemented!("Optional fields require a single usize value");
+            }
         }
         _ => panic!("Unhandled value type"),
+    }
+}
+
+fn store_in_memory_or_return(writer: &mut Stream, result: Vec<String>) {
+    if result.len() == 1 {
+        note!(writer, "return {};", result[0]);
+    } else if MULTI_VALUE_SUPPORT {
+        note!(writer, "return {};", result.join(", "));
+    } else {
+        for (i, v) in result.iter().enumerate() {
+            note!(writer, "storeU32(memory, output + {}, {v})", i * 4);
+        }
     }
 }
 
 fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPropertyMember) {
     push!(
         writer,
-        "function abi.ffi.{}(instance)",
-        get_prop_extern_name(class, member)
+        "function abi.ffi.{}({})",
+        get_prop_extern_name(class, member),
+        if get_ffi_input_count(&member.value_type) > 1 && !MULTI_VALUE_SUPPORT {
+            "output, instance"
+        } else {
+            "instance"
+        },
     );
     let result = convert_lua_value_to_ffi_output(
         writer,
@@ -114,7 +135,7 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
         "Prop",
         0,
     );
-    note!(writer, "return {result};");
+    store_in_memory_or_return(writer, result);
     pull!(writer, "end");
 
     if !member.tags.contains("ReadOnly") {
@@ -144,6 +165,10 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
 
 fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFunctionMember) {
     let mut input_parameters = vec!["instance".to_string()];
+    if get_ffi_input_count(&member.return_type) > 1 && !MULTI_VALUE_SUPPORT {
+        input_parameters.insert(0, "output".to_string());
+    }
+
     for parameter in &member.parameters {
         for i in 0..get_ffi_input_count(&parameter.value_type) {
             input_parameters.push(format!("p_{}{i}", parameter.name));
@@ -185,7 +210,7 @@ fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFun
         "Return",
         0,
     );
-    note!(writer, "return {result};");
+    store_in_memory_or_return(writer, result);
     pull!(writer, "end");
 }
 
@@ -212,7 +237,7 @@ fn generate_class_event(writer: &mut Stream, class: &Class, member: &ClassEventM
     parameters.push("vtable".to_string());
 
     for parameter in &member.parameters {
-        parameters.push(convert_lua_value_to_ffi_output(
+        parameters.append(&mut convert_lua_value_to_ffi_output(
             writer,
             &parameter.value_type,
             &format!("p_{}", parameter.name),
@@ -249,7 +274,9 @@ fn generate_abi_start(writer: &mut Stream) {
         ("createPointer", "util.createPointer"),
         ("memory", "wasm.memory_list.memory"),
         ("storeU8", "rt.store.i32_n8"),
+        ("storeU32", "rt.store.i32"),
         ("loadU8", "rt.load.i32_u8"),
+        ("loadString", "rt.load.string"),
         ("allocString", "wasm.func_list.__heap_alloc_string"),
         ("invokeFunction", "util.invokeFunction"),
         ("dropFunctionRef", "util.dropFunctionRef"),

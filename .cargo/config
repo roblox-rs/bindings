@@ -2,5 +2,5 @@
 rustflags = [
 	"-C", "link-args=--export-table --export=__stack_pointer",
 	"-C", "target-feature=+mutable-globals",
-	"-C", "target-feature=+multivalue",
+	# "-C", "target-feature=+multivalue",
 ]

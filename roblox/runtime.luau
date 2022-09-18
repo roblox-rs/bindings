@@ -1,423 +1,421 @@
+local Integer = (function()
+	local Numeric = {}
+
+	local NUM_ZERO, NUM_ONE, NUM_SIX_FOUR
+	local NUM_BIT_26, NUM_BIT_52
+
+	local bit_lshift = bit32.lshift
+	local bit_rshift = bit32.rshift
+	local bit_arshift = bit32.arshift
+
+	local bit_and = bit32.band
+	local bit_or = bit32.bor
+	local bit_xor = bit32.bxor
+	local bit_not = bit32.bnot
+
+	local bit_extract = bit32.extract
+	local bit_replace = bit32.replace
+
+	local from_u32, from_u64, into_u64
+	local num_subtract, num_divide_unsigned, num_negate
+	local num_or, num_shift_left, num_shift_right_unsigned
+	local num_is_negative, num_is_zero, num_is_less_unsigned
+
+	-- X: a[0 ..21]
+	-- Y: a[22..31]
+	--  | b[0 ..11]
+	-- Z: b[12..31]
+	local constructor = Vector3.new
+
+	function Numeric.from_u32(data_1, data_2)
+		local x = bit_and(data_1, 0x3FFFFF)
+		local y = bit_and(data_2, 0x3FFFFF)
+		local z = bit_replace(bit_rshift(data_1, 22), bit_rshift(data_2, 22), 10, 10)
+
+		return constructor(x, y, z)
+	end
+
+	local function load_d1(value)
+		return bit_replace(bit_and(value.X, 0x3FFFFF), value.Z, 22, 10)
+	end
+
+	local function load_d2(value)
+		return bit_replace(bit_and(value.Y, 0x3FFFFF), bit_rshift(value.Z, 10), 22, 10)
+	end
+
+	function Numeric.into_u32(value)
+		return load_d1(value), load_d2(value)
+	end
+
+	function Numeric.from_u64(value)
+		return from_u32(bit_and(value % 0x100000000), bit_and(value / 0x100000000))
+	end
+
+	function Numeric.into_u64(value)
+		return load_d1(value) + load_d2(value) * 0x100000000
+	end
+
+	function Numeric.add(lhs, rhs)
+		local data_1 = load_d1(lhs) + load_d1(rhs)
+		local data_2 = load_d2(lhs) + load_d2(rhs)
+
+		if data_1 >= 0x100000000 then
+			data_1 = data_1 - 0x100000000
+			data_2 = data_2 + 1
+		end
+
+		if data_2 >= 0x100000000 then
+			data_2 = data_2 - 0x100000000
+		end
+
+		return from_u32(data_1, data_2)
+	end
+
+	function Numeric.subtract(lhs, rhs)
+		local data_1 = load_d1(lhs) - load_d1(rhs)
+		local data_2 = load_d2(lhs) - load_d2(rhs)
+
+		if data_1 < 0 then
+			data_1 = data_1 + 0x100000000
+			data_2 = data_2 - 1
+		end
+
+		if data_2 < 0 then
+			data_2 = data_2 + 0x100000000
+		end
+
+		return from_u32(data_1, data_2)
+	end
+
+	function Numeric.multiply(lhs, rhs)
+		if num_is_zero(lhs) or num_is_zero(rhs) then
+			return NUM_ZERO
+		elseif num_is_less_unsigned(lhs, NUM_BIT_26) and num_is_less_unsigned(rhs, NUM_BIT_26) then
+			return from_u64(load_d1(lhs) * load_d1(rhs))
+		end
+
+		-- Divide each long into 4 chunks of 16 bits, and then add up 4x4 products.
+		-- We can skip products that would overflow.
+		local lhs_1, lhs_2 = load_d1(lhs), load_d2(lhs)
+		local rhs_1, rhs_2 = load_d1(rhs), load_d2(rhs)
+
+		local a48 = bit_rshift(lhs_2, 16)
+		local a32 = bit_and(lhs_2, 0xFFFF)
+		local a16 = bit_rshift(lhs_1, 16)
+		local a00 = bit_and(lhs_1, 0xFFFF)
+
+		local b48 = bit_rshift(rhs_2, 16)
+		local b32 = bit_and(rhs_2, 0xFFFF)
+		local b16 = bit_rshift(rhs_1, 16)
+		local b00 = bit_and(rhs_1, 0xFFFF)
+
+		local c00 = a00 * b00
+		local c16 = bit_rshift(c00, 16)
+
+		c00 = bit_and(c00, 0xFFFF)
+		c16 = c16 + a16 * b00
+
+		local c32 = bit_rshift(c16, 16)
+
+		c16 = bit_and(c16, 0xFFFF)
+		c16 = c16 + a00 * b16
+		c32 = c32 + bit_rshift(c16, 16)
+		c16 = bit_and(c16, 0xFFFF)
+		c32 = c32 + a32 * b00
+
+		local c48 = bit_rshift(c32, 16)
+
+		c32 = bit_and(c32, 0xFFFF)
+		c32 = c32 + a16 * b16
+		c48 = c48 + bit_rshift(c32, 16)
+		c32 = bit_and(c32, 0xFFFF)
+		c32 = c32 + a00 * b32
+		c48 = c48 + bit_rshift(c32, 16)
+		c32 = bit_and(c32, 0xFFFF)
+		c48 = c48 + a48 * b00 + a32 * b16 + a16 * b32 + a00 * b48
+		c48 = bit_and(c48, 0xFFFF)
+
+		local data_1 = bit_replace(c00, c16, 16, 16)
+		local data_2 = bit_replace(c32, c48, 16, 16)
+
+		return from_u32(data_1, data_2)
+	end
+
+	function Numeric.divide_unsigned(lhs, rhs)
+		if num_is_zero(rhs) then
+			error("division by zero")
+		elseif num_is_zero(lhs) then
+			return NUM_ZERO, NUM_ZERO
+		elseif num_is_less_unsigned(lhs, NUM_BIT_52) and num_is_less_unsigned(rhs, NUM_BIT_52) then
+			local lhs_u = into_u64(lhs)
+			local rhs_u = into_u64(rhs)
+
+			return from_u64(lhs_u / rhs_u), from_u64(lhs_u % rhs_u)
+		end
+
+		local quotient = NUM_ZERO
+		local remainder = NUM_ZERO
+
+		local num_1, num_2 = load_d1(lhs), load_d2(lhs)
+
+		for i = 63, 0, -1 do
+			local temp = num_shift_left(remainder, NUM_ONE)
+			local rem_1, rem_2 = load_d1(temp), load_d2(temp)
+
+			if i > 31 then
+				rem_1 = bit_or(rem_1, bit_extract(num_2, i - 32, 1))
+			else
+				rem_1 = bit_or(rem_1, bit_extract(num_1, i, 1))
+			end
+
+			remainder = from_u32(rem_1, rem_2)
+
+			if not num_is_less_unsigned(remainder, rhs) then
+				remainder = num_subtract(remainder, rhs)
+				quotient = num_or(quotient, num_shift_left(NUM_ONE, from_u32(i, 0)))
+			end
+		end
+
+		return quotient, remainder
+	end
+
+	function Numeric.divide_signed(lhs, rhs)
+		local left_negative = num_is_negative(lhs)
+		local right_negative = num_is_negative(rhs)
+
+		if left_negative then
+			lhs = num_negate(lhs)
+		end
+
+		if right_negative then
+			rhs = num_negate(rhs)
+		end
+
+		local quotient, remainder = num_divide_unsigned(lhs, rhs)
+
+		if left_negative ~= right_negative then
+			quotient = num_negate(quotient)
+		end
+
+		if left_negative then
+			remainder = num_negate(remainder)
+		end
+
+		return quotient, remainder
+	end
+
+	function Numeric.negate(value)
+		local data_1 = bit_not(load_d1(value)) + 1
+		local data_2 = bit_not(load_d2(value))
+
+		if data_1 >= 0x100000000 then
+			data_1 = data_1 - 0x100000000
+			data_2 = data_2 + 1
+		end
+
+		if data_2 >= 0x100000000 then
+			data_2 = data_2 - 0x100000000
+		end
+
+		return from_u32(data_1, data_2)
+	end
+
+	function Numeric.bit_and(lhs, rhs)
+		local x = bit_and(lhs.X, rhs.X)
+		local y = bit_and(lhs.Y, rhs.Y)
+		local z = bit_and(lhs.Z, rhs.Z)
+
+		return constructor(x, y, z)
+	end
+
+	function Numeric.bit_not(value)
+		local x = bit_and(bit_not(value.X), 0xFFFFFF)
+		local y = bit_and(bit_not(value.Y), 0xFFFFFF)
+		local z = bit_and(bit_not(value.Z), 0xFFFFFF)
+
+		return constructor(x, y, z)
+	end
+
+	function Numeric.bit_or(lhs, rhs)
+		local x = bit_or(lhs.X, rhs.X)
+		local y = bit_or(lhs.Y, rhs.Y)
+		local z = bit_or(lhs.Z, rhs.Z)
+
+		return constructor(x, y, z)
+	end
+
+	function Numeric.bit_xor(lhs, rhs)
+		local x = bit_xor(lhs.X, rhs.X)
+		local y = bit_xor(lhs.Y, rhs.Y)
+		local z = bit_xor(lhs.Z, rhs.Z)
+
+		return constructor(x, y, z)
+	end
+
+	function Numeric.shift_left(lhs, rhs)
+		local count = rhs.X % 64
+
+		if count == 0 then
+			return lhs
+		elseif count < 32 then
+			local pad = 32 - count
+			local lhs_1, lhs_2 = load_d1(lhs), load_d2(lhs)
+
+			local data_1 = bit_lshift(lhs_1, count)
+			local data_2 = bit_replace(bit_rshift(lhs_1, pad), lhs_2, count, pad)
+
+			return from_u32(data_1, data_2)
+		else
+			local lhs_1 = load_d1(lhs)
+
+			return from_u32(0, bit_lshift(lhs_1, count - 32))
+		end
+	end
+
+	function Numeric.shift_right_unsigned(lhs, rhs)
+		local count = rhs.X % 64
+
+		if count == 0 then
+			return lhs
+		elseif count < 32 then
+			local lhs_1, lhs_2 = load_d1(lhs), load_d2(lhs)
+
+			local data_1 = bit_replace(bit_rshift(lhs_1, count), lhs_2, 32 - count, count)
+			local data_2 = bit_rshift(lhs_2, count)
+
+			return from_u32(data_1, data_2)
+		else
+			local lhs_2 = load_d2(lhs)
+
+			return from_u32(bit_rshift(lhs_2, count - 32), 0)
+		end
+	end
+
+	function Numeric.shift_right_signed(lhs, rhs)
+		local count = rhs.X % 64
+
+		if count == 0 then
+			return lhs
+		elseif count < 32 then
+			local lhs_1, lhs_2 = load_d1(lhs), load_d2(lhs)
+
+			local data_1 = bit_replace(bit_rshift(lhs_1, count), lhs_2, 32 - count, count)
+			local data_2 = bit_arshift(lhs_2, count)
+
+			return from_u32(data_1, data_2)
+		else
+			local lhs_2 = load_d2(lhs)
+
+			local data_1 = bit_arshift(lhs_2, count - 32)
+			local data_2 = lhs_2 >= 0x80000000 and 0xFFFFFFFF or 0
+
+			return from_u32(data_1, data_2)
+		end
+	end
+
+	function Numeric.rotate_left(lhs, rhs)
+		if num_is_zero(rhs) then
+			return lhs
+		else
+			local data_1 = num_shift_left(lhs, rhs)
+			local data_2 = num_shift_right_unsigned(lhs, num_subtract(NUM_SIX_FOUR, rhs))
+
+			return num_or(data_1, data_2)
+		end
+	end
+
+	function Numeric.rotate_right(lhs, rhs)
+		if num_is_zero(rhs) then
+			return lhs
+		else
+			local data_1 = num_shift_right_unsigned(lhs, rhs)
+			local data_2 = num_shift_left(lhs, num_subtract(NUM_SIX_FOUR, rhs))
+
+			return num_or(data_1, data_2)
+		end
+	end
+
+	function Numeric.is_negative(value)
+		return value.Z >= 0x80000
+	end
+
+	function Numeric.is_zero(value)
+		return value.X == 0 and value.Y == 0 and value.Z == 0
+	end
+
+	function Numeric.is_equal(lhs, rhs)
+		return lhs.X == rhs.X and lhs.Y == rhs.Y and lhs.Z == rhs.Z
+	end
+
+	function Numeric.is_less_unsigned(lhs, rhs)
+		local data_l_2 = load_d2(lhs)
+		local data_r_2 = load_d2(rhs)
+
+		return data_l_2 < data_r_2 or (data_l_2 == data_r_2 and load_d1(lhs) < load_d1(rhs))
+	end
+
+	function Numeric.is_greater_unsigned(lhs, rhs)
+		local data_l_2 = load_d2(lhs)
+		local data_r_2 = load_d2(rhs)
+
+		return data_l_2 > data_r_2 or (data_l_2 == data_r_2 and load_d1(lhs) > load_d1(rhs))
+	end
+
+	function Numeric.is_less_signed(lhs, rhs)
+		local neg_a = num_is_negative(lhs)
+		local neg_b = num_is_negative(rhs)
+
+		if neg_a and not neg_b then
+			return true
+		elseif not neg_a and neg_b then
+			return false
+		else
+			return num_is_negative(num_subtract(lhs, rhs))
+		end
+	end
+
+	function Numeric.is_greater_signed(lhs, rhs)
+		local neg_a = num_is_negative(lhs)
+		local neg_b = num_is_negative(rhs)
+
+		if neg_a and not neg_b then
+			return false
+		elseif not neg_a and neg_b then
+			return true
+		else
+			return num_is_negative(num_subtract(rhs, lhs))
+		end
+	end
+
+	from_u32 = Numeric.from_u32
+	from_u64 = Numeric.from_u64
+	into_u64 = Numeric.into_u64
+
+	num_subtract = Numeric.subtract
+	num_divide_unsigned = Numeric.divide_unsigned
+	num_negate = Numeric.negate
+
+	num_or = Numeric.bit_or
+	num_shift_left = Numeric.shift_left
+	num_shift_right_unsigned = Numeric.shift_right_unsigned
+
+	num_is_negative = Numeric.is_negative
+	num_is_zero = Numeric.is_zero
+	num_is_less_unsigned = Numeric.is_less_unsigned
+
+	NUM_ZERO = from_u64(0)
+	NUM_ONE = from_u64(1)
+	NUM_SIX_FOUR = from_u64(64)
+	NUM_BIT_26 = from_u64(0x4000000)
+	NUM_BIT_52 = from_u64(0x10000000000000)
+
+	Numeric.ZERO = NUM_ZERO
+	Numeric.ONE = NUM_ONE
+
+	return table.freeze(Numeric)
+end)()
 local rt = (function()
-	local I64 = (function()
-		local Numeric = {}
-
-		local BIT_SET_31 = 0x80000000
-		local BIT_SET_32 = 0x100000000
-
-		local K_ZERO, K_ONE, K_BIT_SET_26
-
-		local bit_lshift = bit32.lshift
-		local bit_rshift = bit32.rshift
-		local bit_arshift = bit32.arshift
-
-		local bit_and = bit32.band
-		local bit_or = bit32.bor
-		local bit_xor = bit32.bxor
-		local bit_not = bit32.bnot
-
-		local bit_replace = bit32.replace
-
-		local math_ceil = math.ceil
-		local math_floor = math.floor
-		local math_log = math.log
-		local math_max = math.max
-		local math_pow = math.pow
-
-		local table_freeze = table.freeze
-
-		local from_u32, into_u32, from_u64, into_u64
-		local num_add, num_subtract, num_multiply, num_divide_unsigned, num_negate, num_not
-		local num_is_negative, num_is_zero, num_is_equal, num_is_less_unsigned, num_is_greater_unsigned
-
-		-- TODO: Eventually support Vector3
-		function Numeric.from_u32(data_1, data_2)
-			return table_freeze({ data_1, data_2 })
-		end
-
-		function Numeric.into_u32(data)
-			return data[1], data[2]
-		end
-
-		function Numeric.from_u64(value)
-			return from_u32(bit_and(value), math_floor(value / BIT_SET_32))
-		end
-
-		function Numeric.into_u64(value)
-			local data_1, data_2 = into_u32(value)
-
-			return data_1 + data_2 * BIT_SET_32
-		end
-
-		function Numeric.add(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			local data_1 = data_l_1 + data_r_1
-			local data_2 = data_l_2 + data_r_2
-
-			if data_1 >= BIT_SET_32 then
-				data_1 = data_1 - BIT_SET_32
-				data_2 = data_2 + 1
-			end
-
-			if data_2 >= BIT_SET_32 then
-				data_2 = data_2 - BIT_SET_32
-			end
-
-			return from_u32(data_1, data_2)
-		end
-
-		function Numeric.subtract(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			local data_1 = data_l_1 - data_r_1
-			local data_2 = data_l_2 - data_r_2
-
-			if data_1 < 0 then
-				data_1 = data_1 + BIT_SET_32
-				data_2 = data_2 - 1
-			end
-
-			if data_2 < 0 then
-				data_2 = data_2 + BIT_SET_32
-			end
-
-			return from_u32(data_1, data_2)
-		end
-
-		local function set_absolute(lhs, rhs)
-			local has_negative = false
-
-			if num_is_negative(lhs) then
-				lhs = num_negate(lhs)
-				has_negative = not has_negative
-			end
-
-			if num_is_negative(rhs) then
-				rhs = num_negate(rhs)
-				has_negative = not has_negative
-			end
-
-			return has_negative, lhs, rhs
-		end
-
-		function Numeric.multiply(lhs, rhs)
-			if num_is_zero(lhs) or num_is_zero(rhs) then
-				return K_ZERO
-			end
-
-			local has_negative
-
-			has_negative, lhs, rhs = set_absolute(lhs, rhs)
-
-			-- If both longs are small, use float multiplication
-			if num_is_less_unsigned(lhs, K_BIT_SET_26) and num_is_less_unsigned(rhs, K_BIT_SET_26) then
-				local data_l_1, _ = into_u32(lhs)
-				local data_r_1, _ = into_u32(rhs)
-				local result = from_u64(data_l_1 * data_r_1)
-
-				if has_negative then
-					result = num_negate(result)
-				end
-
-				return result
-			end
-
-			-- Divide each long into 4 chunks of 16 bits, and then add up 4x4 products.
-			-- We can skip products that would overflow.
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			local a48 = bit_rshift(data_l_2, 16)
-			local a32 = bit_and(data_l_2, 0xFFFF)
-			local a16 = bit_rshift(data_l_1, 16)
-			local a00 = bit_and(data_l_1, 0xFFFF)
-
-			local b48 = bit_rshift(data_r_2, 16)
-			local b32 = bit_and(data_r_2, 0xFFFF)
-			local b16 = bit_rshift(data_r_1, 16)
-			local b00 = bit_and(data_r_1, 0xFFFF)
-
-			local c00 = a00 * b00
-			local c16 = bit_rshift(c00, 16)
-
-			c00 = bit_and(c00, 0xFFFF)
-			c16 = c16 + a16 * b00
-
-			local c32 = bit_rshift(c16, 16)
-
-			c16 = bit_and(c16, 0xFFFF)
-			c16 = c16 + a00 * b16
-			c32 = c32 + bit_rshift(c16, 16)
-			c16 = bit_and(c16, 0xFFFF)
-			c32 = c32 + a32 * b00
-
-			local c48 = bit_rshift(c32, 16)
-
-			c32 = bit_and(c32, 0xFFFF)
-			c32 = c32 + a16 * b16
-			c48 = c48 + bit_rshift(c32, 16)
-			c32 = bit_and(c32, 0xFFFF)
-			c32 = c32 + a00 * b32
-			c48 = c48 + bit_rshift(c32, 16)
-			c32 = bit_and(c32, 0xFFFF)
-			c48 = c48 + a48 * b00 + a32 * b16 + a16 * b32 + a00 * b48
-			c48 = bit_and(c48, 0xFFFF)
-
-			local data_1 = bit_replace(c00, c16, 16, 16)
-			local data_2 = bit_replace(c32, c48, 16, 16)
-			local result = from_u32(data_1, data_2)
-
-			if has_negative then
-				result = num_negate(result)
-			end
-
-			return result
-		end
-
-		local function get_approx_delta(rem, rhs)
-			local approx = math_max(1, math_floor(rem / rhs))
-			local log = math_ceil(math_log(approx, 2))
-			local delta = log <= 48 and 1 or math_pow(2, log - 48)
-
-			return approx, delta
-		end
-
-		function Numeric.divide_unsigned(lhs, rhs)
-			if num_is_zero(rhs) then
-				error("division by zero")
-			elseif num_is_zero(lhs) then
-				return K_ZERO
-			end
-
-			local rhs_number = into_u64(rhs)
-			local rem = lhs
-			local res = K_ZERO
-
-			while num_is_greater_unsigned(rem, rhs) or num_is_equal(rem, rhs) do
-				local res_approx, delta = get_approx_delta(into_u64(rem), rhs_number)
-				local res_temp = from_u64(res_approx)
-				local rem_temp = num_multiply(res_temp, rhs)
-
-				while num_is_negative(rem_temp) or num_is_greater_unsigned(rem_temp, rem) do
-					res_approx = res_approx - delta
-					res_temp = from_u64(res_approx)
-					rem_temp = num_multiply(res_temp, rhs)
-				end
-
-				if num_is_zero(res_temp) then
-					res_temp = K_ONE
-				end
-
-				res = num_add(res, res_temp)
-				rem = num_subtract(rem, rem_temp)
-			end
-
-			return res
-		end
-
-		function Numeric.divide_signed(lhs, rhs)
-			local has_negative
-
-			has_negative, lhs, rhs = set_absolute(lhs, rhs)
-
-			local result = num_divide_unsigned(lhs, rhs)
-
-			if has_negative then
-				result = num_negate(result)
-			end
-
-			return result
-		end
-
-		function Numeric.negate(value)
-			return num_add(num_not(value), K_ONE)
-		end
-
-		function Numeric.bit_and(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			return from_u32(bit_and(data_l_1, data_r_1), bit_and(data_l_2, data_r_2))
-		end
-
-		function Numeric.bit_not(value)
-			local data_1, data_2 = into_u32(value)
-
-			return from_u32(bit_not(data_1), bit_not(data_2))
-		end
-
-		function Numeric.bit_or(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			return from_u32(bit_or(data_l_1, data_r_1), bit_or(data_l_2, data_r_2))
-		end
-
-		function Numeric.bit_xor(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			return from_u32(bit_xor(data_l_1, data_r_1), bit_xor(data_l_2, data_r_2))
-		end
-
-		function Numeric.shift_left(lhs, rhs)
-			local count = into_u64(rhs)
-
-			if count < 32 then
-				local pad = 32 - count
-				local data_l_1, data_l_2 = into_u32(lhs)
-
-				local data_1 = bit_lshift(data_l_1, count)
-				local data_2 = bit_replace(bit_rshift(data_l_1, pad), data_l_2, count, pad)
-
-				return from_u32(data_1, data_2)
-			elseif count == 32 then
-				local data_l_1, _ = into_u32(lhs)
-
-				return from_u32(0, data_l_1)
-			else
-				local data_l_1, _ = into_u32(lhs)
-
-				return from_u32(0, bit_lshift(data_l_1, count - 32))
-			end
-		end
-
-		function Numeric.shift_right_unsigned(lhs, rhs)
-			local count = into_u64(rhs)
-
-			if count < 32 then
-				local data_l_1, data_l_2 = into_u32(lhs)
-
-				local data_1 = bit_replace(bit_rshift(data_l_1, count), data_l_2, 32 - count, count)
-				local data_2 = bit_rshift(data_l_2, count)
-
-				return from_u32(data_1, data_2)
-			elseif count == 32 then
-				local _, data_l_2 = into_u32(lhs)
-
-				return from_u32(data_l_2, 0)
-			else
-				local _, data_l_2 = into_u32(lhs)
-
-				return from_u32(bit_rshift(data_l_2, count - 32), 0)
-			end
-		end
-
-		function Numeric.shift_right_signed(lhs, rhs)
-			local count = into_u64(rhs)
-
-			if count < 32 then
-				local data_l_1, data_l_2 = into_u32(lhs)
-
-				local data_1 = bit_replace(bit_rshift(data_l_1, count), data_l_2, 32 - count, count)
-				local data_2 = bit_arshift(data_l_2, count)
-
-				return from_u32(data_1, data_2)
-			else
-				local _, data_l_2 = into_u32(lhs)
-
-				local data_1 = bit_arshift(data_l_2, count - 32)
-				local data_2 = data_l_2 > BIT_SET_31 and BIT_SET_32 - 1 or 0
-
-				return from_u32(data_1, data_2)
-			end
-		end
-
-		function Numeric.is_negative(value)
-			local _, data_2 = into_u32(value)
-
-			return data_2 >= BIT_SET_31
-		end
-
-		function Numeric.is_zero(value)
-			local data_1, data_2 = into_u32(value)
-
-			return data_1 == 0 and data_2 == 0
-		end
-
-		function Numeric.is_equal(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			return data_l_1 == data_r_1 and data_l_2 == data_r_2
-		end
-
-		function Numeric.is_less_unsigned(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			return data_l_2 < data_r_2 or (data_l_2 == data_r_2 and data_l_1 < data_r_1)
-		end
-
-		function Numeric.is_greater_unsigned(lhs, rhs)
-			local data_l_1, data_l_2 = into_u32(lhs)
-			local data_r_1, data_r_2 = into_u32(rhs)
-
-			return data_l_2 > data_r_2 or (data_l_2 == data_r_2 and data_l_1 > data_r_1)
-		end
-
-		function Numeric.is_less_signed(lhs, rhs)
-			local neg_a = num_is_negative(lhs)
-			local neg_b = num_is_negative(rhs)
-
-			if neg_a and not neg_b then
-				return true
-			elseif not neg_a and neg_b then
-				return false
-			else
-				return num_is_negative(num_subtract(lhs, rhs))
-			end
-		end
-
-		function Numeric.is_greater_signed(lhs, rhs)
-			local neg_a = num_is_negative(lhs)
-			local neg_b = num_is_negative(rhs)
-
-			if neg_a and not neg_b then
-				return false
-			elseif not neg_a and neg_b then
-				return true
-			else
-				return num_is_negative(num_subtract(rhs, lhs))
-			end
-		end
-
-		from_u32 = Numeric.from_u32
-		into_u32 = Numeric.into_u32
-		from_u64 = Numeric.from_u64
-		into_u64 = Numeric.into_u64
-
-		num_add = Numeric.add
-		num_subtract = Numeric.subtract
-		num_multiply = Numeric.multiply
-		num_divide_unsigned = Numeric.divide_unsigned
-		num_negate = Numeric.negate
-		num_not = Numeric.bit_not
-
-		num_is_negative = Numeric.is_negative
-		num_is_zero = Numeric.is_zero
-		num_is_equal = Numeric.is_equal
-		num_is_less_unsigned = Numeric.is_less_unsigned
-		num_is_greater_unsigned = Numeric.is_greater_unsigned
-
-		K_ZERO = from_u64(0)
-		K_ONE = from_u64(1)
-		K_BIT_SET_26 = from_u64(0x4000000)
-
-		Numeric.K_ZERO = K_ZERO
-		Numeric.K_ONE = K_ONE
-
-		return table_freeze(Numeric)
-	end)()
 	local module = {}
-
-	local MAX_UNSIGNED = 0xffffffff
-	local MAX_SIGNED = 0x7fffffff
-	local BIT_SET_27 = 0x8000000
-	local BIT_SET_32 = 0x100000000
 
 	local to_u32 = bit32.band
 
@@ -426,31 +424,22 @@ local rt = (function()
 	local bit_lshift = bit32.lshift
 	local bit_rshift = bit32.rshift
 
-	local num_from_u32 = I64.from_u32
-	local num_into_u32 = I64.into_u32
+	local num_from_u32 = Integer.from_u32
+	local num_into_u32 = Integer.into_u32
 
 	local function to_i32(num)
-		if num > MAX_SIGNED then
-			num = num - BIT_SET_32
+		if num >= 0x80000000 then
+			return num - 0x100000000
+		else
+			return num
 		end
-
-		return num
 	end
 
 	local function no_op(num)
 		return num
 	end
 
-	do
-		local temp = {}
-
-		temp.K_ZERO = I64.K_ZERO
-		temp.K_ONE = I64.K_ONE
-
-		temp.from_u32 = num_from_u32
-
-		module.i64 = temp
-	end
+	module.i64 = Integer
 
 	do
 		local add = {}
@@ -468,31 +457,33 @@ local rt = (function()
 
 		local math_abs = math.abs
 		local math_fmod = math.fmod
-		local math_floor = math.floor
 		local math_round = math.round
 		local math_sign = math.sign
-		local math_max = math.max
 		local math_min = math.min
+		local math_max = math.max
 
 		local string_byte = string.byte
 		local string_pack = string.pack
 
-		function add.i32(a, b)
-			return to_u32(a + b)
+		local num_divide_signed = Integer.divide_signed
+		local num_divide_unsigned = Integer.divide_unsigned
+
+		function add.i32(lhs, rhs)
+			return to_u32(lhs + rhs)
 		end
 
-		function sub.i32(a, b)
-			return to_u32(a - b)
+		function sub.i32(lhs, rhs)
+			return to_u32(lhs - rhs)
 		end
 
-		function mul.i32(a, b)
-			if (a + b) < BIT_SET_27 then
-				return to_u32(a * b)
+		function mul.i32(lhs, rhs)
+			if (lhs + rhs) < 0x8000000 then
+				return to_u32(lhs * rhs)
 			else
-				local a16 = bit_rshift(a, 16)
-				local a00 = bit_and(a, 0xFFFF)
-				local b16 = bit_rshift(b, 16)
-				local b00 = bit_and(b, 0xFFFF)
+				local a16 = bit_rshift(lhs, 16)
+				local a00 = bit_and(lhs, 0xFFFF)
+				local b16 = bit_rshift(rhs, 16)
+				local b00 = bit_and(rhs, 0xFFFF)
 
 				local c00 = a00 * b00
 				local c16 = a16 * b00 + a00 * b16
@@ -525,29 +516,42 @@ local rt = (function()
 			return to_u32(math_fmod(lhs, rhs))
 		end
 
-		add.i64 = I64.add
-		sub.i64 = I64.subtract
-		mul.i64 = I64.multiply
-		div.i64 = I64.divide_signed
-		div.u64 = I64.divide_unsigned
+		add.i64 = Integer.add
+		sub.i64 = Integer.subtract
+		mul.i64 = Integer.multiply
+		div.i64 = num_divide_signed
+
+		function rem.i64(lhs, rhs)
+			local _, remainder = num_divide_signed(lhs, rhs)
+
+			return remainder
+		end
+
+		div.u64 = num_divide_unsigned
+
+		function rem.u64(lhs, rhs)
+			local _, remainder = num_divide_unsigned(lhs, rhs)
+
+			return remainder
+		end
 
 		function neg.f32(num)
 			return -num
 		end
 
-		function min.f32(a, b)
-			if b == b then
-				return math_min(a, b)
+		function min.f32(lhs, rhs)
+			if rhs == rhs then
+				return math_min(lhs, rhs)
 			else
-				return b
+				return rhs
 			end
 		end
 
-		function max.f32(a, b)
-			if b == b then
-				return math_max(a, b)
+		function max.f32(lhs, rhs)
+			if rhs == rhs then
+				return math_max(lhs, rhs)
 			else
-				return b
+				return rhs
 			end
 		end
 
@@ -555,17 +559,17 @@ local rt = (function()
 			local packed = string_pack("<d", rhs)
 			local sign = string_byte(packed, 8)
 
-			if sign < 0x80 then
-				return math_abs(lhs)
-			else
+			if sign >= 0x80 then
 				return -math_abs(lhs)
+			else
+				return math_abs(lhs)
 			end
 		end
 
 		function nearest.f32(num)
 			local result = math_round(num)
 
-			if math_abs(num) % 1 == 0.5 and math_floor(math_abs(num) % 2) == 0 then
+			if (math_abs(num) + 0.5) % 2 == 1 then
 				result = result - math_sign(result)
 			end
 
@@ -591,9 +595,14 @@ local rt = (function()
 	end
 
 	do
+		local clz = {}
+		local ctz = {}
 		local popcnt = {}
 
-		function popcnt.i32(num)
+		local bit_countlz = bit32.countlz
+		local bit_countrz = bit32.countrz
+
+		local function popcnt_i32(num)
 			local count = 0
 
 			while num ~= 0 do
@@ -604,6 +613,43 @@ local rt = (function()
 			return count
 		end
 
+		popcnt.i32 = popcnt_i32
+
+		function clz.i64(num)
+			local data_1, data_2 = num_into_u32(num)
+			local temp
+
+			if data_2 == 0 then
+				temp = bit_countlz(data_1) + 32
+			else
+				temp = bit_countlz(data_2)
+			end
+
+			return num_from_u32(temp, 0)
+		end
+
+		function ctz.i64(num)
+			local data_1, data_2 = num_into_u32(num)
+			local temp
+
+			if data_1 == 0 then
+				temp = bit_countrz(data_2) + 32
+			else
+				temp = bit_countrz(data_1)
+			end
+
+			return num_from_u32(temp, 0)
+		end
+
+		function popcnt.i64(num)
+			local data_1, data_2 = num_into_u32(num)
+			local temp = popcnt_i32(data_1) + popcnt_i32(data_2)
+
+			return num_from_u32(temp, 0)
+		end
+
+		module.clz = clz
+		module.ctz = ctz
 		module.popcnt = popcnt
 	end
 
@@ -615,11 +661,11 @@ local rt = (function()
 		local ge = {}
 		local gt = {}
 
-		local num_is_equal = I64.is_equal
-		local num_is_less_signed = I64.is_less_signed
-		local num_is_less_unsigned = I64.is_less_unsigned
-		local num_is_greater_signed = I64.is_greater_signed
-		local num_is_greater_unsigned = I64.is_greater_unsigned
+		local num_is_equal = Integer.is_equal
+		local num_is_less_signed = Integer.is_less_signed
+		local num_is_less_unsigned = Integer.is_less_unsigned
+		local num_is_greater_signed = Integer.is_greater_signed
+		local num_is_greater_unsigned = Integer.is_greater_unsigned
 
 		function le.i32(lhs, rhs)
 			return to_i32(lhs) <= to_i32(rhs)
@@ -679,10 +725,10 @@ local rt = (function()
 		local bxor = {}
 		local bnot = {}
 
-		band.i64 = I64.bit_and
-		bor.i64 = I64.bit_or
-		bxor.i64 = I64.bit_xor
-		bnot.i64 = I64.bit_not
+		band.i64 = Integer.bit_and
+		bor.i64 = Integer.bit_or
+		bxor.i64 = Integer.bit_xor
+		bnot.i64 = Integer.bit_not
 
 		module.band = band
 		module.bor = bor
@@ -720,9 +766,11 @@ local rt = (function()
 			return bit_rrotate(lhs, rhs % 32)
 		end
 
-		shl.i64 = I64.shift_left
-		shr.i64 = I64.shift_right_signed
-		shr.u64 = I64.shift_right_unsigned
+		shl.i64 = Integer.shift_left
+		shr.i64 = Integer.shift_right_signed
+		shr.u64 = Integer.shift_right_unsigned
+		rotl.i64 = Integer.rotate_left
+		rotr.i64 = Integer.rotate_right
 
 		module.shl = shl
 		module.shr = shr
@@ -732,7 +780,8 @@ local rt = (function()
 
 	do
 		local wrap = {}
-		local trunc = {}
+		local truncate = {}
+		local saturate = {}
 		local extend = {}
 		local convert = {}
 		local demote = {}
@@ -741,52 +790,23 @@ local rt = (function()
 
 		local math_ceil = math.ceil
 		local math_floor = math.floor
+		local math_clamp = math.clamp
 
 		local string_pack = string.pack
 		local string_unpack = string.unpack
 
-		local num_from_u64 = I64.from_u64
-		local num_into_u64 = I64.into_u64
+		local NUM_ZERO = Integer.ZERO
+		local NUM_MIN_I64 = num_from_u32(0, 0x80000000)
+		local NUM_MAX_I64 = num_from_u32(0xFFFFFFFF, 0x7FFFFFFF)
+		local NUM_MAX_U64 = num_from_u32(0xFFFFFFFF, 0xFFFFFFFF)
 
-		local num_negate = I64.negate
-		local num_is_negative = I64.is_negative
+		local num_from_u64 = Integer.from_u64
+		local num_into_u64 = Integer.into_u64
 
-		function wrap.i32_i64(num)
-			local data_1, _ = num_into_u32(num)
+		local num_negate = Integer.negate
+		local num_is_negative = Integer.is_negative
 
-			return data_1
-		end
-
-		trunc.i32_f32 = to_u32
-		trunc.i32_f64 = to_u32
-		trunc.u32_f32 = no_op
-		trunc.u32_f64 = no_op
-
-		function trunc.i64_f32(num)
-			if num < 0 then
-				local temp = num_from_u64(-math_ceil(num))
-
-				return num_negate(temp)
-			else
-				local temp = math_floor(num)
-
-				return num_from_u64(temp)
-			end
-		end
-
-		function trunc.i64_f64(num)
-			if num < 0 then
-				local temp = num_from_u64(-math_ceil(num))
-
-				return num_negate(temp)
-			else
-				local temp = math_floor(num)
-
-				return num_from_u64(temp)
-			end
-		end
-
-		function trunc.f32(num)
+		local function truncate_f64(num)
 			if num >= 0 then
 				return math_floor(num)
 			else
@@ -794,13 +814,150 @@ local rt = (function()
 			end
 		end
 
-		trunc.f64 = trunc.f32
-		trunc.u64_f32 = num_from_u64
-		trunc.u64_f64 = num_from_u64
+		function wrap.i32_i64(num)
+			local data_1, _ = num_into_u32(num)
+
+			return data_1
+		end
+
+		function truncate.i32_f32(num)
+			return to_u32(truncate_f64(num))
+		end
+
+		truncate.i32_f64 = to_u32
+		truncate.u32_f32 = truncate_f64
+		truncate.u32_f64 = truncate_f64
+
+		function truncate.i64_f32(num)
+			if num < 0 then
+				local temp = num_from_u64(-num)
+
+				return num_negate(temp)
+			else
+				return num_from_u64(num)
+			end
+		end
+
+		truncate.i64_f64 = truncate.i64_f32
+
+		function truncate.u64_f32(num)
+			if num <= 0 then
+				return NUM_ZERO
+			else
+				return num_from_u64(math_floor(num))
+			end
+		end
+
+		truncate.u64_f64 = truncate.u64_f32
+
+		truncate.f32 = truncate_f64
+		truncate.f64 = truncate_f64
+
+		function saturate.i32_f32(num)
+			local temp = math_clamp(truncate_f64(num), -0x80000000, 0x7FFFFFFF)
+
+			return to_u32(temp)
+		end
+
+		saturate.i32_f64 = saturate.i32_f32
+
+		function saturate.u32_f32(num)
+			local temp = math_clamp(truncate_f64(num), 0, 0xFFFFFFFF)
+
+			return to_u32(temp)
+		end
+
+		saturate.u32_f64 = saturate.u32_f32
+
+		local truncate_i64_f64 = truncate.i64_f64
+
+		function saturate.i64_f32(num)
+			if num >= 2 ^ 63 - 1 then
+				return NUM_MAX_I64
+			elseif num <= -2 ^ 63 then
+				return NUM_MIN_I64
+			else
+				return truncate_i64_f64(num)
+			end
+		end
+
+		saturate.i64_f64 = saturate.i64_f32
+
+		function saturate.u64_f32(num)
+			if num >= 2 ^ 64 then
+				return NUM_MAX_U64
+			elseif num <= 0 then
+				return NUM_ZERO
+			else
+				return truncate_i64_f64(num)
+			end
+		end
+
+		saturate.u64_f64 = saturate.u64_f32
+
+		function extend.i32_n8(num)
+			num = bit_and(num, 0xFF)
+
+			if num >= 0x80 then
+				return to_u32(num - 0x100)
+			else
+				return num
+			end
+		end
+
+		function extend.i32_n16(num)
+			num = bit_and(num, 0xFFFF)
+
+			if num >= 0x8000 then
+				return to_u32(num - 0x10000)
+			else
+				return num
+			end
+		end
+
+		function extend.i64_n8(num)
+			local data_1, _ = num_into_u32(num)
+
+			data_1 = bit_and(data_1, 0xFF)
+
+			if data_1 >= 0x80 then
+				local temp = num_from_u32(-data_1 + 0x100, 0)
+
+				return num_negate(temp)
+			else
+				return num_from_u32(data_1, 0)
+			end
+		end
+
+		function extend.i64_n16(num)
+			local data_1, _ = num_into_u32(num)
+
+			data_1 = bit_and(data_1, 0xFFFF)
+
+			if data_1 >= 0x8000 then
+				local temp = num_from_u32(-data_1 + 0x10000, 0)
+
+				return num_negate(temp)
+			else
+				return num_from_u32(data_1, 0)
+			end
+		end
+
+		function extend.i64_n32(num)
+			local data_1, _ = num_into_u32(num)
+
+			if data_1 >= 0x80000000 then
+				local temp = num_from_u32(-data_1 + 0x100000000, 0)
+
+				return num_negate(temp)
+			else
+				return num_from_u32(data_1, 0)
+			end
+		end
 
 		function extend.i64_i32(num)
-			if num > MAX_SIGNED then
-				local temp = num_from_u32(-num + BIT_SET_32, 0)
+			if num >= 0x80000000 then
+				local temp = num_from_u32(-num + 0x100000000, 0)
 
 				return num_negate(temp)
 			else
@@ -808,11 +965,11 @@ local rt = (function()
 			end
 		end
 
-		function extend.u64_i32(num)
+		function extend.i64_u32(num)
 			return num_from_u32(num, 0)
 		end
 
-		convert.f32_i32 = no_op
+		convert.f32_i32 = to_i32
 		convert.f32_u32 = no_op
 
 		function convert.f32_i64(num)
@@ -828,17 +985,7 @@ local rt = (function()
 		convert.f32_u64 = num_into_u64
 		convert.f64_i32 = to_i32
 		convert.f64_u32 = no_op
-
-		function convert.f64_i64(num)
-			if num_is_negative(num) then
-				local temp = num_negate(num)
-
-				return -num_into_u64(temp)
-			else
-				return num_into_u64(num)
-			end
-		end
-
+		convert.f64_i64 = convert.f32_i64
 		convert.f64_u64 = num_into_u64
 
 		demote.f32_f64 = no_op
@@ -872,7 +1019,8 @@ local rt = (function()
 		end
 
 		module.wrap = wrap
-		module.trunc = trunc
+		module.truncate = truncate
+		module.saturate = saturate
 		module.extend = extend
 		module.convert = convert
 		module.demote = demote
@@ -891,6 +1039,7 @@ local rt = (function()
 		local math_floor = math.floor
 
 		local string_byte = string.byte
+		local string_char = string.char
 		local string_unpack = string.unpack
 
 		local reinterpret_f32_i32 = module.reinterpret.f32_i32
@@ -980,7 +1129,7 @@ local rt = (function()
 
 			if data_1 >= 0x80 then
 				data_1 = to_u32(data_1 - 0x100)
-				data_2 = MAX_UNSIGNED
+				data_2 = 0xFFFFFFFF
 			else
 				data_2 = 0
 			end
@@ -1009,7 +1158,7 @@ local rt = (function()
 
 			if data_1 >= 0x8000 then
 				data_1 = to_u32(data_1 - 0x10000)
-				data_2 = MAX_UNSIGNED
+				data_2 = 0xFFFFFFFF
 			else
 				data_2 = 0
 			end
@@ -1050,7 +1199,7 @@ local rt = (function()
 
 			if data_1 >= 0x80000000 then
 				data_1 = to_u32(data_1 - 0x100000000)
-				data_2 = MAX_UNSIGNED
+				data_2 = 0xFFFFFFFF
 			else
 				data_2 = 0
 			end
@@ -1097,6 +1246,19 @@ local rt = (function()
 			local raw = load_i64(memory, addr)
 
 			return reinterpret_f64_i64(raw)
+		end
+
+		function load.string(memory, addr, len)
+			local buffer = table.create(len)
+			local data = memory.data
+
+			for i = 1, len do
+				local raw = load_byte(data, addr + i - 1)
+
+				buffer[i] = string_char(raw)
+			end
+
+			return table.concat(buffer)
 		end
 
 		function store.i32_n8(memory, addr, value)
@@ -1164,7 +1326,7 @@ local rt = (function()
 			store_i64(memory, addr, reinterpret_i64_f64(value))
 		end
 
-		function store.string(memory, offset, data, len)
+		function store.string(memory, addr, data, len)
 			len = len or #data
 
 			local rem = len % 4
@@ -1172,13 +1334,13 @@ local rt = (function()
 			for i = 1, len - rem, 4 do
 				local v = string_unpack("<I4", data, i)
 
-				store_i32(memory, offset + i - 1, v)
+				store_i32(memory, addr + i - 1, v)
 			end
 
 			for i = len - rem + 1, len do
 				local v = string_byte(data, i)
 
-				store_i8(memory, offset + i - 1, v)
+				store_i8(memory, addr + i - 1, v)
 			end
 		end
 
