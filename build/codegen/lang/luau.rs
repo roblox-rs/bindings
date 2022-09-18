@@ -106,9 +106,7 @@ fn convert_lua_value_to_ffi_output(
 }
 
 fn store_in_memory_or_return(writer: &mut Stream, result: Vec<String>) {
-    if result.len() == 1 {
-        note!(writer, "return {};", result[0]);
-    } else if MULTI_VALUE_SUPPORT {
+    if result.len() == 1 || MULTI_VALUE_SUPPORT {
         note!(writer, "return {};", result.join(", "));
     } else {
         for (i, v) in result.iter().enumerate() {
