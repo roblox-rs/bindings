@@ -25,97 +25,97 @@ function abi.ffi.prop_set_instance_archivable(instance, p_Archivable0)
 	getPointer(instance).Archivable = p_Archivable0 == 1;
 end
 function abi.ffi.prop_get_instance_class_name(output, instance)
-	local valueProp0 = getPointer(instance).ClassName;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ClassName;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_instance_name(output, instance)
-	local valueProp0 = getPointer(instance).Name;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Name;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_instance_name(instance, p_Name0, p_Name1)
 	getPointer(instance).Name = loadString(memory, p_Name0, p_Name1);
 end
 function abi.ffi.prop_get_instance_parent(output, instance)
-	local valueProp0 = getPointer(instance).Parent;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Parent;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_instance_parent(instance, p_Parent0, p_Parent1)
-	local valuevalue0;
+	local value0;
 	if p_Parent0 == 1 then
-		valuevalue0 = getPointer(p_Parent1);
+		value0 = getPointer(p_Parent1);
 	end
-	getPointer(instance).Parent = valuevalue0;
+	getPointer(instance).Parent = value0;
 end
 function abi.ffi.dyn_fn_instance_clear_all_children(instance)
 	return getPointer(instance):ClearAllChildren();
 end
 function abi.ffi.dyn_fn_instance_fn_clone(output, instance)
-	local valueReturn0 = getPointer(instance):FnClone();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FnClone();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_destroy(instance)
 	return getPointer(instance):Destroy();
 end
 function abi.ffi.dyn_fn_instance_find_first_ancestor(output, instance, p_name0, p_name1)
-	local valueReturn0 = getPointer(instance):FindFirstAncestor(loadString(memory, p_name0, p_name1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindFirstAncestor(loadString(memory, p_name0, p_name1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_find_first_ancestor_of_class(output, instance, p_className0, p_className1)
-	local valueReturn0 = getPointer(instance):FindFirstAncestorOfClass(loadString(memory, p_className0, p_className1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindFirstAncestorOfClass(loadString(memory, p_className0, p_className1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_find_first_ancestor_which_is_a(output, instance, p_className0, p_className1)
-	local valueReturn0 = getPointer(instance):FindFirstAncestorWhichIsA(loadString(memory, p_className0, p_className1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindFirstAncestorWhichIsA(loadString(memory, p_className0, p_className1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_find_first_child(output, instance, p_name0, p_name1, p_recursive0)
-	local valueReturn0 = getPointer(instance):FindFirstChild(loadString(memory, p_name0, p_name1), p_recursive0 == 1);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindFirstChild(loadString(memory, p_name0, p_name1), p_recursive0 == 1);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_find_first_child_of_class(output, instance, p_className0, p_className1)
-	local valueReturn0 = getPointer(instance):FindFirstChildOfClass(loadString(memory, p_className0, p_className1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindFirstChildOfClass(loadString(memory, p_className0, p_className1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_find_first_child_which_is_a(output, instance, p_className0, p_className1, p_recursive0)
-	local valueReturn0 = getPointer(instance):FindFirstChildWhichIsA(loadString(memory, p_className0, p_className1), p_recursive0 == 1);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindFirstChildWhichIsA(loadString(memory, p_className0, p_className1), p_recursive0 == 1);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_find_first_descendant(output, instance, p_name0, p_name1)
-	local valueReturn0 = getPointer(instance):FindFirstDescendant(loadString(memory, p_name0, p_name1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindFirstDescendant(loadString(memory, p_name0, p_name1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_get_actor(output, instance)
-	local valueReturn0 = getPointer(instance):GetActor();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetActor();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_instance_get_full_name(output, instance)
-	local valueReturn0 = getPointer(instance):GetFullName();
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetFullName();
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_instance_is_a(instance, p_className0, p_className1)
 	return getPointer(instance):IsA(loadString(memory, p_className0, p_className1)) and 1 or 0;
@@ -127,15 +127,15 @@ function abi.ffi.dyn_fn_instance_is_descendant_of(instance, p_ancestor0)
 	return getPointer(instance):IsDescendantOf(getPointer(p_ancestor0)) and 1 or 0;
 end
 function abi.ffi.dyn_fn_instance_wait_for_child(output, instance, p_childName0, p_childName1, p_timeOut0)
-	local valueReturn0 = getPointer(instance):WaitForChild(loadString(memory, p_childName0, p_childName1), p_timeOut0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):WaitForChild(loadString(memory, p_childName0, p_childName1), p_timeOut0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.connect_instance_ancestry_changed(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).AncestryChanged:Connect(function(p_child, p_parent)
 		local value0 = p_child;
-		local value0 = p_parent;
-		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_parent;
+		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.connect_instance_attribute_changed(instance, data, vtable)
@@ -242,14 +242,14 @@ function abi.ffi.dyn_fn_animation_clip_provider_register_animation_clip(instance
 	return createPointer(getPointer(instance):RegisterAnimationClip(getPointer(p_animationClip0)));
 end
 function abi.ffi.dyn_fn_animation_clip_provider_get_animation_clip_async(output, instance, p_assetId0)
-	local valueReturn0 = getPointer(instance):GetAnimationClipAsync(getPointer(p_assetId0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetAnimationClipAsync(getPointer(p_assetId0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_animation_clip_provider_get_animations(output, instance, p_userId0)
-	local valueReturn0 = getPointer(instance):GetAnimations(p_userId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetAnimations(p_userId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_animation_stream_track_is_playing(instance)
 	return getPointer(instance).IsPlaying and 1 or 0;
@@ -261,9 +261,9 @@ function abi.ffi.prop_get_animation_stream_track_weight_target(instance)
 	return getPointer(instance).WeightTarget;
 end
 function abi.ffi.prop_get_animation_track_animation(output, instance)
-	local valueProp0 = getPointer(instance).Animation;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Animation;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_animation_track_is_playing(instance)
 	return getPointer(instance).IsPlaying and 1 or 0;
@@ -328,9 +328,9 @@ function abi.ffi.connect_animation_track_stopped(instance, data, vtable)
 	end))
 end
 function abi.ffi.dyn_fn_animator_load_animation(output, instance, p_animation0)
-	local valueReturn0 = getPointer(instance):LoadAnimation(getPointer(p_animation0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):LoadAnimation(getPointer(p_animation0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.connect_animator_animation_played(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).AnimationPlayed:Connect(function(p_animationTrack)
@@ -350,9 +350,9 @@ function abi.ffi.dyn_fn_asset_service_create_place_in_player_inventory_async(ins
 	return getPointer(instance):CreatePlaceInPlayerInventoryAsync(getPointer(p_player0), loadString(memory, p_placeName0, p_placeName1), p_templatePlaceID0, loadString(memory, p_description0, p_description1));
 end
 function abi.ffi.dyn_fn_asset_service_get_game_places_async(output, instance)
-	local valueReturn0 = getPointer(instance):GetGamePlacesAsync();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetGamePlacesAsync();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_asset_service_save_place_async(instance)
 	return getPointer(instance):SavePlaceAsync();
@@ -481,14 +481,14 @@ function abi.ffi.dyn_fn_avatar_editor_service_prompt_rename_outfit(instance, p_o
 	return getPointer(instance):PromptRenameOutfit(p_outfitId0);
 end
 function abi.ffi.dyn_fn_avatar_editor_service_check_apply_default_clothing(output, instance, p_humanoidDescription0)
-	local valueReturn0 = getPointer(instance):CheckApplyDefaultClothing(getPointer(p_humanoidDescription0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):CheckApplyDefaultClothing(getPointer(p_humanoidDescription0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_avatar_editor_service_search_catalog(output, instance, p_searchParameters0)
-	local valueReturn0 = getPointer(instance):SearchCatalog(getPointer(p_searchParameters0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):SearchCatalog(getPointer(p_searchParameters0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_backpack_item_texture_id(instance)
 	return createPointer(getPointer(instance).TextureId);
@@ -551,13 +551,13 @@ function abi.ffi.prop_set_tool_requires_handle(instance, p_RequiresHandle0)
 	getPointer(instance).RequiresHandle = p_RequiresHandle0 == 1;
 end
 function abi.ffi.prop_get_tool_tool_tip(output, instance)
-	local valueProp0 = getPointer(instance).ToolTip;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ToolTip;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_tool_tool_tip(instance, p_ToolTip0, p_ToolTip1)
 	getPointer(instance).ToolTip = loadString(memory, p_ToolTip0, p_ToolTip1);
@@ -596,16 +596,16 @@ function abi.ffi.dyn_fn_badge_service_user_has_badge_async(instance, p_userId0, 
 	return getPointer(instance):UserHasBadgeAsync(p_userId0, p_badgeId0) and 1 or 0;
 end
 function abi.ffi.prop_get_player_gui_selection_image_object(output, instance)
-	local valueProp0 = getPointer(instance).SelectionImageObject;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).SelectionImageObject;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_player_gui_selection_image_object(instance, p_SelectionImageObject0, p_SelectionImageObject1)
-	local valuevalue0;
+	local value0;
 	if p_SelectionImageObject0 == 1 then
-		valuevalue0 = getPointer(p_SelectionImageObject1);
+		value0 = getPointer(p_SelectionImageObject1);
 	end
-	getPointer(instance).SelectionImageObject = valuevalue0;
+	getPointer(instance).SelectionImageObject = value0;
 end
 function abi.ffi.prop_get_starter_gui_show_development_gui(instance)
 	return getPointer(instance).ShowDevelopmentGui and 1 or 0;
@@ -689,28 +689,28 @@ function abi.ffi.prop_set_wrap_target_stiffness(instance, p_Stiffness0)
 	getPointer(instance).Stiffness = p_Stiffness0;
 end
 function abi.ffi.prop_get_beam_attachment_0(output, instance)
-	local valueProp0 = getPointer(instance).Attachment0;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment0;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_beam_attachment_0(instance, p_Attachment00, p_Attachment01)
-	local valuevalue0;
+	local value0;
 	if p_Attachment00 == 1 then
-		valuevalue0 = getPointer(p_Attachment01);
+		value0 = getPointer(p_Attachment01);
 	end
-	getPointer(instance).Attachment0 = valuevalue0;
+	getPointer(instance).Attachment0 = value0;
 end
 function abi.ffi.prop_get_beam_attachment_1(output, instance)
-	local valueProp0 = getPointer(instance).Attachment1;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment1;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_beam_attachment_1(instance, p_Attachment10, p_Attachment11)
-	local valuevalue0;
+	local value0;
 	if p_Attachment10 == 1 then
-		valuevalue0 = getPointer(p_Attachment11);
+		value0 = getPointer(p_Attachment11);
 	end
-	getPointer(instance).Attachment1 = valuevalue0;
+	getPointer(instance).Attachment1 = value0;
 end
 function abi.ffi.prop_get_beam_brightness(instance)
 	return getPointer(instance).Brightness;
@@ -949,16 +949,16 @@ function abi.ffi.prop_set_rocket_propulsion_max_torque(instance, p_MaxTorque0)
 	getPointer(instance).MaxTorque = getPointer(p_MaxTorque0);
 end
 function abi.ffi.prop_get_rocket_propulsion_target(output, instance)
-	local valueProp0 = getPointer(instance).Target;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Target;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_rocket_propulsion_target(instance, p_Target0, p_Target1)
-	local valuevalue0;
+	local value0;
 	if p_Target0 == 1 then
-		valuevalue0 = getPointer(p_Target1);
+		value0 = getPointer(p_Target1);
 	end
-	getPointer(instance).Target = valuevalue0;
+	getPointer(instance).Target = value0;
 end
 function abi.ffi.prop_get_rocket_propulsion_target_offset(instance)
 	return createPointer(getPointer(instance).TargetOffset);
@@ -1014,16 +1014,16 @@ function abi.ffi.prop_set_camera_c_frame(instance, p_CFrame0)
 	getPointer(instance).CFrame = getPointer(p_CFrame0);
 end
 function abi.ffi.prop_get_camera_camera_subject(output, instance)
-	local valueProp0 = getPointer(instance).CameraSubject;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).CameraSubject;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_camera_camera_subject(instance, p_CameraSubject0, p_CameraSubject1)
-	local valuevalue0;
+	local value0;
 	if p_CameraSubject0 == 1 then
-		valuevalue0 = getPointer(p_CameraSubject1);
+		value0 = getPointer(p_CameraSubject1);
 	end
-	getPointer(instance).CameraSubject = valuevalue0;
+	getPointer(instance).CameraSubject = value0;
 end
 function abi.ffi.prop_get_camera_diagonal_field_of_view(instance)
 	return getPointer(instance).DiagonalFieldOfView;
@@ -1232,22 +1232,22 @@ function abi.ffi.dyn_fn_chat_can_users_chat_async(instance, p_userIdFrom0, p_use
 	return getPointer(instance):CanUsersChatAsync(p_userIdFrom0, p_userIdTo0) and 1 or 0;
 end
 function abi.ffi.dyn_fn_chat_filter_string_async(output, instance, p_stringToFilter0, p_stringToFilter1, p_playerFrom0, p_playerTo0)
-	local valueReturn0 = getPointer(instance):FilterStringAsync(loadString(memory, p_stringToFilter0, p_stringToFilter1), getPointer(p_playerFrom0), getPointer(p_playerTo0));
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):FilterStringAsync(loadString(memory, p_stringToFilter0, p_stringToFilter1), getPointer(p_playerFrom0), getPointer(p_playerTo0));
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_chat_filter_string_for_broadcast(output, instance, p_stringToFilter0, p_stringToFilter1, p_playerFrom0)
-	local valueReturn0 = getPointer(instance):FilterStringForBroadcast(loadString(memory, p_stringToFilter0, p_stringToFilter1), getPointer(p_playerFrom0));
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):FilterStringForBroadcast(loadString(memory, p_stringToFilter0, p_stringToFilter1), getPointer(p_playerFrom0));
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_click_detector_cursor_icon(instance)
 	return createPointer(getPointer(instance).CursorIcon);
@@ -1342,13 +1342,13 @@ function abi.ffi.prop_get_command_instance_allow_gui_access_points(instance)
 	return getPointer(instance).AllowGUIAccessPoints and 1 or 0;
 end
 function abi.ffi.prop_get_command_instance_display_name(output, instance)
-	local valueProp0 = getPointer(instance).DisplayName;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).DisplayName;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_command_instance_display_name(instance, p_DisplayName0, p_DisplayName1)
 	getPointer(instance).DisplayName = loadString(memory, p_DisplayName0, p_DisplayName1);
@@ -1357,28 +1357,28 @@ function abi.ffi.prop_get_constraint_active(instance)
 	return getPointer(instance).Active and 1 or 0;
 end
 function abi.ffi.prop_get_constraint_attachment_0(output, instance)
-	local valueProp0 = getPointer(instance).Attachment0;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment0;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_constraint_attachment_0(instance, p_Attachment00, p_Attachment01)
-	local valuevalue0;
+	local value0;
 	if p_Attachment00 == 1 then
-		valuevalue0 = getPointer(p_Attachment01);
+		value0 = getPointer(p_Attachment01);
 	end
-	getPointer(instance).Attachment0 = valuevalue0;
+	getPointer(instance).Attachment0 = value0;
 end
 function abi.ffi.prop_get_constraint_attachment_1(output, instance)
-	local valueProp0 = getPointer(instance).Attachment1;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment1;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_constraint_attachment_1(instance, p_Attachment10, p_Attachment11)
-	local valuevalue0;
+	local value0;
 	if p_Attachment10 == 1 then
-		valuevalue0 = getPointer(p_Attachment11);
+		value0 = getPointer(p_Attachment11);
 	end
-	getPointer(instance).Attachment1 = valuevalue0;
+	getPointer(instance).Attachment1 = value0;
 end
 function abi.ffi.prop_get_constraint_color(instance)
 	return createPointer(getPointer(instance).Color);
@@ -2128,13 +2128,13 @@ function abi.ffi.prop_set_vector_force_force(instance, p_Force0)
 	getPointer(instance).Force = getPointer(p_Force0);
 end
 function abi.ffi.prop_get_content_provider_base_url(output, instance)
-	local valueProp0 = getPointer(instance).BaseUrl;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).BaseUrl;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_content_provider_request_queue_size(instance)
 	return getPointer(instance).RequestQueueSize;
@@ -2163,13 +2163,13 @@ function abi.ffi.connect_content_provider_asset_fetch_failed(instance, data, vta
 	end))
 end
 function abi.ffi.dyn_fn_context_action_service_get_current_local_tool_icon(output, instance)
-	local valueReturn0 = getPointer(instance):GetCurrentLocalToolIcon();
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetCurrentLocalToolIcon();
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_context_action_service_set_description(instance, p_actionName0, p_actionName1, p_description0, p_description1)
 	return getPointer(instance):SetDescription(loadString(memory, p_actionName0, p_actionName1), loadString(memory, p_description0, p_description1));
@@ -2190,9 +2190,9 @@ function abi.ffi.dyn_fn_context_action_service_unbind_all_actions(instance)
 	return getPointer(instance):UnbindAllActions();
 end
 function abi.ffi.dyn_fn_context_action_service_get_button(output, instance, p_actionName0, p_actionName1)
-	local valueReturn0 = getPointer(instance):GetButton(loadString(memory, p_actionName0, p_actionName1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetButton(loadString(memory, p_actionName0, p_actionName1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.connect_context_action_service_local_tool_equipped(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).LocalToolEquipped:Connect(function(p_toolEquipped)
@@ -2256,25 +2256,25 @@ function abi.ffi.prop_get_data_store_info_created_time(instance)
 	return getPointer(instance).CreatedTime;
 end
 function abi.ffi.prop_get_data_store_info_data_store_name(output, instance)
-	local valueProp0 = getPointer(instance).DataStoreName;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).DataStoreName;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_data_store_info_updated_time(instance)
 	return getPointer(instance).UpdatedTime;
 end
 function abi.ffi.prop_get_data_store_key_key_name(output, instance)
-	local valueProp0 = getPointer(instance).KeyName;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).KeyName;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_data_store_key_info_created_time(instance)
 	return getPointer(instance).CreatedTime;
@@ -2283,13 +2283,13 @@ function abi.ffi.prop_get_data_store_key_info_updated_time(instance)
 	return getPointer(instance).UpdatedTime;
 end
 function abi.ffi.prop_get_data_store_key_info_version(output, instance)
-	local valueProp0 = getPointer(instance).Version;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Version;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_data_store_object_version_info_created_time(instance)
 	return getPointer(instance).CreatedTime;
@@ -2298,13 +2298,13 @@ function abi.ffi.prop_get_data_store_object_version_info_is_deleted(instance)
 	return getPointer(instance).IsDeleted and 1 or 0;
 end
 function abi.ffi.prop_get_data_store_object_version_info_version(output, instance)
-	local valueProp0 = getPointer(instance).Version;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Version;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_data_store_options_all_scopes(instance)
 	return getPointer(instance).AllScopes and 1 or 0;
@@ -2313,24 +2313,24 @@ function abi.ffi.prop_set_data_store_options_all_scopes(instance, p_AllScopes0)
 	getPointer(instance).AllScopes = p_AllScopes0 == 1;
 end
 function abi.ffi.dyn_fn_data_store_service_get_data_store(output, instance, p_name0, p_name1, p_scope0, p_scope1, p_options0)
-	local valueReturn0 = getPointer(instance):GetDataStore(loadString(memory, p_name0, p_name1), loadString(memory, p_scope0, p_scope1), getPointer(p_options0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetDataStore(loadString(memory, p_name0, p_name1), loadString(memory, p_scope0, p_scope1), getPointer(p_options0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_data_store_service_get_global_data_store(output, instance)
-	local valueReturn0 = getPointer(instance):GetGlobalDataStore();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetGlobalDataStore();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_data_store_service_get_ordered_data_store(output, instance, p_name0, p_name1, p_scope0, p_scope1)
-	local valueReturn0 = getPointer(instance):GetOrderedDataStore(loadString(memory, p_name0, p_name1), loadString(memory, p_scope0, p_scope1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetOrderedDataStore(loadString(memory, p_name0, p_name1), loadString(memory, p_scope0, p_scope1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_data_store_service_list_data_stores_async(output, instance, p_prefix0, p_prefix1, p_pageSize0)
-	local valueReturn0 = getPointer(instance):ListDataStoresAsync(loadString(memory, p_prefix0, p_prefix1), p_pageSize0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):ListDataStoresAsync(loadString(memory, p_prefix0, p_prefix1), p_pageSize0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_debris_add_item(instance, p_item0, p_lifetime0)
 	return getPointer(instance):AddItem(getPointer(p_item0), p_lifetime0);
@@ -2348,13 +2348,13 @@ function abi.ffi.prop_set_dialog_goodbye_choice_active(instance, p_GoodbyeChoice
 	getPointer(instance).GoodbyeChoiceActive = p_GoodbyeChoiceActive0 == 1;
 end
 function abi.ffi.prop_get_dialog_goodbye_dialog(output, instance)
-	local valueProp0 = getPointer(instance).GoodbyeDialog;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).GoodbyeDialog;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_dialog_goodbye_dialog(instance, p_GoodbyeDialog0, p_GoodbyeDialog1)
 	getPointer(instance).GoodbyeDialog = loadString(memory, p_GoodbyeDialog0, p_GoodbyeDialog1);
@@ -2366,13 +2366,13 @@ function abi.ffi.prop_set_dialog_in_use(instance, p_InUse0)
 	getPointer(instance).InUse = p_InUse0 == 1;
 end
 function abi.ffi.prop_get_dialog_initial_prompt(output, instance)
-	local valueProp0 = getPointer(instance).InitialPrompt;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).InitialPrompt;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_dialog_initial_prompt(instance, p_InitialPrompt0, p_InitialPrompt1)
 	getPointer(instance).InitialPrompt = loadString(memory, p_InitialPrompt0, p_InitialPrompt1);
@@ -2392,8 +2392,8 @@ end
 function abi.ffi.connect_dialog_dialog_choice_selected(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).DialogChoiceSelected:Connect(function(p_player, p_dialogChoice)
 		local value0 = p_player;
-		local value0 = p_dialogChoice;
-		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_dialogChoice;
+		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.prop_get_dialog_choice_goodbye_choice_active(instance)
@@ -2403,37 +2403,37 @@ function abi.ffi.prop_set_dialog_choice_goodbye_choice_active(instance, p_Goodby
 	getPointer(instance).GoodbyeChoiceActive = p_GoodbyeChoiceActive0 == 1;
 end
 function abi.ffi.prop_get_dialog_choice_goodbye_dialog(output, instance)
-	local valueProp0 = getPointer(instance).GoodbyeDialog;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).GoodbyeDialog;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_dialog_choice_goodbye_dialog(instance, p_GoodbyeDialog0, p_GoodbyeDialog1)
 	getPointer(instance).GoodbyeDialog = loadString(memory, p_GoodbyeDialog0, p_GoodbyeDialog1);
 end
 function abi.ffi.prop_get_dialog_choice_response_dialog(output, instance)
-	local valueProp0 = getPointer(instance).ResponseDialog;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ResponseDialog;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_dialog_choice_response_dialog(instance, p_ResponseDialog0, p_ResponseDialog1)
 	getPointer(instance).ResponseDialog = loadString(memory, p_ResponseDialog0, p_ResponseDialog1);
 end
 function abi.ffi.prop_get_dialog_choice_user_dialog(output, instance)
-	local valueProp0 = getPointer(instance).UserDialog;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).UserDialog;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_dialog_choice_user_dialog(instance, p_UserDialog0, p_UserDialog1)
 	getPointer(instance).UserDialog = loadString(memory, p_UserDialog0, p_UserDialog1);
@@ -2490,19 +2490,19 @@ function abi.ffi.dyn_fn_euler_rotation_curve_get_rotation_at_time(instance, p_ti
 	return createPointer(getPointer(instance):GetRotationAtTime(p_time0));
 end
 function abi.ffi.dyn_fn_euler_rotation_curve_x(output, instance)
-	local valueReturn0 = getPointer(instance):X();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):X();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_euler_rotation_curve_y(output, instance)
-	local valueReturn0 = getPointer(instance):Y();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):Y();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_euler_rotation_curve_z(output, instance)
-	local valueReturn0 = getPointer(instance):Z();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):Z();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_explosion_blast_pressure(instance)
 	return getPointer(instance).BlastPressure;
@@ -2643,9 +2643,9 @@ function abi.ffi.dyn_fn_float_curve_get_key_at_index(instance, p_index0)
 	return createPointer(getPointer(instance):GetKeyAtIndex(p_index0));
 end
 function abi.ffi.dyn_fn_float_curve_get_value_at_time(output, instance, p_time0)
-	local valueReturn0 = getPointer(instance):GetValueAtTime(p_time0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and valueReturn0 or 0)
+	local value0 = getPointer(instance):GetValueAtTime(p_time0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and value0 or 0)
 end
 function abi.ffi.dyn_fn_float_curve_remove_key_at_index(instance, p_startingIndex0, p_count0)
 	return getPointer(instance):RemoveKeyAtIndex(p_startingIndex0, p_count0);
@@ -2669,13 +2669,13 @@ function abi.ffi.prop_set_get_text_bounds_params_size(instance, p_Size0)
 	getPointer(instance).Size = p_Size0;
 end
 function abi.ffi.prop_get_get_text_bounds_params_text(output, instance)
-	local valueProp0 = getPointer(instance).Text;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Text;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_get_text_bounds_params_text(instance, p_Text0, p_Text1)
 	getPointer(instance).Text = loadString(memory, p_Text0, p_Text1);
@@ -2687,22 +2687,22 @@ function abi.ffi.prop_set_get_text_bounds_params_width(instance, p_Width0)
 	getPointer(instance).Width = p_Width0;
 end
 function abi.ffi.dyn_fn_data_store_list_keys_async(output, instance, p_prefix0, p_prefix1, p_pageSize0)
-	local valueReturn0 = getPointer(instance):ListKeysAsync(loadString(memory, p_prefix0, p_prefix1), p_pageSize0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):ListKeysAsync(loadString(memory, p_prefix0, p_prefix1), p_pageSize0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_data_store_remove_version_async(instance, p_key0, p_key1, p_version0, p_version1)
 	return getPointer(instance):RemoveVersionAsync(loadString(memory, p_key0, p_key1), loadString(memory, p_version0, p_version1));
 end
 function abi.ffi.dyn_fn_group_service_get_allies_async(output, instance, p_groupId0)
-	local valueReturn0 = getPointer(instance):GetAlliesAsync(p_groupId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetAlliesAsync(p_groupId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_group_service_get_enemies_async(output, instance, p_groupId0)
-	local valueReturn0 = getPointer(instance):GetEnemiesAsync(p_groupId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetEnemiesAsync(p_groupId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_gui_base_2_d_absolute_position(instance)
 	return createPointer(getPointer(instance).AbsolutePosition);
@@ -2720,16 +2720,16 @@ function abi.ffi.prop_set_gui_base_2_d_auto_localize(instance, p_AutoLocalize0)
 	getPointer(instance).AutoLocalize = p_AutoLocalize0 == 1;
 end
 function abi.ffi.prop_get_gui_base_2_d_root_localization_table(output, instance)
-	local valueProp0 = getPointer(instance).RootLocalizationTable;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).RootLocalizationTable;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_gui_base_2_d_root_localization_table(instance, p_RootLocalizationTable0, p_RootLocalizationTable1)
-	local valuevalue0;
+	local value0;
 	if p_RootLocalizationTable0 == 1 then
-		valuevalue0 = getPointer(p_RootLocalizationTable1);
+		value0 = getPointer(p_RootLocalizationTable1);
 	end
-	getPointer(instance).RootLocalizationTable = valuevalue0;
+	getPointer(instance).RootLocalizationTable = value0;
 end
 function abi.ffi.prop_get_gui_base_2_d_selection_group(instance)
 	return getPointer(instance).SelectionGroup and 1 or 0;
@@ -2740,8 +2740,8 @@ end
 function abi.ffi.connect_gui_base_2_d_selection_changed(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).SelectionChanged:Connect(function(p_amISelected, p_previousSelection, p_newSelection)
 		local value0 = p_previousSelection;
-		local value0 = p_newSelection;
-		invokeFunction(data, vtable, p_amISelected and 1 or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_newSelection;
+		invokeFunction(data, vtable, p_amISelected and 1 or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.prop_get_gui_object_active(instance)
@@ -2793,52 +2793,52 @@ function abi.ffi.prop_set_gui_object_layout_order(instance, p_LayoutOrder0)
 	getPointer(instance).LayoutOrder = p_LayoutOrder0;
 end
 function abi.ffi.prop_get_gui_object_next_selection_down(output, instance)
-	local valueProp0 = getPointer(instance).NextSelectionDown;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).NextSelectionDown;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_gui_object_next_selection_down(instance, p_NextSelectionDown0, p_NextSelectionDown1)
-	local valuevalue0;
+	local value0;
 	if p_NextSelectionDown0 == 1 then
-		valuevalue0 = getPointer(p_NextSelectionDown1);
+		value0 = getPointer(p_NextSelectionDown1);
 	end
-	getPointer(instance).NextSelectionDown = valuevalue0;
+	getPointer(instance).NextSelectionDown = value0;
 end
 function abi.ffi.prop_get_gui_object_next_selection_left(output, instance)
-	local valueProp0 = getPointer(instance).NextSelectionLeft;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).NextSelectionLeft;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_gui_object_next_selection_left(instance, p_NextSelectionLeft0, p_NextSelectionLeft1)
-	local valuevalue0;
+	local value0;
 	if p_NextSelectionLeft0 == 1 then
-		valuevalue0 = getPointer(p_NextSelectionLeft1);
+		value0 = getPointer(p_NextSelectionLeft1);
 	end
-	getPointer(instance).NextSelectionLeft = valuevalue0;
+	getPointer(instance).NextSelectionLeft = value0;
 end
 function abi.ffi.prop_get_gui_object_next_selection_right(output, instance)
-	local valueProp0 = getPointer(instance).NextSelectionRight;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).NextSelectionRight;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_gui_object_next_selection_right(instance, p_NextSelectionRight0, p_NextSelectionRight1)
-	local valuevalue0;
+	local value0;
 	if p_NextSelectionRight0 == 1 then
-		valuevalue0 = getPointer(p_NextSelectionRight1);
+		value0 = getPointer(p_NextSelectionRight1);
 	end
-	getPointer(instance).NextSelectionRight = valuevalue0;
+	getPointer(instance).NextSelectionRight = value0;
 end
 function abi.ffi.prop_get_gui_object_next_selection_up(output, instance)
-	local valueProp0 = getPointer(instance).NextSelectionUp;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).NextSelectionUp;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_gui_object_next_selection_up(instance, p_NextSelectionUp0, p_NextSelectionUp1)
-	local valuevalue0;
+	local value0;
 	if p_NextSelectionUp0 == 1 then
-		valuevalue0 = getPointer(p_NextSelectionUp1);
+		value0 = getPointer(p_NextSelectionUp1);
 	end
-	getPointer(instance).NextSelectionUp = valuevalue0;
+	getPointer(instance).NextSelectionUp = value0;
 end
 function abi.ffi.prop_get_gui_object_position(instance)
 	return createPointer(getPointer(instance).Position);
@@ -2859,16 +2859,16 @@ function abi.ffi.prop_set_gui_object_selectable(instance, p_Selectable0)
 	getPointer(instance).Selectable = p_Selectable0 == 1;
 end
 function abi.ffi.prop_get_gui_object_selection_image_object(output, instance)
-	local valueProp0 = getPointer(instance).SelectionImageObject;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).SelectionImageObject;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_gui_object_selection_image_object(instance, p_SelectionImageObject0, p_SelectionImageObject1)
-	local valuevalue0;
+	local value0;
 	if p_SelectionImageObject0 == 1 then
-		valuevalue0 = getPointer(p_SelectionImageObject1);
+		value0 = getPointer(p_SelectionImageObject1);
 	end
-	getPointer(instance).SelectionImageObject = valuevalue0;
+	getPointer(instance).SelectionImageObject = value0;
 end
 function abi.ffi.prop_get_gui_object_selection_order(instance)
 	return getPointer(instance).SelectionOrder;
@@ -3083,13 +3083,13 @@ function abi.ffi.prop_set_image_button_tile_size(instance, p_TileSize0)
 	getPointer(instance).TileSize = getPointer(p_TileSize0);
 end
 function abi.ffi.prop_get_text_button_content_text(output, instance)
-	local valueProp0 = getPointer(instance).ContentText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ContentText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_text_button_font_face(instance)
 	return createPointer(getPointer(instance).FontFace);
@@ -3104,13 +3104,13 @@ function abi.ffi.prop_set_text_button_line_height(instance, p_LineHeight0)
 	getPointer(instance).LineHeight = p_LineHeight0;
 end
 function abi.ffi.prop_get_text_button_localized_text(output, instance)
-	local valueProp0 = getPointer(instance).LocalizedText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).LocalizedText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_text_button_max_visible_graphemes(instance)
 	return getPointer(instance).MaxVisibleGraphemes;
@@ -3125,13 +3125,13 @@ function abi.ffi.prop_set_text_button_rich_text(instance, p_RichText0)
 	getPointer(instance).RichText = p_RichText0 == 1;
 end
 function abi.ffi.prop_get_text_button_text(output, instance)
-	local valueProp0 = getPointer(instance).Text;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Text;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_button_text(instance, p_Text0, p_Text1)
 	getPointer(instance).Text = loadString(memory, p_Text0, p_Text1);
@@ -3236,13 +3236,13 @@ function abi.ffi.prop_set_image_label_tile_size(instance, p_TileSize0)
 	getPointer(instance).TileSize = getPointer(p_TileSize0);
 end
 function abi.ffi.prop_get_text_label_content_text(output, instance)
-	local valueProp0 = getPointer(instance).ContentText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ContentText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_text_label_font_face(instance)
 	return createPointer(getPointer(instance).FontFace);
@@ -3257,13 +3257,13 @@ function abi.ffi.prop_set_text_label_line_height(instance, p_LineHeight0)
 	getPointer(instance).LineHeight = p_LineHeight0;
 end
 function abi.ffi.prop_get_text_label_localized_text(output, instance)
-	local valueProp0 = getPointer(instance).LocalizedText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).LocalizedText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_text_label_max_visible_graphemes(instance)
 	return getPointer(instance).MaxVisibleGraphemes;
@@ -3278,13 +3278,13 @@ function abi.ffi.prop_set_text_label_rich_text(instance, p_RichText0)
 	getPointer(instance).RichText = p_RichText0 == 1;
 end
 function abi.ffi.prop_get_text_label_text(output, instance)
-	local valueProp0 = getPointer(instance).Text;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Text;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_label_text(instance, p_Text0, p_Text1)
 	getPointer(instance).Text = loadString(memory, p_Text0, p_Text1);
@@ -3404,13 +3404,13 @@ function abi.ffi.prop_set_text_box_clear_text_on_focus(instance, p_ClearTextOnFo
 	getPointer(instance).ClearTextOnFocus = p_ClearTextOnFocus0 == 1;
 end
 function abi.ffi.prop_get_text_box_content_text(output, instance)
-	local valueProp0 = getPointer(instance).ContentText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ContentText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_text_box_cursor_position(instance)
 	return getPointer(instance).CursorPosition;
@@ -3449,13 +3449,13 @@ function abi.ffi.prop_set_text_box_placeholder_color_3(instance, p_PlaceholderCo
 	getPointer(instance).PlaceholderColor3 = getPointer(p_PlaceholderColor30);
 end
 function abi.ffi.prop_get_text_box_placeholder_text(output, instance)
-	local valueProp0 = getPointer(instance).PlaceholderText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).PlaceholderText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_box_placeholder_text(instance, p_PlaceholderText0, p_PlaceholderText1)
 	getPointer(instance).PlaceholderText = loadString(memory, p_PlaceholderText0, p_PlaceholderText1);
@@ -3479,13 +3479,13 @@ function abi.ffi.prop_set_text_box_show_native_input(instance, p_ShowNativeInput
 	getPointer(instance).ShowNativeInput = p_ShowNativeInput0 == 1;
 end
 function abi.ffi.prop_get_text_box_text(output, instance)
-	local valueProp0 = getPointer(instance).Text;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Text;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_box_text(instance, p_Text0, p_Text1)
 	getPointer(instance).Text = loadString(memory, p_Text0, p_Text1);
@@ -3671,16 +3671,16 @@ function abi.ffi.prop_set_viewport_frame_ambient(instance, p_Ambient0)
 	getPointer(instance).Ambient = getPointer(p_Ambient0);
 end
 function abi.ffi.prop_get_viewport_frame_current_camera(output, instance)
-	local valueProp0 = getPointer(instance).CurrentCamera;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).CurrentCamera;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_viewport_frame_current_camera(instance, p_CurrentCamera0, p_CurrentCamera1)
-	local valuevalue0;
+	local value0;
 	if p_CurrentCamera0 == 1 then
-		valuevalue0 = getPointer(p_CurrentCamera1);
+		value0 = getPointer(p_CurrentCamera1);
 	end
-	getPointer(instance).CurrentCamera = valuevalue0;
+	getPointer(instance).CurrentCamera = value0;
 end
 function abi.ffi.prop_get_viewport_frame_image_color_3(instance)
 	return createPointer(getPointer(instance).ImageColor3);
@@ -3725,16 +3725,16 @@ function abi.ffi.prop_set_billboard_gui_active(instance, p_Active0)
 	getPointer(instance).Active = p_Active0 == 1;
 end
 function abi.ffi.prop_get_billboard_gui_adornee(output, instance)
-	local valueProp0 = getPointer(instance).Adornee;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Adornee;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_billboard_gui_adornee(instance, p_Adornee0, p_Adornee1)
-	local valuevalue0;
+	local value0;
 	if p_Adornee0 == 1 then
-		valuevalue0 = getPointer(p_Adornee1);
+		value0 = getPointer(p_Adornee1);
 	end
-	getPointer(instance).Adornee = valuevalue0;
+	getPointer(instance).Adornee = value0;
 end
 function abi.ffi.prop_get_billboard_gui_always_on_top(instance)
 	return getPointer(instance).AlwaysOnTop and 1 or 0;
@@ -3800,16 +3800,16 @@ function abi.ffi.prop_set_billboard_gui_max_distance(instance, p_MaxDistance0)
 	getPointer(instance).MaxDistance = p_MaxDistance0;
 end
 function abi.ffi.prop_get_billboard_gui_player_to_hide_from(output, instance)
-	local valueProp0 = getPointer(instance).PlayerToHideFrom;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).PlayerToHideFrom;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_billboard_gui_player_to_hide_from(instance, p_PlayerToHideFrom0, p_PlayerToHideFrom1)
-	local valuevalue0;
+	local value0;
 	if p_PlayerToHideFrom0 == 1 then
-		valuevalue0 = getPointer(p_PlayerToHideFrom1);
+		value0 = getPointer(p_PlayerToHideFrom1);
 	end
-	getPointer(instance).PlayerToHideFrom = valuevalue0;
+	getPointer(instance).PlayerToHideFrom = value0;
 end
 function abi.ffi.prop_get_billboard_gui_size(instance)
 	return createPointer(getPointer(instance).Size);
@@ -3854,16 +3854,16 @@ function abi.ffi.prop_set_surface_gui_active(instance, p_Active0)
 	getPointer(instance).Active = p_Active0 == 1;
 end
 function abi.ffi.prop_get_surface_gui_adornee(output, instance)
-	local valueProp0 = getPointer(instance).Adornee;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Adornee;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_surface_gui_adornee(instance, p_Adornee0, p_Adornee1)
-	local valuevalue0;
+	local value0;
 	if p_Adornee0 == 1 then
-		valuevalue0 = getPointer(p_Adornee1);
+		value0 = getPointer(p_Adornee1);
 	end
-	getPointer(instance).Adornee = valuevalue0;
+	getPointer(instance).Adornee = value0;
 end
 function abi.ffi.prop_get_surface_gui_always_on_top(instance)
 	return getPointer(instance).AlwaysOnTop and 1 or 0;
@@ -3932,16 +3932,16 @@ function abi.ffi.prop_set_gui_base_3_d_visible(instance, p_Visible0)
 	getPointer(instance).Visible = p_Visible0 == 1;
 end
 function abi.ffi.prop_get_instance_adornment_adornee(output, instance)
-	local valueProp0 = getPointer(instance).Adornee;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Adornee;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_instance_adornment_adornee(instance, p_Adornee0, p_Adornee1)
-	local valuevalue0;
+	local value0;
 	if p_Adornee0 == 1 then
-		valuevalue0 = getPointer(p_Adornee1);
+		value0 = getPointer(p_Adornee1);
 	end
-	getPointer(instance).Adornee = valuevalue0;
+	getPointer(instance).Adornee = value0;
 end
 function abi.ffi.prop_get_selection_box_line_thickness(instance)
 	return getPointer(instance).LineThickness;
@@ -3962,16 +3962,16 @@ function abi.ffi.prop_set_selection_box_surface_transparency(instance, p_Surface
 	getPointer(instance).SurfaceTransparency = p_SurfaceTransparency0;
 end
 function abi.ffi.prop_get_pv_adornment_adornee(output, instance)
-	local valueProp0 = getPointer(instance).Adornee;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Adornee;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_pv_adornment_adornee(instance, p_Adornee0, p_Adornee1)
-	local valuevalue0;
+	local value0;
 	if p_Adornee0 == 1 then
-		valuevalue0 = getPointer(p_Adornee1);
+		value0 = getPointer(p_Adornee1);
 	end
-	getPointer(instance).Adornee = valuevalue0;
+	getPointer(instance).Adornee = value0;
 end
 function abi.ffi.prop_get_handle_adornment_always_on_top(instance)
 	return getPointer(instance).AlwaysOnTop and 1 or 0;
@@ -4102,16 +4102,16 @@ function abi.ffi.prop_set_selection_sphere_surface_transparency(instance, p_Surf
 	getPointer(instance).SurfaceTransparency = p_SurfaceTransparency0;
 end
 function abi.ffi.prop_get_part_adornment_adornee(output, instance)
-	local valueProp0 = getPointer(instance).Adornee;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Adornee;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_part_adornment_adornee(instance, p_Adornee0, p_Adornee1)
-	local valuevalue0;
+	local value0;
 	if p_Adornee0 == 1 then
-		valuevalue0 = getPointer(p_Adornee1);
+		value0 = getPointer(p_Adornee1);
 	end
-	getPointer(instance).Adornee = valuevalue0;
+	getPointer(instance).Adornee = value0;
 end
 function abi.ffi.prop_get_arc_handles_axes(instance)
 	return createPointer(getPointer(instance).Axes);
@@ -4126,16 +4126,16 @@ function abi.ffi.prop_set_handles_faces(instance, p_Faces0)
 	getPointer(instance).Faces = getPointer(p_Faces0);
 end
 function abi.ffi.prop_get_selection_lasso_humanoid(output, instance)
-	local valueProp0 = getPointer(instance).Humanoid;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Humanoid;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_selection_lasso_humanoid(instance, p_Humanoid0, p_Humanoid1)
-	local valuevalue0;
+	local value0;
 	if p_Humanoid0 == 1 then
-		valuevalue0 = getPointer(p_Humanoid1);
+		value0 = getPointer(p_Humanoid1);
 	end
-	getPointer(instance).Humanoid = valuevalue0;
+	getPointer(instance).Humanoid = value0;
 end
 function abi.ffi.prop_get_gui_service_auto_select_gui_enabled(instance)
 	return getPointer(instance).AutoSelectGuiEnabled and 1 or 0;
@@ -4159,16 +4159,16 @@ function abi.ffi.prop_get_gui_service_menu_is_open(instance)
 	return getPointer(instance).MenuIsOpen and 1 or 0;
 end
 function abi.ffi.prop_get_gui_service_selected_object(output, instance)
-	local valueProp0 = getPointer(instance).SelectedObject;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).SelectedObject;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_gui_service_selected_object(instance, p_SelectedObject0, p_SelectedObject1)
-	local valuevalue0;
+	local value0;
 	if p_SelectedObject0 == 1 then
-		valuevalue0 = getPointer(p_SelectedObject1);
+		value0 = getPointer(p_SelectedObject1);
 	end
-	getPointer(instance).SelectedObject = valuevalue0;
+	getPointer(instance).SelectedObject = value0;
 end
 function abi.ffi.prop_get_gui_service_touch_controls_enabled(instance)
 	return getPointer(instance).TouchControlsEnabled and 1 or 0;
@@ -4226,16 +4226,16 @@ function abi.ffi.connect_gui_service_menu_opened(instance, data, vtable)
 	end))
 end
 function abi.ffi.prop_get_highlight_adornee(output, instance)
-	local valueProp0 = getPointer(instance).Adornee;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Adornee;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_highlight_adornee(instance, p_Adornee0, p_Adornee1)
-	local valuevalue0;
+	local value0;
 	if p_Adornee0 == 1 then
-		valuevalue0 = getPointer(p_Adornee1);
+		value0 = getPointer(p_Adornee1);
 	end
-	getPointer(instance).Adornee = valuevalue0;
+	getPointer(instance).Adornee = value0;
 end
 function abi.ffi.prop_get_highlight_enabled(instance)
 	return getPointer(instance).Enabled and 1 or 0;
@@ -4268,22 +4268,22 @@ function abi.ffi.prop_set_highlight_outline_transparency(instance, p_OutlineTran
 	getPointer(instance).OutlineTransparency = p_OutlineTransparency0;
 end
 function abi.ffi.dyn_fn_http_service_generate_guid(output, instance, p_wrapInCurlyBraces0)
-	local valueReturn0 = getPointer(instance):GenerateGUID(p_wrapInCurlyBraces0 == 1);
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GenerateGUID(p_wrapInCurlyBraces0 == 1);
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_http_service_url_encode(output, instance, p_input0, p_input1)
-	local valueReturn0 = getPointer(instance):UrlEncode(loadString(memory, p_input0, p_input1));
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):UrlEncode(loadString(memory, p_input0, p_input1));
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_humanoid_auto_jump_enabled(instance)
 	return getPointer(instance).AutoJumpEnabled and 1 or 0;
@@ -4316,13 +4316,13 @@ function abi.ffi.prop_set_humanoid_camera_offset(instance, p_CameraOffset0)
 	getPointer(instance).CameraOffset = getPointer(p_CameraOffset0);
 end
 function abi.ffi.prop_get_humanoid_display_name(output, instance)
-	local valueProp0 = getPointer(instance).DisplayName;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).DisplayName;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_display_name(instance, p_DisplayName0, p_DisplayName1)
 	getPointer(instance).DisplayName = loadString(memory, p_DisplayName0, p_DisplayName1);
@@ -4397,14 +4397,14 @@ function abi.ffi.prop_set_humanoid_requires_neck(instance, p_RequiresNeck0)
 	getPointer(instance).RequiresNeck = p_RequiresNeck0 == 1;
 end
 function abi.ffi.prop_get_humanoid_root_part(output, instance)
-	local valueProp0 = getPointer(instance).RootPart;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).RootPart;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_humanoid_seat_part(output, instance)
-	local valueProp0 = getPointer(instance).SeatPart;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).SeatPart;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_humanoid_sit(instance)
 	return getPointer(instance).Sit and 1 or 0;
@@ -4431,16 +4431,16 @@ function abi.ffi.prop_set_humanoid_walk_speed(instance, p_WalkSpeed0)
 	getPointer(instance).WalkSpeed = p_WalkSpeed0;
 end
 function abi.ffi.prop_get_humanoid_walk_to_part(output, instance)
-	local valueProp0 = getPointer(instance).WalkToPart;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).WalkToPart;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_humanoid_walk_to_part(instance, p_WalkToPart0, p_WalkToPart1)
-	local valuevalue0;
+	local value0;
 	if p_WalkToPart0 == 1 then
-		valuevalue0 = getPointer(p_WalkToPart1);
+		value0 = getPointer(p_WalkToPart1);
 	end
-	getPointer(instance).WalkToPart = valuevalue0;
+	getPointer(instance).WalkToPart = value0;
 end
 function abi.ffi.prop_get_humanoid_walk_to_point(instance)
 	return createPointer(getPointer(instance).WalkToPoint);
@@ -4458,9 +4458,9 @@ function abi.ffi.dyn_fn_humanoid_equip_tool(instance, p_tool0)
 	return getPointer(instance):EquipTool(getPointer(p_tool0));
 end
 function abi.ffi.dyn_fn_humanoid_get_applied_description(output, instance)
-	local valueReturn0 = getPointer(instance):GetAppliedDescription();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetAppliedDescription();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_humanoid_fn_move(instance, p_moveDirection0, p_relativeToCamera0)
 	return getPointer(instance):FnMove(getPointer(p_moveDirection0), p_relativeToCamera0 == 1);
@@ -4557,13 +4557,13 @@ function abi.ffi.connect_humanoid_touched(instance, data, vtable)
 	end))
 end
 function abi.ffi.prop_get_humanoid_description_back_accessory(output, instance)
-	local valueProp0 = getPointer(instance).BackAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).BackAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_back_accessory(instance, p_BackAccessory0, p_BackAccessory1)
 	getPointer(instance).BackAccessory = loadString(memory, p_BackAccessory0, p_BackAccessory1);
@@ -4593,13 +4593,13 @@ function abi.ffi.prop_set_humanoid_description_face(instance, p_Face0)
 	getPointer(instance).Face = p_Face0;
 end
 function abi.ffi.prop_get_humanoid_description_face_accessory(output, instance)
-	local valueProp0 = getPointer(instance).FaceAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).FaceAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_face_accessory(instance, p_FaceAccessory0, p_FaceAccessory1)
 	getPointer(instance).FaceAccessory = loadString(memory, p_FaceAccessory0, p_FaceAccessory1);
@@ -4611,13 +4611,13 @@ function abi.ffi.prop_set_humanoid_description_fall_animation(instance, p_FallAn
 	getPointer(instance).FallAnimation = p_FallAnimation0;
 end
 function abi.ffi.prop_get_humanoid_description_front_accessory(output, instance)
-	local valueProp0 = getPointer(instance).FrontAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).FrontAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_front_accessory(instance, p_FrontAccessory0, p_FrontAccessory1)
 	getPointer(instance).FrontAccessory = loadString(memory, p_FrontAccessory0, p_FrontAccessory1);
@@ -4629,25 +4629,25 @@ function abi.ffi.prop_set_humanoid_description_graphic_t_shirt(instance, p_Graph
 	getPointer(instance).GraphicTShirt = p_GraphicTShirt0;
 end
 function abi.ffi.prop_get_humanoid_description_hair_accessory(output, instance)
-	local valueProp0 = getPointer(instance).HairAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).HairAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_hair_accessory(instance, p_HairAccessory0, p_HairAccessory1)
 	getPointer(instance).HairAccessory = loadString(memory, p_HairAccessory0, p_HairAccessory1);
 end
 function abi.ffi.prop_get_humanoid_description_hat_accessory(output, instance)
-	local valueProp0 = getPointer(instance).HatAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).HatAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_hat_accessory(instance, p_HatAccessory0, p_HatAccessory1)
 	getPointer(instance).HatAccessory = loadString(memory, p_HatAccessory0, p_HatAccessory1);
@@ -4713,13 +4713,13 @@ function abi.ffi.prop_set_humanoid_description_left_leg_color(instance, p_LeftLe
 	getPointer(instance).LeftLegColor = getPointer(p_LeftLegColor0);
 end
 function abi.ffi.prop_get_humanoid_description_neck_accessory(output, instance)
-	local valueProp0 = getPointer(instance).NeckAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).NeckAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_neck_accessory(instance, p_NeckAccessory0, p_NeckAccessory1)
 	getPointer(instance).NeckAccessory = loadString(memory, p_NeckAccessory0, p_NeckAccessory1);
@@ -4773,13 +4773,13 @@ function abi.ffi.prop_set_humanoid_description_shirt(instance, p_Shirt0)
 	getPointer(instance).Shirt = p_Shirt0;
 end
 function abi.ffi.prop_get_humanoid_description_shoulders_accessory(output, instance)
-	local valueProp0 = getPointer(instance).ShouldersAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ShouldersAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_shoulders_accessory(instance, p_ShouldersAccessory0, p_ShouldersAccessory1)
 	getPointer(instance).ShouldersAccessory = loadString(memory, p_ShouldersAccessory0, p_ShouldersAccessory1);
@@ -4803,13 +4803,13 @@ function abi.ffi.prop_set_humanoid_description_torso_color(instance, p_TorsoColo
 	getPointer(instance).TorsoColor = getPointer(p_TorsoColor0);
 end
 function abi.ffi.prop_get_humanoid_description_waist_accessory(output, instance)
-	local valueProp0 = getPointer(instance).WaistAccessory;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).WaistAccessory;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_humanoid_description_waist_accessory(instance, p_WaistAccessory0, p_WaistAccessory1)
 	getPointer(instance).WaistAccessory = loadString(memory, p_WaistAccessory0, p_WaistAccessory1);
@@ -4833,22 +4833,22 @@ function abi.ffi.dyn_fn_humanoid_description_remove_emote(instance, p_name0, p_n
 	return getPointer(instance):RemoveEmote(loadString(memory, p_name0, p_name1));
 end
 function abi.ffi.prop_get_importer_base_settings_id(output, instance)
-	local valueProp0 = getPointer(instance).Id;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Id;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_importer_base_settings_import_name(output, instance)
-	local valueProp0 = getPointer(instance).ImportName;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ImportName;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_importer_base_settings_import_name(instance, p_ImportName0, p_ImportName1)
 	getPointer(instance).ImportName = loadString(memory, p_ImportName0, p_ImportName1);
@@ -4878,43 +4878,43 @@ function abi.ffi.prop_set_importer_group_settings_insert_in_workspace(instance, 
 	getPointer(instance).InsertInWorkspace = p_InsertInWorkspace0 == 1;
 end
 function abi.ffi.prop_get_importer_material_settings_diffuse_file_path(output, instance)
-	local valueProp0 = getPointer(instance).DiffuseFilePath;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).DiffuseFilePath;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_importer_material_settings_is_pbr(instance)
 	return getPointer(instance).IsPbr and 1 or 0;
 end
 function abi.ffi.prop_get_importer_material_settings_metalness_file_path(output, instance)
-	local valueProp0 = getPointer(instance).MetalnessFilePath;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).MetalnessFilePath;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_importer_material_settings_normal_file_path(output, instance)
-	local valueProp0 = getPointer(instance).NormalFilePath;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).NormalFilePath;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_importer_material_settings_roughness_file_path(output, instance)
-	local valueProp0 = getPointer(instance).RoughnessFilePath;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).RoughnessFilePath;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_importer_mesh_settings_anchored(instance)
 	return getPointer(instance).Anchored and 1 or 0;
@@ -5037,14 +5037,14 @@ function abi.ffi.dyn_fn_insert_service_get_latest_asset_version_async(instance, 
 	return getPointer(instance):GetLatestAssetVersionAsync(p_assetId0);
 end
 function abi.ffi.dyn_fn_insert_service_load_asset(output, instance, p_assetId0)
-	local valueReturn0 = getPointer(instance):LoadAsset(p_assetId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):LoadAsset(p_assetId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_insert_service_load_asset_version(output, instance, p_assetVersionId0)
-	local valueReturn0 = getPointer(instance):LoadAssetVersion(p_assetVersionId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):LoadAssetVersion(p_assetVersionId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_joint_instance_active(instance)
 	return getPointer(instance).Active and 1 or 0;
@@ -5068,28 +5068,28 @@ function abi.ffi.prop_set_joint_instance_enabled(instance, p_Enabled0)
 	getPointer(instance).Enabled = p_Enabled0 == 1;
 end
 function abi.ffi.prop_get_joint_instance_part_0(output, instance)
-	local valueProp0 = getPointer(instance).Part0;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Part0;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_joint_instance_part_0(instance, p_Part00, p_Part01)
-	local valuevalue0;
+	local value0;
 	if p_Part00 == 1 then
-		valuevalue0 = getPointer(p_Part01);
+		value0 = getPointer(p_Part01);
 	end
-	getPointer(instance).Part0 = valuevalue0;
+	getPointer(instance).Part0 = value0;
 end
 function abi.ffi.prop_get_joint_instance_part_1(output, instance)
-	local valueProp0 = getPointer(instance).Part1;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Part1;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_joint_instance_part_1(instance, p_Part10, p_Part11)
-	local valuevalue0;
+	local value0;
 	if p_Part10 == 1 then
-		valuevalue0 = getPointer(p_Part11);
+		value0 = getPointer(p_Part11);
 	end
-	getPointer(instance).Part1 = valuevalue0;
+	getPointer(instance).Part1 = value0;
 end
 function abi.ffi.prop_get_dynamic_rotate_base_angle(instance)
 	return getPointer(instance).BaseAngle;
@@ -5161,13 +5161,13 @@ function abi.ffi.dyn_fn_keyframe_remove_pose(instance, p_pose0)
 	return getPointer(instance):RemovePose(getPointer(p_pose0));
 end
 function abi.ffi.prop_get_keyframe_marker_value(output, instance)
-	local valueProp0 = getPointer(instance).Value;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Value;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_keyframe_marker_value(instance, p_Value0, p_Value1)
 	getPointer(instance).Value = loadString(memory, p_Value0, p_Value1);
@@ -5179,14 +5179,14 @@ function abi.ffi.dyn_fn_keyframe_sequence_provider_register_keyframe_sequence(in
 	return createPointer(getPointer(instance):RegisterKeyframeSequence(getPointer(p_keyframeSequence0)));
 end
 function abi.ffi.dyn_fn_keyframe_sequence_provider_get_animations(output, instance, p_userId0)
-	local valueReturn0 = getPointer(instance):GetAnimations(p_userId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetAnimations(p_userId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_keyframe_sequence_provider_get_keyframe_sequence_async(output, instance, p_assetId0)
-	local valueReturn0 = getPointer(instance):GetKeyframeSequenceAsync(getPointer(p_assetId0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetKeyframeSequenceAsync(getPointer(p_assetId0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_light_brightness(instance)
 	return getPointer(instance).Brightness;
@@ -5333,13 +5333,13 @@ function abi.ffi.prop_set_lighting_shadow_softness(instance, p_ShadowSoftness0)
 	getPointer(instance).ShadowSoftness = p_ShadowSoftness0;
 end
 function abi.ffi.prop_get_lighting_time_of_day(output, instance)
-	local valueProp0 = getPointer(instance).TimeOfDay;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).TimeOfDay;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_lighting_time_of_day(instance, p_TimeOfDay0, p_TimeOfDay1)
 	getPointer(instance).TimeOfDay = loadString(memory, p_TimeOfDay0, p_TimeOfDay1);
@@ -5365,63 +5365,63 @@ function abi.ffi.connect_lighting_lighting_changed(instance, data, vtable)
 	end))
 end
 function abi.ffi.prop_get_localization_service_roblox_locale_id(output, instance)
-	local valueProp0 = getPointer(instance).RobloxLocaleId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).RobloxLocaleId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_localization_service_system_locale_id(output, instance)
-	local valueProp0 = getPointer(instance).SystemLocaleId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).SystemLocaleId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_localization_service_get_translator_for_player(output, instance, p_player0)
-	local valueReturn0 = getPointer(instance):GetTranslatorForPlayer(getPointer(p_player0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetTranslatorForPlayer(getPointer(p_player0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_localization_service_get_country_region_for_player_async(output, instance, p_player0)
-	local valueReturn0 = getPointer(instance):GetCountryRegionForPlayerAsync(getPointer(p_player0));
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetCountryRegionForPlayerAsync(getPointer(p_player0));
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_localization_service_get_translator_for_locale_async(output, instance, p_locale0, p_locale1)
-	local valueReturn0 = getPointer(instance):GetTranslatorForLocaleAsync(loadString(memory, p_locale0, p_locale1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetTranslatorForLocaleAsync(loadString(memory, p_locale0, p_locale1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_localization_service_get_translator_for_player_async(output, instance, p_player0)
-	local valueReturn0 = getPointer(instance):GetTranslatorForPlayerAsync(getPointer(p_player0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetTranslatorForPlayerAsync(getPointer(p_player0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_localization_table_source_locale_id(output, instance)
-	local valueProp0 = getPointer(instance).SourceLocaleId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).SourceLocaleId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_localization_table_source_locale_id(instance, p_SourceLocaleId0, p_SourceLocaleId1)
 	getPointer(instance).SourceLocaleId = loadString(memory, p_SourceLocaleId0, p_SourceLocaleId1);
 end
 function abi.ffi.dyn_fn_localization_table_get_translator(output, instance, p_localeId0, p_localeId1)
-	local valueReturn0 = getPointer(instance):GetTranslator(loadString(memory, p_localeId0, p_localeId1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetTranslator(loadString(memory, p_localeId0, p_localeId1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_localization_table_remove_entry(instance, p_key0, p_key1, p_source0, p_source1, p_context0, p_context1)
 	return getPointer(instance):RemoveEntry(loadString(memory, p_key0, p_key1), loadString(memory, p_source0, p_source1), loadString(memory, p_context0, p_context1));
@@ -5493,9 +5493,9 @@ function abi.ffi.dyn_fn_marketplace_service_prompt_subscription_purchase(instanc
 	return getPointer(instance):PromptSubscriptionPurchase(getPointer(p_player0), p_subscriptionId0);
 end
 function abi.ffi.dyn_fn_marketplace_service_get_developer_products_async(output, instance)
-	local valueReturn0 = getPointer(instance):GetDeveloperProductsAsync();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetDeveloperProductsAsync();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_marketplace_service_is_player_subscribed(instance, p_player0, p_subscriptionId0)
 	return getPointer(instance):IsPlayerSubscribed(getPointer(p_player0), p_subscriptionId0) and 1 or 0;
@@ -5554,14 +5554,14 @@ function abi.ffi.dyn_fn_memory_store_queue_remove_async(instance, p_id0, p_id1)
 	return getPointer(instance):RemoveAsync(loadString(memory, p_id0, p_id1));
 end
 function abi.ffi.dyn_fn_memory_store_service_get_queue(output, instance, p_name0, p_name1, p_invisibilityTimeout0)
-	local valueReturn0 = getPointer(instance):GetQueue(loadString(memory, p_name0, p_name1), p_invisibilityTimeout0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetQueue(loadString(memory, p_name0, p_name1), p_invisibilityTimeout0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_memory_store_service_get_sorted_map(output, instance, p_name0, p_name1)
-	local valueReturn0 = getPointer(instance):GetSortedMap(loadString(memory, p_name0, p_name1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetSortedMap(loadString(memory, p_name0, p_name1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_memory_store_sorted_map_remove_async(instance, p_key0, p_key1)
 	return getPointer(instance):RemoveAsync(loadString(memory, p_key0, p_key1));
@@ -5579,21 +5579,21 @@ function abi.ffi.prop_get_mouse_origin(instance)
 	return createPointer(getPointer(instance).Origin);
 end
 function abi.ffi.prop_get_mouse_target(output, instance)
-	local valueProp0 = getPointer(instance).Target;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Target;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_mouse_target_filter(output, instance)
-	local valueProp0 = getPointer(instance).TargetFilter;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).TargetFilter;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_mouse_target_filter(instance, p_TargetFilter0, p_TargetFilter1)
-	local valuevalue0;
+	local value0;
 	if p_TargetFilter0 == 1 then
-		valuevalue0 = getPointer(p_TargetFilter1);
+		value0 = getPointer(p_TargetFilter1);
 	end
-	getPointer(instance).TargetFilter = valuevalue0;
+	getPointer(instance).TargetFilter = value0;
 end
 function abi.ffi.prop_get_mouse_unit_ray(instance)
 	return createPointer(getPointer(instance).UnitRay);
@@ -5662,28 +5662,28 @@ function abi.ffi.prop_set_no_collision_constraint_enabled(instance, p_Enabled0)
 	getPointer(instance).Enabled = p_Enabled0 == 1;
 end
 function abi.ffi.prop_get_no_collision_constraint_part_0(output, instance)
-	local valueProp0 = getPointer(instance).Part0;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Part0;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_no_collision_constraint_part_0(instance, p_Part00, p_Part01)
-	local valuevalue0;
+	local value0;
 	if p_Part00 == 1 then
-		valuevalue0 = getPointer(p_Part01);
+		value0 = getPointer(p_Part01);
 	end
-	getPointer(instance).Part0 = valuevalue0;
+	getPointer(instance).Part0 = value0;
 end
 function abi.ffi.prop_get_no_collision_constraint_part_1(output, instance)
-	local valueProp0 = getPointer(instance).Part1;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Part1;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_no_collision_constraint_part_1(instance, p_Part10, p_Part11)
-	local valuevalue0;
+	local value0;
 	if p_Part10 == 1 then
-		valuevalue0 = getPointer(p_Part11);
+		value0 = getPointer(p_Part11);
 	end
-	getPointer(instance).Part1 = valuevalue0;
+	getPointer(instance).Part1 = value0;
 end
 function abi.ffi.dyn_fn_pv_instance_get_pivot(instance)
 	return createPointer(getPointer(instance):GetPivot());
@@ -5716,9 +5716,9 @@ function abi.ffi.prop_get_base_part_assembly_mass(instance)
 	return getPointer(instance).AssemblyMass;
 end
 function abi.ffi.prop_get_base_part_assembly_root_part(output, instance)
-	local valueProp0 = getPointer(instance).AssemblyRootPart;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).AssemblyRootPart;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_base_part_brick_color(instance)
 	return createPointer(getPointer(instance).BrickColor);
@@ -5799,13 +5799,13 @@ function abi.ffi.prop_set_base_part_massless(instance, p_Massless0)
 	getPointer(instance).Massless = p_Massless0 == 1;
 end
 function abi.ffi.prop_get_base_part_material_variant(output, instance)
-	local valueProp0 = getPointer(instance).MaterialVariant;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).MaterialVariant;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_base_part_material_variant(instance, p_MaterialVariant0, p_MaterialVariant1)
 	getPointer(instance).MaterialVariant = loadString(memory, p_MaterialVariant0, p_MaterialVariant1);
@@ -5886,17 +5886,17 @@ function abi.ffi.dyn_fn_base_part_get_mass(instance)
 	return getPointer(instance):GetMass();
 end
 function abi.ffi.dyn_fn_base_part_get_network_owner(output, instance)
-	local valueReturn0 = getPointer(instance):GetNetworkOwner();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetNetworkOwner();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_base_part_get_network_ownership_auto(instance)
 	return getPointer(instance):GetNetworkOwnershipAuto() and 1 or 0;
 end
 function abi.ffi.dyn_fn_base_part_get_root_part(output, instance)
-	local valueReturn0 = getPointer(instance):GetRootPart();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetRootPart();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_base_part_get_velocity_at_position(instance, p_position0)
 	return createPointer(getPointer(instance):GetVelocityAtPosition(getPointer(p_position0)));
@@ -5931,9 +5931,9 @@ function abi.ffi.prop_set_seat_disabled(instance, p_Disabled0)
 	getPointer(instance).Disabled = p_Disabled0 == 1;
 end
 function abi.ffi.prop_get_seat_occupant(output, instance)
-	local valueProp0 = getPointer(instance).Occupant;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Occupant;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_seat_sit(instance, p_humanoid0)
 	return getPointer(instance):Sit(getPointer(p_humanoid0));
@@ -6011,9 +6011,9 @@ function abi.ffi.dyn_fn_terrain_clear(instance)
 	return getPointer(instance):Clear();
 end
 function abi.ffi.dyn_fn_terrain_copy_region(output, instance, p_region0)
-	local valueReturn0 = getPointer(instance):CopyRegion(getPointer(p_region0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):CopyRegion(getPointer(p_region0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_terrain_count_cells(instance)
 	return getPointer(instance):CountCells();
@@ -6109,9 +6109,9 @@ function abi.ffi.prop_set_vehicle_seat_max_speed(instance, p_MaxSpeed0)
 	getPointer(instance).MaxSpeed = p_MaxSpeed0;
 end
 function abi.ffi.prop_get_vehicle_seat_occupant(output, instance)
-	local valueProp0 = getPointer(instance).Occupant;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Occupant;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_vehicle_seat_steer(instance)
 	return getPointer(instance).Steer;
@@ -6153,16 +6153,16 @@ function abi.ffi.dyn_fn_vehicle_seat_sit(instance, p_humanoid0)
 	return getPointer(instance):Sit(getPointer(p_humanoid0));
 end
 function abi.ffi.prop_get_model_primary_part(output, instance)
-	local valueProp0 = getPointer(instance).PrimaryPart;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).PrimaryPart;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_model_primary_part(instance, p_PrimaryPart0, p_PrimaryPart1)
-	local valuevalue0;
+	local value0;
 	if p_PrimaryPart0 == 1 then
-		valuevalue0 = getPointer(p_PrimaryPart1);
+		value0 = getPointer(p_PrimaryPart1);
 	end
-	getPointer(instance).PrimaryPart = valuevalue0;
+	getPointer(instance).PrimaryPart = value0;
 end
 function abi.ffi.prop_get_model_world_pivot(instance)
 	return createPointer(getPointer(instance).WorldPivot);
@@ -6201,16 +6201,16 @@ function abi.ffi.prop_set_workspace_allow_third_party_sales(instance, p_AllowThi
 	getPointer(instance).AllowThirdPartySales = p_AllowThirdPartySales0 == 1;
 end
 function abi.ffi.prop_get_workspace_current_camera(output, instance)
-	local valueProp0 = getPointer(instance).CurrentCamera;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).CurrentCamera;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_workspace_current_camera(instance, p_CurrentCamera0, p_CurrentCamera1)
-	local valuevalue0;
+	local value0;
 	if p_CurrentCamera0 == 1 then
-		valuevalue0 = getPointer(p_CurrentCamera1);
+		value0 = getPointer(p_CurrentCamera1);
 	end
-	getPointer(instance).CurrentCamera = valuevalue0;
+	getPointer(instance).CurrentCamera = value0;
 end
 function abi.ffi.prop_get_workspace_distributed_game_time(instance)
 	return getPointer(instance).DistributedGameTime;
@@ -6243,9 +6243,9 @@ function abi.ffi.prop_set_workspace_streaming_enabled(instance, p_StreamingEnabl
 	getPointer(instance).StreamingEnabled = p_StreamingEnabled0 == 1;
 end
 function abi.ffi.prop_get_workspace_terrain(output, instance)
-	local valueProp0 = getPointer(instance).Terrain;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Terrain;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_workspace_get_num_awake_parts(instance)
 	return getPointer(instance):GetNumAwakeParts();
@@ -6314,13 +6314,13 @@ function abi.ffi.prop_set_particle_emitter_flipbook_framerate(instance, p_Flipbo
 	getPointer(instance).FlipbookFramerate = getPointer(p_FlipbookFramerate0);
 end
 function abi.ffi.prop_get_particle_emitter_flipbook_incompatible(output, instance)
-	local valueProp0 = getPointer(instance).FlipbookIncompatible;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).FlipbookIncompatible;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_particle_emitter_flipbook_incompatible(instance, p_FlipbookIncompatible0, p_FlipbookIncompatible1)
 	getPointer(instance).FlipbookIncompatible = loadString(memory, p_FlipbookIncompatible0, p_FlipbookIncompatible1);
@@ -6456,28 +6456,28 @@ function abi.ffi.connect_path_unblocked(instance, data, vtable)
 	end))
 end
 function abi.ffi.prop_get_pathfinding_link_attachment_0(output, instance)
-	local valueProp0 = getPointer(instance).Attachment0;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment0;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_pathfinding_link_attachment_0(instance, p_Attachment00, p_Attachment01)
-	local valuevalue0;
+	local value0;
 	if p_Attachment00 == 1 then
-		valuevalue0 = getPointer(p_Attachment01);
+		value0 = getPointer(p_Attachment01);
 	end
-	getPointer(instance).Attachment0 = valuevalue0;
+	getPointer(instance).Attachment0 = value0;
 end
 function abi.ffi.prop_get_pathfinding_link_attachment_1(output, instance)
-	local valueProp0 = getPointer(instance).Attachment1;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment1;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_pathfinding_link_attachment_1(instance, p_Attachment10, p_Attachment11)
-	local valuevalue0;
+	local value0;
 	if p_Attachment10 == 1 then
-		valuevalue0 = getPointer(p_Attachment11);
+		value0 = getPointer(p_Attachment11);
 	end
-	getPointer(instance).Attachment1 = valuevalue0;
+	getPointer(instance).Attachment1 = value0;
 end
 function abi.ffi.prop_get_pathfinding_link_is_bidirectional(instance)
 	return getPointer(instance).IsBidirectional and 1 or 0;
@@ -6486,25 +6486,25 @@ function abi.ffi.prop_set_pathfinding_link_is_bidirectional(instance, p_IsBidire
 	getPointer(instance).IsBidirectional = p_IsBidirectional0 == 1;
 end
 function abi.ffi.prop_get_pathfinding_link_label(output, instance)
-	local valueProp0 = getPointer(instance).Label;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Label;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_pathfinding_link_label(instance, p_Label0, p_Label1)
 	getPointer(instance).Label = loadString(memory, p_Label0, p_Label1);
 end
 function abi.ffi.prop_get_pathfinding_modifier_label(output, instance)
-	local valueProp0 = getPointer(instance).Label;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Label;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_pathfinding_modifier_label(instance, p_Label0, p_Label1)
 	getPointer(instance).Label = loadString(memory, p_Label0, p_Label1);
@@ -6516,9 +6516,9 @@ function abi.ffi.prop_set_pathfinding_modifier_pass_through(instance, p_PassThro
 	getPointer(instance).PassThrough = p_PassThrough0 == 1;
 end
 function abi.ffi.dyn_fn_pathfinding_service_find_path_async(output, instance, p_start0, p_finish0)
-	local valueReturn0 = getPointer(instance):FindPathAsync(getPointer(p_start0), getPointer(p_finish0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindPathAsync(getPointer(p_start0), getPointer(p_finish0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_physics_service_collision_group_contains_part(instance, p_name0, p_name1, p_part0)
 	return getPointer(instance):CollisionGroupContainsPart(loadString(memory, p_name0, p_name1), getPointer(p_part0)) and 1 or 0;
@@ -6536,13 +6536,13 @@ function abi.ffi.dyn_fn_physics_service_get_collision_group_id(instance, p_name0
 	return getPointer(instance):GetCollisionGroupId(loadString(memory, p_name0, p_name1));
 end
 function abi.ffi.dyn_fn_physics_service_get_collision_group_name(output, instance, p_name0)
-	local valueReturn0 = getPointer(instance):GetCollisionGroupName(p_name0);
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetCollisionGroupName(p_name0);
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_physics_service_get_max_collision_groups(instance)
 	return getPointer(instance):GetMaxCollisionGroups();
@@ -6584,16 +6584,16 @@ function abi.ffi.prop_set_player_can_load_character_appearance(instance, p_CanLo
 	getPointer(instance).CanLoadCharacterAppearance = p_CanLoadCharacterAppearance0 == 1;
 end
 function abi.ffi.prop_get_player_character(output, instance)
-	local valueProp0 = getPointer(instance).Character;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Character;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_player_character(instance, p_Character0, p_Character1)
-	local valuevalue0;
+	local value0;
 	if p_Character0 == 1 then
-		valuevalue0 = getPointer(p_Character1);
+		value0 = getPointer(p_Character1);
 	end
-	getPointer(instance).Character = valuevalue0;
+	getPointer(instance).Character = value0;
 end
 function abi.ffi.prop_get_player_character_appearance_id(instance)
 	return getPointer(instance).CharacterAppearanceId;
@@ -6608,13 +6608,13 @@ function abi.ffi.prop_set_player_dev_enable_mouse_lock(instance, p_DevEnableMous
 	getPointer(instance).DevEnableMouseLock = p_DevEnableMouseLock0 == 1;
 end
 function abi.ffi.prop_get_player_display_name(output, instance)
-	local valueProp0 = getPointer(instance).DisplayName;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).DisplayName;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_player_display_name(instance, p_DisplayName0, p_DisplayName1)
 	getPointer(instance).DisplayName = loadString(memory, p_DisplayName0, p_DisplayName1);
@@ -6635,13 +6635,13 @@ function abi.ffi.prop_set_player_health_display_distance(instance, p_HealthDispl
 	getPointer(instance).HealthDisplayDistance = p_HealthDisplayDistance0;
 end
 function abi.ffi.prop_get_player_locale_id(output, instance)
-	local valueProp0 = getPointer(instance).LocaleId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).LocaleId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_player_name_display_distance(instance)
 	return getPointer(instance).NameDisplayDistance;
@@ -6656,40 +6656,40 @@ function abi.ffi.prop_set_player_neutral(instance, p_Neutral0)
 	getPointer(instance).Neutral = p_Neutral0 == 1;
 end
 function abi.ffi.prop_get_player_replication_focus(output, instance)
-	local valueProp0 = getPointer(instance).ReplicationFocus;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).ReplicationFocus;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_player_replication_focus(instance, p_ReplicationFocus0, p_ReplicationFocus1)
-	local valuevalue0;
+	local value0;
 	if p_ReplicationFocus0 == 1 then
-		valuevalue0 = getPointer(p_ReplicationFocus1);
+		value0 = getPointer(p_ReplicationFocus1);
 	end
-	getPointer(instance).ReplicationFocus = valuevalue0;
+	getPointer(instance).ReplicationFocus = value0;
 end
 function abi.ffi.prop_get_player_respawn_location(output, instance)
-	local valueProp0 = getPointer(instance).RespawnLocation;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).RespawnLocation;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_player_respawn_location(instance, p_RespawnLocation0, p_RespawnLocation1)
-	local valuevalue0;
+	local value0;
 	if p_RespawnLocation0 == 1 then
-		valuevalue0 = getPointer(p_RespawnLocation1);
+		value0 = getPointer(p_RespawnLocation1);
 	end
-	getPointer(instance).RespawnLocation = valuevalue0;
+	getPointer(instance).RespawnLocation = value0;
 end
 function abi.ffi.prop_get_player_team(output, instance)
-	local valueProp0 = getPointer(instance).Team;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Team;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_player_team(instance, p_Team0, p_Team1)
-	local valuevalue0;
+	local value0;
 	if p_Team0 == 1 then
-		valuevalue0 = getPointer(p_Team1);
+		value0 = getPointer(p_Team1);
 	end
-	getPointer(instance).Team = valuevalue0;
+	getPointer(instance).Team = value0;
 end
 function abi.ffi.prop_get_player_team_color(instance)
 	return createPointer(getPointer(instance).TeamColor);
@@ -6710,9 +6710,9 @@ function abi.ffi.dyn_fn_player_distance_from_character(instance, p_point0)
 	return getPointer(instance):DistanceFromCharacter(getPointer(p_point0));
 end
 function abi.ffi.dyn_fn_player_get_mouse(output, instance)
-	local valueReturn0 = getPointer(instance):GetMouse();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetMouse();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_player_get_network_ping(instance)
 	return getPointer(instance):GetNetworkPing();
@@ -6730,13 +6730,13 @@ function abi.ffi.dyn_fn_player_get_rank_in_group(instance, p_groupId0)
 	return getPointer(instance):GetRankInGroup(p_groupId0);
 end
 function abi.ffi.dyn_fn_player_get_role_in_group(output, instance, p_groupId0)
-	local valueReturn0 = getPointer(instance):GetRoleInGroup(p_groupId0);
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetRoleInGroup(p_groupId0);
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_player_is_friends_with(instance, p_userId0)
 	return getPointer(instance):IsFriendsWith(p_userId0) and 1 or 0;
@@ -6778,8 +6778,8 @@ function abi.ffi.connect_player_chatted(instance, data, vtable)
 		for i = 1, stringLength0 do
 			storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 		end
-		local value0 = p_recipient;
-		invokeFunction(data, vtable, stringContent0, stringLength0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_recipient;
+		invokeFunction(data, vtable, stringContent0, stringLength0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.connect_player_idled(instance, data, vtable)
@@ -6812,9 +6812,9 @@ function abi.ffi.prop_get_players_classic_chat(instance)
 	return getPointer(instance).ClassicChat and 1 or 0;
 end
 function abi.ffi.prop_get_players_local_player(output, instance)
-	local valueProp0 = getPointer(instance).LocalPlayer;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).LocalPlayer;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_players_max_players(instance)
 	return getPointer(instance).MaxPlayers;
@@ -6829,43 +6829,43 @@ function abi.ffi.prop_set_players_respawn_time(instance, p_RespawnTime0)
 	getPointer(instance).RespawnTime = p_RespawnTime0;
 end
 function abi.ffi.dyn_fn_players_get_player_by_user_id(output, instance, p_userId0)
-	local valueReturn0 = getPointer(instance):GetPlayerByUserId(p_userId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetPlayerByUserId(p_userId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_players_get_player_from_character(output, instance, p_character0)
-	local valueReturn0 = getPointer(instance):GetPlayerFromCharacter(getPointer(p_character0));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetPlayerFromCharacter(getPointer(p_character0));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_players_create_humanoid_model_from_user_id(output, instance, p_userId0)
-	local valueReturn0 = getPointer(instance):CreateHumanoidModelFromUserId(p_userId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):CreateHumanoidModelFromUserId(p_userId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_players_get_friends_async(output, instance, p_userId0)
-	local valueReturn0 = getPointer(instance):GetFriendsAsync(p_userId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetFriendsAsync(p_userId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_players_get_humanoid_description_from_outfit_id(output, instance, p_outfitId0)
-	local valueReturn0 = getPointer(instance):GetHumanoidDescriptionFromOutfitId(p_outfitId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetHumanoidDescriptionFromOutfitId(p_outfitId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_players_get_humanoid_description_from_user_id(output, instance, p_userId0)
-	local valueReturn0 = getPointer(instance):GetHumanoidDescriptionFromUserId(p_userId0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetHumanoidDescriptionFromUserId(p_userId0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_players_get_name_from_user_id_async(output, instance, p_userId0)
-	local valueReturn0 = getPointer(instance):GetNameFromUserIdAsync(p_userId0);
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetNameFromUserIdAsync(p_userId0);
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_players_get_user_id_from_name_async(instance, p_userName0, p_userName1)
 	return getPointer(instance):GetUserIdFromNameAsync(loadString(memory, p_userName0, p_userName1));
@@ -7003,13 +7003,13 @@ function abi.ffi.prop_set_sun_rays_effect_spread(instance, p_Spread0)
 	getPointer(instance).Spread = p_Spread0;
 end
 function abi.ffi.prop_get_proximity_prompt_action_text(output, instance)
-	local valueProp0 = getPointer(instance).ActionText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ActionText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_proximity_prompt_action_text(instance, p_ActionText0, p_ActionText1)
 	getPointer(instance).ActionText = loadString(memory, p_ActionText0, p_ActionText1);
@@ -7045,13 +7045,13 @@ function abi.ffi.prop_set_proximity_prompt_max_activation_distance(instance, p_M
 	getPointer(instance).MaxActivationDistance = p_MaxActivationDistance0;
 end
 function abi.ffi.prop_get_proximity_prompt_object_text(output, instance)
-	local valueProp0 = getPointer(instance).ObjectText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ObjectText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_proximity_prompt_object_text(instance, p_ObjectText0, p_ObjectText1)
 	getPointer(instance).ObjectText = loadString(memory, p_ObjectText0, p_ObjectText1);
@@ -7063,16 +7063,16 @@ function abi.ffi.prop_set_proximity_prompt_requires_line_of_sight(instance, p_Re
 	getPointer(instance).RequiresLineOfSight = p_RequiresLineOfSight0 == 1;
 end
 function abi.ffi.prop_get_proximity_prompt_root_localization_table(output, instance)
-	local valueProp0 = getPointer(instance).RootLocalizationTable;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).RootLocalizationTable;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_proximity_prompt_root_localization_table(instance, p_RootLocalizationTable0, p_RootLocalizationTable1)
-	local valuevalue0;
+	local value0;
 	if p_RootLocalizationTable0 == 1 then
-		valuevalue0 = getPointer(p_RootLocalizationTable1);
+		value0 = getPointer(p_RootLocalizationTable1);
 	end
-	getPointer(instance).RootLocalizationTable = valuevalue0;
+	getPointer(instance).RootLocalizationTable = value0;
 end
 function abi.ffi.prop_get_proximity_prompt_ui_offset(instance)
 	return createPointer(getPointer(instance).UIOffset);
@@ -7130,15 +7130,15 @@ end
 function abi.ffi.connect_proximity_prompt_service_prompt_button_hold_began(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).PromptButtonHoldBegan:Connect(function(p_prompt, p_playerWhoTriggered)
 		local value0 = p_prompt;
-		local value0 = p_playerWhoTriggered;
-		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_playerWhoTriggered;
+		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.connect_proximity_prompt_service_prompt_button_hold_ended(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).PromptButtonHoldEnded:Connect(function(p_prompt, p_playerWhoTriggered)
 		local value0 = p_prompt;
-		local value0 = p_playerWhoTriggered;
-		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_playerWhoTriggered;
+		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.connect_proximity_prompt_service_prompt_hidden(instance, data, vtable)
@@ -7150,15 +7150,15 @@ end
 function abi.ffi.connect_proximity_prompt_service_prompt_trigger_ended(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).PromptTriggerEnded:Connect(function(p_prompt, p_playerWhoTriggered)
 		local value0 = p_prompt;
-		local value0 = p_playerWhoTriggered;
-		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_playerWhoTriggered;
+		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.connect_proximity_prompt_service_prompt_triggered(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).PromptTriggered:Connect(function(p_prompt, p_playerWhoTriggered)
 		local value0 = p_prompt;
-		local value0 = p_playerWhoTriggered;
-		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value1 = p_playerWhoTriggered;
+		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, value1 and 1 or 0, value1 and createPointer(value1) or 0);
 	end))
 end
 function abi.ffi.dyn_fn_replicated_first_remove_default_loading_screen(instance)
@@ -7171,9 +7171,9 @@ function abi.ffi.dyn_fn_rotation_curve_get_key_at_index(instance, p_index0)
 	return createPointer(getPointer(instance):GetKeyAtIndex(p_index0));
 end
 function abi.ffi.dyn_fn_rotation_curve_get_value_at_time(output, instance, p_time0)
-	local valueReturn0 = getPointer(instance):GetValueAtTime(p_time0);
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetValueAtTime(p_time0);
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_rotation_curve_remove_key_at_index(instance, p_startingIndex0, p_count0)
 	return getPointer(instance):RemoveKeyAtIndex(p_startingIndex0, p_count0);
@@ -7280,24 +7280,24 @@ function abi.ffi.connect_script_context_error(instance, data, vtable)
 		for i = 1, stringLength0 do
 			storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 		end
-		local value0 = p_stackTrace;
-		local stringContent0, stringLength0 = allocString(#value0), #value0;
-		for i = 1, stringLength0 do
-			storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
+		local value1 = p_stackTrace;
+		local stringContent1, stringLength1 = allocString(#value1), #value1;
+		for i = 1, stringLength1 do
+			storeU8(memory, stringContent1 + (i - 1), string.byte(value1:sub(i, i)));
 		end
-		local value0 = p_script;
-		invokeFunction(data, vtable, stringContent0, stringLength0, stringContent0, stringLength0, value0 and 1 or 0, value0 and createPointer(value0) or 0);
+		local value2 = p_script;
+		invokeFunction(data, vtable, stringContent0, stringLength0, stringContent1, stringLength1, value2 and 1 or 0, value2 and createPointer(value2) or 0);
 	end))
 end
 function abi.ffi.dyn_fn_service_provider_find_service(output, instance, p_className0, p_className1)
-	local valueReturn0 = getPointer(instance):FindService(loadString(memory, p_className0, p_className1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):FindService(loadString(memory, p_className0, p_className1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_service_provider_get_service(output, instance, p_className0, p_className1)
-	local valueReturn0 = getPointer(instance):GetService(loadString(memory, p_className0, p_className1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetService(loadString(memory, p_className0, p_className1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.connect_service_provider_close(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).Close:Connect(function()
@@ -7323,13 +7323,13 @@ function abi.ffi.prop_get_data_model_game_id(instance)
 	return getPointer(instance).GameId;
 end
 function abi.ffi.prop_get_data_model_job_id(output, instance)
-	local valueProp0 = getPointer(instance).JobId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).JobId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_data_model_place_id(instance)
 	return getPointer(instance).PlaceId;
@@ -7338,21 +7338,21 @@ function abi.ffi.prop_get_data_model_place_version(instance)
 	return getPointer(instance).PlaceVersion;
 end
 function abi.ffi.prop_get_data_model_private_server_id(output, instance)
-	local valueProp0 = getPointer(instance).PrivateServerId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).PrivateServerId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_data_model_private_server_owner_id(instance)
 	return getPointer(instance).PrivateServerOwnerId;
 end
 function abi.ffi.prop_get_data_model_workspace(output, instance)
-	local valueProp0 = getPointer(instance).Workspace;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Workspace;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_data_model_is_loaded(instance)
 	return getPointer(instance):IsLoaded() and 1 or 0;
@@ -7536,16 +7536,16 @@ function abi.ffi.prop_set_sound_roll_off_min_distance(instance, p_RollOffMinDist
 	getPointer(instance).RollOffMinDistance = p_RollOffMinDistance0;
 end
 function abi.ffi.prop_get_sound_sound_group(output, instance)
-	local valueProp0 = getPointer(instance).SoundGroup;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).SoundGroup;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_sound_sound_group(instance, p_SoundGroup0, p_SoundGroup1)
-	local valuevalue0;
+	local value0;
 	if p_SoundGroup0 == 1 then
-		valuevalue0 = getPointer(p_SoundGroup1);
+		value0 = getPointer(p_SoundGroup1);
 	end
-	getPointer(instance).SoundGroup = valuevalue0;
+	getPointer(instance).SoundGroup = value0;
 end
 function abi.ffi.prop_get_sound_sound_id(instance)
 	return createPointer(getPointer(instance).SoundId);
@@ -7705,16 +7705,16 @@ function abi.ffi.prop_set_compressor_sound_effect_release(instance, p_Release0)
 	getPointer(instance).Release = p_Release0;
 end
 function abi.ffi.prop_get_compressor_sound_effect_side_chain(output, instance)
-	local valueProp0 = getPointer(instance).SideChain;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).SideChain;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_compressor_sound_effect_side_chain(instance, p_SideChain0, p_SideChain1)
-	local valuevalue0;
+	local value0;
 	if p_SideChain0 == 1 then
-		valuevalue0 = getPointer(p_SideChain1);
+		value0 = getPointer(p_SideChain1);
 	end
-	getPointer(instance).SideChain = valuevalue0;
+	getPointer(instance).SideChain = value0;
 end
 function abi.ffi.prop_get_compressor_sound_effect_threshold(instance)
 	return getPointer(instance).Threshold;
@@ -7924,28 +7924,28 @@ function abi.ffi.prop_set_speaker_roll_off_min_distance(instance, p_RollOffMinDi
 	getPointer(instance).RollOffMinDistance = p_RollOffMinDistance0;
 end
 function abi.ffi.prop_get_speaker_sound_group(output, instance)
-	local valueProp0 = getPointer(instance).SoundGroup;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).SoundGroup;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_speaker_sound_group(instance, p_SoundGroup0, p_SoundGroup1)
-	local valuevalue0;
+	local value0;
 	if p_SoundGroup0 == 1 then
-		valuevalue0 = getPointer(p_SoundGroup1);
+		value0 = getPointer(p_SoundGroup1);
 	end
-	getPointer(instance).SoundGroup = valuevalue0;
+	getPointer(instance).SoundGroup = value0;
 end
 function abi.ffi.prop_get_speaker_source(output, instance)
-	local valueProp0 = getPointer(instance).Source;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Source;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_speaker_source(instance, p_Source0, p_Source1)
-	local valuevalue0;
+	local value0;
 	if p_Source0 == 1 then
-		valuevalue0 = getPointer(p_Source1);
+		value0 = getPointer(p_Source1);
 	end
-	getPointer(instance).Source = valuevalue0;
+	getPointer(instance).Source = value0;
 end
 function abi.ffi.prop_get_speaker_volume(instance)
 	return getPointer(instance).Volume;
@@ -8095,43 +8095,43 @@ function abi.ffi.connect_team_player_removed(instance, data, vtable)
 	end))
 end
 function abi.ffi.prop_get_teleport_async_result_private_server_id(output, instance)
-	local valueProp0 = getPointer(instance).PrivateServerId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).PrivateServerId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_teleport_async_result_reserved_server_access_code(output, instance)
-	local valueProp0 = getPointer(instance).ReservedServerAccessCode;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ReservedServerAccessCode;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_get_teleport_options_reserved_server_access_code(output, instance)
-	local valueProp0 = getPointer(instance).ReservedServerAccessCode;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ReservedServerAccessCode;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_teleport_options_reserved_server_access_code(instance, p_ReservedServerAccessCode0, p_ReservedServerAccessCode1)
 	getPointer(instance).ReservedServerAccessCode = loadString(memory, p_ReservedServerAccessCode0, p_ReservedServerAccessCode1);
 end
 function abi.ffi.prop_get_teleport_options_server_instance_id(output, instance)
-	local valueProp0 = getPointer(instance).ServerInstanceId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).ServerInstanceId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_teleport_options_server_instance_id(instance, p_ServerInstanceId0, p_ServerInstanceId1)
 	getPointer(instance).ServerInstanceId = loadString(memory, p_ServerInstanceId0, p_ServerInstanceId1);
@@ -8143,9 +8143,9 @@ function abi.ffi.prop_set_teleport_options_should_reserve_server(instance, p_Sho
 	getPointer(instance).ShouldReserveServer = p_ShouldReserveServer0 == 1;
 end
 function abi.ffi.dyn_fn_teleport_service_get_arriving_teleport_gui(output, instance)
-	local valueReturn0 = getPointer(instance):GetArrivingTeleportGui();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetArrivingTeleportGui();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_teleport_service_set_teleport_gui(instance, p_gui0)
 	return getPointer(instance):SetTeleportGui(getPointer(p_gui0));
@@ -8160,14 +8160,14 @@ function abi.ffi.prop_get_terrain_region_size_in_cells(instance)
 	return createPointer(getPointer(instance).SizeInCells);
 end
 function abi.ffi.dyn_fn_text_channel_display_system_message(output, instance, p_systemMessage0, p_systemMessage1, p_metadata0, p_metadata1)
-	local valueReturn0 = getPointer(instance):DisplaySystemMessage(loadString(memory, p_systemMessage0, p_systemMessage1), loadString(memory, p_metadata0, p_metadata1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):DisplaySystemMessage(loadString(memory, p_systemMessage0, p_systemMessage1), loadString(memory, p_metadata0, p_metadata1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_text_channel_send_async(output, instance, p_message0, p_message1, p_metadata0, p_metadata1)
-	local valueReturn0 = getPointer(instance):SendAsync(loadString(memory, p_message0, p_message1), loadString(memory, p_metadata0, p_metadata1));
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):SendAsync(loadString(memory, p_message0, p_message1), loadString(memory, p_metadata0, p_metadata1));
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.connect_text_channel_message_received(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).MessageReceived:Connect(function(p_incomingMessage)
@@ -8182,25 +8182,25 @@ function abi.ffi.prop_set_text_chat_command_enabled(instance, p_Enabled0)
 	getPointer(instance).Enabled = p_Enabled0 == 1;
 end
 function abi.ffi.prop_get_text_chat_command_primary_alias(output, instance)
-	local valueProp0 = getPointer(instance).PrimaryAlias;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).PrimaryAlias;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_command_primary_alias(instance, p_PrimaryAlias0, p_PrimaryAlias1)
 	getPointer(instance).PrimaryAlias = loadString(memory, p_PrimaryAlias0, p_PrimaryAlias1);
 end
 function abi.ffi.prop_get_text_chat_command_secondary_alias(output, instance)
-	local valueProp0 = getPointer(instance).SecondaryAlias;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).SecondaryAlias;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_command_secondary_alias(instance, p_SecondaryAlias0, p_SecondaryAlias1)
 	getPointer(instance).SecondaryAlias = loadString(memory, p_SecondaryAlias0, p_SecondaryAlias1);
@@ -8208,12 +8208,12 @@ end
 function abi.ffi.connect_text_chat_command_triggered(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).Triggered:Connect(function(p_originTextSource, p_unfilteredText)
 		local value0 = p_originTextSource;
-		local value0 = p_unfilteredText;
-		local stringContent0, stringLength0 = allocString(#value0), #value0;
-		for i = 1, stringLength0 do
-			storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
+		local value1 = p_unfilteredText;
+		local stringContent1, stringLength1 = allocString(#value1), #value1;
+		for i = 1, stringLength1 do
+			storeU8(memory, stringContent1 + (i - 1), string.byte(value1:sub(i, i)));
 		end
-		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, stringContent0, stringLength0);
+		invokeFunction(data, vtable, value0 and 1 or 0, value0 and createPointer(value0) or 0, stringContent1, stringLength1);
 	end))
 end
 function abi.ffi.prop_get_chat_input_bar_configuration_enabled(instance)
@@ -8223,16 +8223,16 @@ function abi.ffi.prop_set_chat_input_bar_configuration_enabled(instance, p_Enabl
 	getPointer(instance).Enabled = p_Enabled0 == 1;
 end
 function abi.ffi.prop_get_chat_input_bar_configuration_target_text_channel(output, instance)
-	local valueProp0 = getPointer(instance).TargetTextChannel;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).TargetTextChannel;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_chat_input_bar_configuration_target_text_channel(instance, p_TargetTextChannel0, p_TargetTextChannel1)
-	local valuevalue0;
+	local value0;
 	if p_TargetTextChannel0 == 1 then
-		valuevalue0 = getPointer(p_TargetTextChannel1);
+		value0 = getPointer(p_TargetTextChannel1);
 	end
-	getPointer(instance).TargetTextChannel = valuevalue0;
+	getPointer(instance).TargetTextChannel = value0;
 end
 function abi.ffi.prop_get_chat_window_configuration_enabled(instance)
 	return getPointer(instance).Enabled and 1 or 0;
@@ -8241,76 +8241,76 @@ function abi.ffi.prop_set_chat_window_configuration_enabled(instance, p_Enabled0
 	getPointer(instance).Enabled = p_Enabled0 == 1;
 end
 function abi.ffi.prop_get_text_chat_message_message_id(output, instance)
-	local valueProp0 = getPointer(instance).MessageId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).MessageId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_message_message_id(instance, p_MessageId0, p_MessageId1)
 	getPointer(instance).MessageId = loadString(memory, p_MessageId0, p_MessageId1);
 end
 function abi.ffi.prop_get_text_chat_message_metadata(output, instance)
-	local valueProp0 = getPointer(instance).Metadata;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Metadata;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_message_metadata(instance, p_Metadata0, p_Metadata1)
 	getPointer(instance).Metadata = loadString(memory, p_Metadata0, p_Metadata1);
 end
 function abi.ffi.prop_get_text_chat_message_prefix_text(output, instance)
-	local valueProp0 = getPointer(instance).PrefixText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).PrefixText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_message_prefix_text(instance, p_PrefixText0, p_PrefixText1)
 	getPointer(instance).PrefixText = loadString(memory, p_PrefixText0, p_PrefixText1);
 end
 function abi.ffi.prop_get_text_chat_message_text(output, instance)
-	local valueProp0 = getPointer(instance).Text;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Text;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_message_text(instance, p_Text0, p_Text1)
 	getPointer(instance).Text = loadString(memory, p_Text0, p_Text1);
 end
 function abi.ffi.prop_get_text_chat_message_text_channel(output, instance)
-	local valueProp0 = getPointer(instance).TextChannel;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).TextChannel;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_text_chat_message_text_channel(instance, p_TextChannel0, p_TextChannel1)
-	local valuevalue0;
+	local value0;
 	if p_TextChannel0 == 1 then
-		valuevalue0 = getPointer(p_TextChannel1);
+		value0 = getPointer(p_TextChannel1);
 	end
-	getPointer(instance).TextChannel = valuevalue0;
+	getPointer(instance).TextChannel = value0;
 end
 function abi.ffi.prop_get_text_chat_message_text_source(output, instance)
-	local valueProp0 = getPointer(instance).TextSource;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).TextSource;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_text_chat_message_text_source(instance, p_TextSource0, p_TextSource1)
-	local valuevalue0;
+	local value0;
 	if p_TextSource0 == 1 then
-		valuevalue0 = getPointer(p_TextSource1);
+		value0 = getPointer(p_TextSource1);
 	end
-	getPointer(instance).TextSource = valuevalue0;
+	getPointer(instance).TextSource = value0;
 end
 function abi.ffi.prop_get_text_chat_message_timestamp(instance)
 	return createPointer(getPointer(instance).Timestamp);
@@ -8319,25 +8319,25 @@ function abi.ffi.prop_set_text_chat_message_timestamp(instance, p_Timestamp0)
 	getPointer(instance).Timestamp = getPointer(p_Timestamp0);
 end
 function abi.ffi.prop_get_text_chat_message_properties_prefix_text(output, instance)
-	local valueProp0 = getPointer(instance).PrefixText;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).PrefixText;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_message_properties_prefix_text(instance, p_PrefixText0, p_PrefixText1)
 	getPointer(instance).PrefixText = loadString(memory, p_PrefixText0, p_PrefixText1);
 end
 function abi.ffi.prop_get_text_chat_message_properties_text(output, instance)
-	local valueProp0 = getPointer(instance).Text;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Text;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_text_chat_message_properties_text(instance, p_Text0, p_Text1)
 	getPointer(instance).Text = loadString(memory, p_Text0, p_Text1);
@@ -8367,31 +8367,31 @@ function abi.ffi.connect_text_chat_service_sending_message(instance, data, vtabl
 	end))
 end
 function abi.ffi.dyn_fn_text_filter_result_get_chat_for_user_async(output, instance, p_toUserId0)
-	local valueReturn0 = getPointer(instance):GetChatForUserAsync(p_toUserId0);
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetChatForUserAsync(p_toUserId0);
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_text_filter_result_get_non_chat_string_for_broadcast_async(output, instance)
-	local valueReturn0 = getPointer(instance):GetNonChatStringForBroadcastAsync();
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetNonChatStringForBroadcastAsync();
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_text_filter_result_get_non_chat_string_for_user_async(output, instance, p_toUserId0)
-	local valueReturn0 = getPointer(instance):GetNonChatStringForUserAsync(p_toUserId0);
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):GetNonChatStringForUserAsync(p_toUserId0);
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_text_service_get_text_bounds_async(instance, p_params0)
 	return createPointer(getPointer(instance):GetTextBoundsAsync(getPointer(p_params0)));
@@ -8406,28 +8406,28 @@ function abi.ffi.prop_get_text_source_user_id(instance)
 	return getPointer(instance).UserId;
 end
 function abi.ffi.prop_get_trail_attachment_0(output, instance)
-	local valueProp0 = getPointer(instance).Attachment0;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment0;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_trail_attachment_0(instance, p_Attachment00, p_Attachment01)
-	local valuevalue0;
+	local value0;
 	if p_Attachment00 == 1 then
-		valuevalue0 = getPointer(p_Attachment01);
+		value0 = getPointer(p_Attachment01);
 	end
-	getPointer(instance).Attachment0 = valuevalue0;
+	getPointer(instance).Attachment0 = value0;
 end
 function abi.ffi.prop_get_trail_attachment_1(output, instance)
-	local valueProp0 = getPointer(instance).Attachment1;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Attachment1;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_trail_attachment_1(instance, p_Attachment10, p_Attachment11)
-	local valuevalue0;
+	local value0;
 	if p_Attachment10 == 1 then
-		valuevalue0 = getPointer(p_Attachment11);
+		value0 = getPointer(p_Attachment11);
 	end
-	getPointer(instance).Attachment1 = valuevalue0;
+	getPointer(instance).Attachment1 = value0;
 end
 function abi.ffi.prop_get_trail_brightness(instance)
 	return getPointer(instance).Brightness;
@@ -8511,22 +8511,22 @@ function abi.ffi.dyn_fn_trail_clear(instance)
 	return getPointer(instance):Clear();
 end
 function abi.ffi.prop_get_translator_locale_id(output, instance)
-	local valueProp0 = getPointer(instance).LocaleId;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).LocaleId;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_translator_translate(output, instance, p_context0, p_text0, p_text1)
-	local valueReturn0 = getPointer(instance):Translate(getPointer(p_context0), loadString(memory, p_text0, p_text1));
-	local stringContentReturn0, stringLengthReturn0 = allocString(#valueReturn0), #valueReturn0;
-	for i = 1, stringLengthReturn0 do
-		storeU8(memory, stringContentReturn0 + (i - 1), string.byte(valueReturn0:sub(i, i)));
+	local value0 = getPointer(instance):Translate(getPointer(p_context0), loadString(memory, p_text0, p_text1));
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentReturn0)
-	storeU32(memory, output + 4, stringLengthReturn0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.dyn_fn_tween_base_cancel(instance)
 	return getPointer(instance):Cancel();
@@ -8538,9 +8538,9 @@ function abi.ffi.dyn_fn_tween_base_play(instance)
 	return getPointer(instance):Play();
 end
 function abi.ffi.prop_get_tween_instance(output, instance)
-	local valueProp0 = getPointer(instance).Instance;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Instance;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_tween_tween_info(instance)
 	return createPointer(getPointer(instance).TweenInfo);
@@ -8657,9 +8657,9 @@ function abi.ffi.prop_set_ui_page_layout_circular(instance, p_Circular0)
 	getPointer(instance).Circular = p_Circular0 == 1;
 end
 function abi.ffi.prop_get_ui_page_layout_current_page(output, instance)
-	local valueProp0 = getPointer(instance).CurrentPage;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).CurrentPage;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_get_ui_page_layout_gamepad_input_enabled(instance)
 	return getPointer(instance).GamepadInputEnabled and 1 or 0;
@@ -8897,19 +8897,19 @@ function abi.ffi.prop_get_user_input_service_vr_enabled(instance)
 	return getPointer(instance).VREnabled and 1 or 0;
 end
 function abi.ffi.dyn_fn_user_input_service_get_device_acceleration(output, instance)
-	local valueReturn0 = getPointer(instance):GetDeviceAcceleration();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetDeviceAcceleration();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_user_input_service_get_device_gravity(output, instance)
-	local valueReturn0 = getPointer(instance):GetDeviceGravity();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetDeviceGravity();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_user_input_service_get_focused_text_box(output, instance)
-	local valueReturn0 = getPointer(instance):GetFocusedTextBox();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):GetFocusedTextBox();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_user_input_service_get_mouse_delta(instance)
 	return createPointer(getPointer(instance):GetMouseDelta());
@@ -9084,16 +9084,16 @@ function abi.ffi.connect_number_value_changed(instance, data, vtable)
 	end))
 end
 function abi.ffi.prop_get_object_value_value(output, instance)
-	local valueProp0 = getPointer(instance).Value;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Value;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_object_value_value(instance, p_Value0, p_Value1)
-	local valuevalue0;
+	local value0;
 	if p_Value0 == 1 then
-		valuevalue0 = getPointer(p_Value1);
+		value0 = getPointer(p_Value1);
 	end
-	getPointer(instance).Value = valuevalue0;
+	getPointer(instance).Value = value0;
 end
 function abi.ffi.connect_object_value_changed(instance, data, vtable)
 	return createConnection(data, vtable, getPointer(instance).Changed:Connect(function(p_value)
@@ -9113,13 +9113,13 @@ function abi.ffi.connect_ray_value_changed(instance, data, vtable)
 	end))
 end
 function abi.ffi.prop_get_string_value_value(output, instance)
-	local valueProp0 = getPointer(instance).Value;
-	local stringContentProp0, stringLengthProp0 = allocString(#valueProp0), #valueProp0;
-	for i = 1, stringLengthProp0 do
-		storeU8(memory, stringContentProp0 + (i - 1), string.byte(valueProp0:sub(i, i)));
+	local value0 = getPointer(instance).Value;
+	local stringContent0, stringLength0 = allocString(#value0), #value0;
+	for i = 1, stringLength0 do
+		storeU8(memory, stringContent0 + (i - 1), string.byte(value0:sub(i, i)));
 	end
-	storeU32(memory, output + 0, stringContentProp0)
-	storeU32(memory, output + 4, stringLengthProp0)
+	storeU32(memory, output + 0, stringContent0)
+	storeU32(memory, output + 4, stringLength0)
 end
 function abi.ffi.prop_set_string_value_value(instance, p_Value0, p_Value1)
 	getPointer(instance).Value = loadString(memory, p_Value0, p_Value1);
@@ -9146,19 +9146,19 @@ function abi.ffi.connect_vector_3_value_changed(instance, data, vtable)
 	end))
 end
 function abi.ffi.dyn_fn_vector_3_curve_x(output, instance)
-	local valueReturn0 = getPointer(instance):X();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):X();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_vector_3_curve_y(output, instance)
-	local valueReturn0 = getPointer(instance):Y();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):Y();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_vector_3_curve_z(output, instance)
-	local valueReturn0 = getPointer(instance):Z();
-	storeU32(memory, output + 0, valueReturn0 and 1 or 0)
-	storeU32(memory, output + 4, valueReturn0 and createPointer(valueReturn0) or 0)
+	local value0 = getPointer(instance):Z();
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.dyn_fn_voice_chat_internal_is_voice_enabled_for_user_id_async(instance, p_userId0)
 	return getPointer(instance):IsVoiceEnabledForUserIdAsync(p_userId0) and 1 or 0;
@@ -9179,27 +9179,27 @@ function abi.ffi.prop_set_weld_constraint_enabled(instance, p_Enabled0)
 	getPointer(instance).Enabled = p_Enabled0 == 1;
 end
 function abi.ffi.prop_get_weld_constraint_part_0(output, instance)
-	local valueProp0 = getPointer(instance).Part0;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Part0;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_weld_constraint_part_0(instance, p_Part00, p_Part01)
-	local valuevalue0;
+	local value0;
 	if p_Part00 == 1 then
-		valuevalue0 = getPointer(p_Part01);
+		value0 = getPointer(p_Part01);
 	end
-	getPointer(instance).Part0 = valuevalue0;
+	getPointer(instance).Part0 = value0;
 end
 function abi.ffi.prop_get_weld_constraint_part_1(output, instance)
-	local valueProp0 = getPointer(instance).Part1;
-	storeU32(memory, output + 0, valueProp0 and 1 or 0)
-	storeU32(memory, output + 4, valueProp0 and createPointer(valueProp0) or 0)
+	local value0 = getPointer(instance).Part1;
+	storeU32(memory, output + 0, value0 and 1 or 0)
+	storeU32(memory, output + 4, value0 and createPointer(value0) or 0)
 end
 function abi.ffi.prop_set_weld_constraint_part_1(instance, p_Part10, p_Part11)
-	local valuevalue0;
+	local value0;
 	if p_Part10 == 1 then
-		valuevalue0 = getPointer(p_Part11);
+		value0 = getPointer(p_Part11);
 	end
-	getPointer(instance).Part1 = valuevalue0;
+	getPointer(instance).Part1 = value0;
 end
 return abi;

@@ -23,15 +23,19 @@ fn get_ffi_input_count(value_type: &ValueType) -> i32 {
     }
 }
 
+fn get_variable_id(variable_id: &mut i32) -> i32 {
+    let id = *variable_id;
+    *variable_id += 1;
+    id
+}
+
 fn convert_ffi_input_to_lua_value(
     writer: &mut Stream,
     value_type: &ValueType,
     value: &str,
     parameters: &[String],
-    raw_suffix: &str,
-    increment: i32,
+    variable_id: &mut i32,
 ) -> String {
-    let suffix = format!("{raw_suffix}{increment}");
     match value_type {
         ValueType::Class(_) | ValueType::DataType(_) => format!("getPointer({})", parameters[0]),
         ValueType::Primitive(PrimitiveKind::String) => {
@@ -40,19 +44,19 @@ fn convert_ffi_input_to_lua_value(
         ValueType::Primitive(PrimitiveKind::Bool) => format!("{} == 1", parameters[0]),
         ValueType::Primitive(_) => parameters[0].to_string(),
         ValueType::Optional(value_type) => {
-            note!(writer, "local value{suffix};");
+            let id = get_variable_id(variable_id);
+            note!(writer, "local value{id};");
             push!(writer, "if {} == 1 then", parameters[0]);
             let result = convert_ffi_input_to_lua_value(
                 writer,
                 value_type,
                 value,
                 &parameters[1..],
-                raw_suffix,
-                increment + 1,
+                variable_id,
             );
-            note!(writer, "value{suffix} = {};", result);
+            note!(writer, "value{id} = {};", result);
             pull!(writer, "end");
-            format!("value{suffix}")
+            format!("value{id}")
         }
         _ => format!("{value} --[[ unimplemented ]]"),
     }
@@ -62,36 +66,32 @@ fn convert_lua_value_to_ffi_output(
     writer: &mut Stream,
     value_type: &ValueType,
     value: &str,
-    raw_suffix: &str,
-    increment: i32,
+    variable_id: &mut i32,
 ) -> Vec<String> {
-    let suffix = format!("{raw_suffix}{increment}");
     match value_type {
         ValueType::Class(_) | ValueType::DataType(_) => vec![format!("createPointer({value})")],
         ValueType::Primitive(PrimitiveKind::String) => {
-            let variable = format!("value{suffix}");
+            let id = get_variable_id(variable_id);
+            let variable = format!("value{id}");
             note!(writer, "local {variable} = {value};");
-            note!(writer, "local stringContent{suffix}, stringLength{suffix} = allocString(#{variable}), #{variable};");
-            push!(writer, "for i = 1, stringLength{suffix} do");
+            note!(writer, "local stringContent{id}, stringLength{id} = allocString(#{variable}), #{variable};");
+            push!(writer, "for i = 1, stringLength{id} do");
             note!(
                 writer,
-                "storeU8(memory, stringContent{suffix} + (i - 1), string.byte({variable}:sub(i, i)));"
+                "storeU8(memory, stringContent{id} + (i - 1), string.byte({variable}:sub(i, i)));"
             );
             pull!(writer, "end");
-            vec![
-                format!("stringContent{suffix}"),
-                format!("stringLength{suffix}"),
-            ]
+            vec![format!("stringContent{id}"), format!("stringLength{id}")]
         }
         ValueType::Primitive(PrimitiveKind::Bool) => vec![format!("{value} and 1 or 0")],
         ValueType::Primitive(_) => vec![value.to_string()],
         ValueType::Optional(value_type) => {
-            let variable = format!("value{suffix}");
+            let id = get_variable_id(variable_id);
+            let variable = format!("value{id}");
             note!(writer, "local {variable} = {};", value);
 
-            let values = convert_lua_value_to_ffi_output(
-                writer, value_type, &variable, raw_suffix, increment,
-            );
+            let values =
+                convert_lua_value_to_ffi_output(writer, value_type, &variable, variable_id);
             if values.len() == 1 {
                 vec![
                     format!("{variable} and 1 or 0"),
@@ -130,8 +130,7 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
         writer,
         &member.value_type,
         &format!("getPointer(instance).{}", member.name),
-        "Prop",
-        0,
+        &mut 0,
     );
     store_in_memory_or_return(writer, result);
     pull!(writer, "end");
@@ -153,8 +152,7 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
             &member.value_type,
             &format!("p_{}", member.name),
             input_parameters.as_slice(),
-            "value",
-            0,
+            &mut 0,
         );
         note!(writer, "getPointer(instance).{} = {};", member.name, result);
         pull!(writer, "end");
@@ -181,6 +179,7 @@ fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFun
     );
 
     let mut output_parameters = Vec::<String>::new();
+    let mut variable_id = 0;
     for parameter in &member.parameters {
         let mut parameters = vec![];
         for i in 0..get_ffi_input_count(&parameter.value_type) {
@@ -192,8 +191,7 @@ fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFun
             &parameter.value_type,
             &format!("p_{}", parameter.name),
             parameters.as_slice(),
-            &format!("p{}", to_pascal(&parameter.name)),
-            0,
+            &mut variable_id,
         ));
     }
 
@@ -205,8 +203,7 @@ fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFun
             member.name,
             output_parameters.join(", ")
         ),
-        "Return",
-        0,
+        &mut 0,
     );
     store_in_memory_or_return(writer, result);
     pull!(writer, "end");
@@ -234,13 +231,13 @@ fn generate_class_event(writer: &mut Stream, class: &Class, member: &ClassEventM
     parameters.push("data".to_string());
     parameters.push("vtable".to_string());
 
+    let mut variable_id = 0;
     for parameter in &member.parameters {
         parameters.append(&mut convert_lua_value_to_ffi_output(
             writer,
             &parameter.value_type,
             &format!("p_{}", parameter.name),
-            "",
-            0,
+            &mut variable_id,
         ));
     }
 
