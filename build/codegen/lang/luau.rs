@@ -21,7 +21,7 @@ fn get_ffi_input_count(value_type: &ValueType) -> i32 {
     }
 }
 
-fn get_variable_id(variable_id: &mut i32) -> i32 {
+fn new_variable_id(variable_id: &mut i32) -> i32 {
     let id = *variable_id;
     *variable_id += 1;
     id
@@ -42,7 +42,7 @@ fn convert_ffi_input_to_lua_value(
         ValueType::Primitive(PrimitiveKind::Bool) => format!("{} == 1", parameters[0]),
         ValueType::Primitive(_) => parameters[0].to_string(),
         ValueType::Optional(value_type) => {
-            let id = get_variable_id(variable_id);
+            let id = new_variable_id(variable_id);
             note!(writer, "local value{id};");
             push!(writer, "if {} == 1 then", parameters[0]);
             let result = convert_ffi_input_to_lua_value(
@@ -69,7 +69,7 @@ fn convert_lua_value_to_ffi_output(
     match value_type {
         ValueType::Class(_) | ValueType::DataType(_) => vec![format!("createPointer({value})")],
         ValueType::Primitive(PrimitiveKind::String) => {
-            let id = get_variable_id(variable_id);
+            let id = new_variable_id(variable_id);
             let variable = format!("value{id}");
             note!(writer, "local {variable} = {value};");
             note!(writer, "local stringContent{id}, stringLength{id} = allocString(#{variable}), #{variable};");
@@ -84,7 +84,7 @@ fn convert_lua_value_to_ffi_output(
         ValueType::Primitive(PrimitiveKind::Bool) => vec![format!("{value} and 1 or 0")],
         ValueType::Primitive(_) => vec![value.to_string()],
         ValueType::Optional(value_type) => {
-            let id = get_variable_id(variable_id);
+            let id = new_variable_id(variable_id);
             let variable = format!("value{id}");
             note!(writer, "local {variable} = {};", value);
 
