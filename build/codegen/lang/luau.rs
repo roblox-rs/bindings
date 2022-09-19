@@ -10,9 +10,7 @@ use crate::codegen::{
     },
 };
 
-use super::{
-    dyn_fn_extern_name, event_extern_name, get_prop_extern_name, set_prop_extern_name, to_pascal,
-};
+use super::{dyn_fn_extern_name, event_extern_name, get_prop_extern_name, set_prop_extern_name};
 
 fn get_ffi_input_count(value_type: &ValueType) -> i32 {
     match value_type {

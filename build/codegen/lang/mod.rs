@@ -9,10 +9,6 @@ pub fn to_snake(name: &str) -> String {
     name.from_case(Case::Pascal).to_case(Case::Snake)
 }
 
-pub fn to_pascal(name: &str) -> String {
-    name.from_case(Case::Camel).to_case(Case::Pascal)
-}
-
 pub fn raw_name(name: &str) -> String {
     let name = to_snake(name);
     if name == "loop" {
