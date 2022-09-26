@@ -29,6 +29,12 @@ impl Stream {
         self.stream.push_str(str);
         self.stream.push('\n');
     }
+
+    pub fn write_split(&mut self, str: &str) {
+        for s in str.split('\n') {
+            self.write(s);
+        }
+    }
 }
 
 macro_rules! note {
@@ -36,7 +42,7 @@ macro_rules! note {
         $name.write("")
     };
 	($name:ident, $($tts:tt)*) => {
-		$name.write(&format!($($tts)*))
+		$name.write_split(&format!($($tts)*))
 	}
 }
 

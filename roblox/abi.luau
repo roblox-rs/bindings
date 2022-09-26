@@ -9202,4 +9202,22 @@ function abi.ffi.prop_set_weld_constraint_part_1(instance, p_Part10, p_Part11)
 	end
 	getPointer(instance).Part1 = value0;
 end
+function lua_value_number(value)
+	return createPointer(value);
+end
+function abi.ffi.lua_value_string(addr, len)
+	return createPointer(readString(addr, len));
+end
+abi.ffi.lua_value_f32 = lua_value_number;
+abi.ffi.lua_value_f64 = lua_value_number;
+abi.ffi.lua_value_i8 = lua_value_number;
+abi.ffi.lua_value_i16 = lua_value_number;
+abi.ffi.lua_value_i32 = lua_value_number;
+abi.ffi.lua_value_i64 = lua_value_number;
+abi.ffi.lua_value_u8 = lua_value_number;
+abi.ffi.lua_value_u16 = lua_value_number;
+abi.ffi.lua_value_u32 = lua_value_number;
+abi.ffi.lua_value_u64 = lua_value_number;
+abi.ffi.lua_value_usize = lua_value_number;
+abi.ffi.lua_value_isize = lua_value_number;
 return abi;

@@ -13,7 +13,10 @@ use crate::{
     CLASS_BLACKLIST,
 };
 
-use self::lang::{is_camel_case, to_snake};
+use self::{
+    lang::{is_camel_case, to_snake},
+    structs::ClassCallbackMember,
+};
 
 enum SecurityKind {
     Read,
@@ -248,6 +251,26 @@ fn transform_class_event(
     Some(ClassMember::Event(event))
 }
 
+fn transform_class_callback(
+    dump: &Dump,
+    class: &Class,
+    callback: &ClassCallbackMember,
+) -> Option<ClassMember> {
+    if !callback
+        .parameters
+        .iter()
+        .all(|parameter| is_type_generated(dump, &parameter.value_type))
+    {
+        return None;
+    }
+
+    if !is_type_generated(dump, &callback.return_type) {
+        return None;
+    }
+
+    Some(ClassMember::Callback(callback.clone()))
+}
+
 fn transform_class_member(dump: &Dump, class: &Class, member: &ClassMember) -> Option<ClassMember> {
     if !is_valid_class_member(class, member) {
         return None;
@@ -257,7 +280,7 @@ fn transform_class_member(dump: &Dump, class: &Class, member: &ClassMember) -> O
         ClassMember::Property(property) => transform_class_property(dump, property),
         ClassMember::Function(function) => transform_class_function(dump, class, function),
         ClassMember::Event(event) => transform_class_event(dump, class, event),
-        ClassMember::Callback(_) => None,
+        ClassMember::Callback(callback) => transform_class_callback(dump, class, callback),
     }
 }
 

@@ -1,7 +1,9 @@
 use core::panic;
 
 use crate::codegen::{
-    constants::rust::{EXCLUSIVE_INSTANCE, ROBLOX_CREATABLE, RUST_OPTION, RUST_STR},
+    constants::rust::{
+        EXCLUSIVE_INSTANCE, ROBLOX_CREATABLE, RUST_INSTANCE_CUSTOM_IMPL, RUST_OPTION, RUST_STR,
+    },
     stream::{note, pull, push, Stream},
     structs::{
         Class, ClassEventMember, ClassFunctionMember, ClassFunctionParameter, ClassMember,
@@ -263,20 +265,7 @@ fn generate_class_member(writer: &mut Stream, dump: &Dump, class: &Class, member
 
 fn generate_custom_impl_macro(writer: &mut Stream, dump: &Dump, class: &Class) {
     if class.name == "Instance" {
-        note!(writer, "#[repr(transparent)]");
-        note!(writer, "pub struct $name(u32);");
-
-        push!(writer, "impl Clone for $name {{");
-        push!(writer, "fn clone(&self) -> Self {{");
-        note!(writer, "unsafe {{ Self(clone_pointer(self.to_ptr())) }}");
-        pull!(writer, "}}");
-        pull!(writer, "}}");
-
-        push!(writer, "impl Drop for $name {{");
-        push!(writer, "fn drop(&mut self) {{");
-        note!(writer, "unsafe {{ drop_pointer(self.to_ptr()) }}");
-        pull!(writer, "}}");
-        pull!(writer, "}}");
+        note!(writer, "{}", RUST_INSTANCE_CUSTOM_IMPL);
     } else if dump
         .parent(class)
         .map_or(false, |parent| parent == dump.class("Instance"))

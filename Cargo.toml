@@ -20,6 +20,9 @@ convert_case = "0.5"
 lazy_static = "1.4"
 chrono = "0.4"
 
+[features]
+multivalue = []
+
 [profile.release]
 # Tell `rustc` to optimize for small code size.
 # opt-level = "s"

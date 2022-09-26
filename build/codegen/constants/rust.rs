@@ -85,3 +85,26 @@ macro_rules! impl_instance_exclusive {
 	}
 }
 ";
+
+pub const RUST_INSTANCE_CUSTOM_IMPL: &str = "\
+#[repr(transparent)]
+pub struct $name(u32);
+
+impl Clone for $name {
+	fn clone(&self) -> Self {
+		unsafe { Self(clone_pointer(self.to_ptr())) }
+	}
+}
+
+impl Drop for $name {
+	fn drop(&mut self) {
+		unsafe { drop_pointer(self.to_ptr()) }
+	}
+}
+
+impl From<$name> for LuaValue {
+	fn from(value: $name) -> LuaValue {
+		unsafe { std::mem::transmute::<_, LuaValue>(value) }
+	}
+}
+";

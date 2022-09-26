@@ -14,3 +14,12 @@ local function createConnection(stack, vtable, connection)
 	connections[id] = { stack, vtable };
 	return id;
 end";
+
+pub const LUAU_LUA_VALUE_CONVERSION: &str = "\
+function abi.ffi.lua_value_string(addr, len)
+	return createPointer(readString(addr, len));
+end";
+
+pub const LUA_VALUE_NUMBER_TYPES: [&str; 12] = [
+    "f32", "f64", "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "usize", "isize",
+];

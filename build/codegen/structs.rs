@@ -56,10 +56,12 @@ pub struct ClassEventMember {
 #[serde(rename_all = "PascalCase")]
 pub struct ClassCallbackMember {
     pub name: String,
+    pub return_type: ValueType,
     #[serde(deserialize_with = "set_from_vec")]
     #[serde(default)]
     pub tags: HashSet<String>,
     pub security: Security,
+    pub parameters: Vec<ClassFunctionParameter>,
 }
 
 #[derive(Clone, Deserialize, PartialEq, Eq)]
@@ -124,6 +126,19 @@ pub enum ValueType {
     Enum(String),
 }
 
+pub enum GroupType {
+    Tuple(Vec<ValueType>),
+    /// An array of ValueType
+    Array(ValueType),
+    /// A dictionary object with a struct representing it.
+    DefinedDictionary(String),
+    /// A fallback for dictionaries without a struct representing it.
+    /// Raw lua table manipulation is necessary
+    Dictionary,
+    /// Any value.
+    Variant,
+}
+
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum DataTypeKind {
     Function,
@@ -182,6 +197,8 @@ pub enum PrimitiveKind {
     #[serde(rename = "float?")]
     PossibleFloat,
 }
+
+// fn get_group(class: &Class, member: ClassMember, group_type: String) -> Option<_> {}
 
 impl ClassMember {
     pub fn tags(&self) -> &HashSet<String> {

@@ -1,6 +1,8 @@
 use convert_case::{Case, Casing};
 
-use super::structs::{Class, ClassEventMember, ClassFunctionMember, ClassPropertyMember};
+use super::structs::{
+    Class, ClassCallbackMember, ClassEventMember, ClassFunctionMember, ClassPropertyMember,
+};
 
 pub mod luau;
 pub mod rust;
@@ -51,5 +53,13 @@ pub fn event_extern_name(class: &Class, event: &ClassEventMember) -> String {
         "connect_{}_{}",
         to_snake(&class.name),
         to_snake(&event.name)
+    )
+}
+
+pub fn callback_extern_name(class: &Class, callback: &ClassCallbackMember) -> String {
+    format!(
+        "callback_set_{}_{}",
+        to_snake(&class.name),
+        to_snake(&callback.name)
     )
 }
