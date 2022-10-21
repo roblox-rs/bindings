@@ -14,6 +14,21 @@ where
 #[serde(rename_all = "PascalCase")]
 pub struct Dump {
     pub classes: Vec<Class>,
+    pub enums: Vec<Enum>,
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Enum {
+    pub items: Vec<EnumItem>,
+    pub name: String,
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct EnumItem {
+    pub name: String,
+    pub value: i32,
 }
 
 #[derive(Clone, Deserialize, PartialEq, Eq)]
@@ -56,10 +71,12 @@ pub struct ClassEventMember {
 #[serde(rename_all = "PascalCase")]
 pub struct ClassCallbackMember {
     pub name: String,
+    pub return_type: ValueType,
     #[serde(deserialize_with = "set_from_vec")]
     #[serde(default)]
     pub tags: HashSet<String>,
     pub security: Security,
+    pub parameters: Vec<ClassFunctionParameter>,
 }
 
 #[derive(Clone, Deserialize, PartialEq, Eq)]
@@ -122,6 +139,26 @@ pub enum ValueType {
     Class(String),
     Group(String),
     Enum(String),
+    #[serde(skip)]
+    DetailedGroup(Box<GroupType>),
+}
+
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+#[allow(dead_code)]
+pub enum GroupType {
+    /// Unknown number of returns
+    Tuple(ValueType),
+    /// Multiple fixed returns
+    FixedTuple(Vec<ValueType>),
+    /// An array of ValueType
+    Array(ValueType),
+    /// A dictionary object with a struct representing it.
+    DefinedDictionary(String),
+    /// A fallback for dictionaries without a struct representing it.
+    /// Raw lua table manipulation is necessary
+    Dictionary,
+    /// Any value.
+    Variant,
 }
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
@@ -180,6 +217,7 @@ pub enum PrimitiveKind {
     Float,
     Double,
     #[serde(rename = "float?")]
+    #[serde(alias = "int?")]
     PossibleFloat,
 }
 
@@ -212,10 +250,22 @@ impl ClassMember {
     }
 }
 
-impl ClassEventMember {
-    // pub fn event_name(&self) -> &str {
-    //     self.event_name.as_ref().unwrap_or(&self.name)
-    // }
+impl From<ClassCallbackMember> for ClassMember {
+    fn from(callback: ClassCallbackMember) -> Self {
+        ClassMember::Callback(callback)
+    }
+}
+
+impl From<ClassFunctionMember> for ClassMember {
+    fn from(function: ClassFunctionMember) -> Self {
+        ClassMember::Function(function)
+    }
+}
+
+impl From<ClassEventMember> for ClassMember {
+    fn from(event: ClassEventMember) -> Self {
+        ClassMember::Event(event)
+    }
 }
 
 impl Dump {
@@ -235,9 +285,19 @@ impl Dump {
 }
 
 impl ValueType {
+    /// Is this a tuple?
+    pub fn is_multi_value(&self) -> bool {
+        if let ValueType::DetailedGroup(group) = self {
+            return matches!(group.as_ref(), GroupType::Tuple(_));
+        }
+
+        false
+    }
+
     /// The type that users pass to the rust bindings.
     pub fn rust_input_type(&self) -> String {
         match self {
+            ValueType::Enum(kind) => format!("enums::{kind}"),
             ValueType::Class(kind) => format!("&{kind}"),
             ValueType::DataType(kind) => format!("&{:?}", kind),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
@@ -251,6 +311,13 @@ impl ValueType {
             ValueType::Optional(value_type) => {
                 format!("Option<{}>", value_type.rust_input_type())
             }
+            ValueType::DetailedGroup(group) => match group.as_ref() {
+                GroupType::Array(value_type) | GroupType::Tuple(value_type) => {
+                    format!("Vec<{}>", value_type.rust_input_type())
+                }
+                GroupType::Variant => "LuaValue".to_string(),
+                _ => panic!("Unhandled group type {:?}", group),
+            },
             _ => panic!("Unhandled rust input type {:?}", self),
         }
     }
@@ -258,6 +325,7 @@ impl ValueType {
     /// The type that users receive from the rust bindings.
     pub fn rust_output_type(&self) -> String {
         match self {
+            ValueType::Enum(kind) => format!("enums::{kind}"),
             ValueType::Class(kind) => kind.clone(),
             ValueType::DataType(kind) => format!("{:?}", kind),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
@@ -271,6 +339,13 @@ impl ValueType {
             ValueType::Optional(value_type) => {
                 format!("Option<{}>", value_type.rust_output_type())
             }
+            ValueType::DetailedGroup(group) => match group.as_ref() {
+                GroupType::Array(value) | GroupType::Tuple(value) => {
+                    format!("Vec<{}>", value.rust_output_type())
+                }
+                GroupType::Variant => "LuaValue".to_string(),
+                _ => unimplemented!(),
+            },
             _ => panic!("Unhandled rust output type {:?}", self),
         }
     }
@@ -278,6 +353,7 @@ impl ValueType {
     /// The type that the rust bindings pass through FFI.
     pub fn ffi_input_type(&self) -> String {
         match self {
+            ValueType::Enum(kind) => format!("enums::{kind}"),
             ValueType::Class(_) | ValueType::DataType(_) => "u32".to_string(),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
             ValueType::Primitive(PrimitiveKind::String) => "RustStr".to_string(),
@@ -290,7 +366,12 @@ impl ValueType {
             ValueType::Optional(value_type) => {
                 format!("RustOption<{}>", value_type.ffi_input_type())
             }
-
+            ValueType::DetailedGroup(group) => match group.as_ref() {
+                GroupType::Array(value) => format!("RustVec<{}>", value.ffi_output_type()),
+                GroupType::Tuple(value) => format!("RustVec<{}>", value.ffi_output_type()),
+                GroupType::Variant => "LuaValue".to_string(),
+                _ => unimplemented!(),
+            },
             _ => panic!("Unhandled ffi input type {:?}", self),
         }
     }
@@ -298,9 +379,10 @@ impl ValueType {
     /// The type that the rust bindings receive from FFI.
     pub fn ffi_output_type(&self) -> String {
         match self {
+            ValueType::Enum(kind) => format!("enums::{kind}"),
             ValueType::Class(_) | ValueType::DataType(_) => "u32".to_string(),
             ValueType::Primitive(PrimitiveKind::Bool) => "bool".to_string(),
-            ValueType::Primitive(PrimitiveKind::String) => "RustStr".to_string(),
+            ValueType::Primitive(PrimitiveKind::String) => "RustString".to_string(),
             ValueType::Primitive(
                 PrimitiveKind::Float
                 | PrimitiveKind::Double
@@ -310,6 +392,12 @@ impl ValueType {
             ValueType::Optional(value_type) => {
                 format!("RustOption<{}>", value_type.ffi_output_type())
             }
+            ValueType::DetailedGroup(group) => match group.as_ref() {
+                GroupType::Array(value) => format!("RustVec<{}>", value.ffi_output_type()),
+                GroupType::Tuple(value) => format!("RustVec<{}>", value.ffi_output_type()),
+                GroupType::Variant => "LuaValue".to_string(),
+                _ => unimplemented!(),
+            },
             _ => panic!("Unhandled ffi output type {:?}", self),
         }
     }

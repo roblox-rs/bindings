@@ -1,10 +1,12 @@
 mod boilerplate;
 mod color3;
+mod lua_value;
 mod rbx_script_connection;
 mod vector3;
 
 pub use boilerplate::*;
 pub use color3::*;
+pub use lua_value::*;
 pub use rbx_script_connection::*;
 pub use vector3::*;
 
