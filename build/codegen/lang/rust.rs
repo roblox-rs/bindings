@@ -2,12 +2,14 @@ use core::panic;
 
 use crate::codegen::{
     constants::rust::{
-        EXCLUSIVE_INSTANCE, ROBLOX_CREATABLE, RUST_INSTANCE_CUSTOM_IMPL, RUST_OPTION, RUST_STR,
+        EXCLUSIVE_INSTANCE, ROBLOX_CREATABLE, RUST_INSTANCE_CUSTOM_IMPL, RUST_OPTION,
+        RUST_ROBLOX_ENUM_MACRO, RUST_STR, RUST_STRING, RUST_VEC,
     },
+    lang::callback_extern_name,
     stream::{note, pull, push, Stream},
     structs::{
-        Class, ClassEventMember, ClassFunctionMember, ClassFunctionParameter, ClassMember,
-        ClassPropertyMember, Dump, PrimitiveKind, ValueType,
+        Class, ClassCallbackMember, ClassEventMember, ClassFunctionMember, ClassFunctionParameter,
+        ClassMember, ClassPropertyMember, Dump, GroupType, PrimitiveKind, ValueType,
     },
 };
 
@@ -15,6 +17,15 @@ use super::{
     dyn_fn_extern_name, event_extern_name, get_prop_extern_name, raw_name, set_prop_extern_name,
     to_snake,
 };
+
+fn sanitize_identifier(identifier: &str) -> String {
+    // self cannot be a raw identifier
+    if identifier == "Self" {
+        "VariantSelf".to_string()
+    } else {
+        identifier.to_string()
+    }
+}
 
 fn generate_ffi_function_parameters(
     mut output: Vec<String>,
@@ -79,7 +90,21 @@ fn generate_extern(writer: &mut Stream, dump: &Dump) {
                         }
                     );
                 }
-                ClassMember::Callback(_) => continue,
+                ClassMember::Callback(callback) => {
+                    note!(
+                        writer,
+                        "fn {}(instance: u32, drop_return: extern \"C\" fn({}), callback: Box<dyn FnMut({}) -> {}>);",
+                        callback_extern_name(class, callback),
+                        callback.return_type.ffi_output_type(),
+                        &callback
+                            .parameters
+                            .iter()
+                            .map(|v| v.value_type.ffi_output_type())
+                            .collect::<Vec<String>>()
+                            .join(", "),
+                        callback.return_type.ffi_output_type()
+                    );
+                }
             }
         }
     }
@@ -89,6 +114,8 @@ fn generate_extern(writer: &mut Stream, dump: &Dump) {
 fn generate_const_text(writer: &mut Stream) {
     note!(writer, "{}", RUST_OPTION);
     note!(writer, "{}", RUST_STR);
+    note!(writer, "{}", RUST_STRING);
+    note!(writer, "{}", RUST_VEC);
     note!(writer, "{}", ROBLOX_CREATABLE);
     note!(writer, "{}", EXCLUSIVE_INSTANCE);
 }
@@ -191,6 +218,7 @@ fn generate_class_function(
 
 fn convert_rust_input_to_ffi(value_type: &ValueType, value: &str) -> String {
     match value_type {
+        ValueType::Enum(_) => value.to_string(),
         ValueType::Class(_) | ValueType::DataType(_) => format!("{value}.to_ptr()"),
         ValueType::Primitive(PrimitiveKind::String) => format!("{value}.into()"),
         ValueType::Optional(value_type) => format!(
@@ -198,12 +226,23 @@ fn convert_rust_input_to_ffi(value_type: &ValueType, value: &str) -> String {
             convert_rust_input_to_ffi(value_type, "value")
         ),
         ValueType::Primitive(_) => value.to_string(),
+        ValueType::DetailedGroup(group) => match group.as_ref() {
+            GroupType::Array(value_type) | GroupType::Tuple(value_type) => {
+                format!(
+                    "RustVec::from({value}.into_iter().map(|value| {}).collect::<Vec<_>>())",
+                    convert_rust_input_to_ffi(value_type, "value")
+                )
+            }
+            GroupType::Variant => value.to_string(),
+            _ => panic!("Unhandled group type"),
+        },
         _ => panic!("Unhandled value type"),
     }
 }
 
 fn convert_ffi_output_to_rust(value_type: &ValueType, value: &str) -> String {
     match value_type {
+        ValueType::Enum(_) => value.to_string(),
         ValueType::Class(kind) => format!("{kind}({value})"),
         ValueType::DataType(kind) => format!("{kind:?}({value})"),
         ValueType::Primitive(PrimitiveKind::String) => format!("{value}.into()"),
@@ -212,6 +251,15 @@ fn convert_ffi_output_to_rust(value_type: &ValueType, value: &str) -> String {
             "Option::from({value}).map(|value| {})",
             convert_ffi_output_to_rust(value_type, "value")
         ),
+        ValueType::DetailedGroup(group) => match group.as_ref() {
+            GroupType::Tuple(value_type) | GroupType::Array(value_type) => format!(
+                "Vec::from({value}).into_iter().map(|value| {}).collect::<Vec<{}>>()",
+                convert_ffi_output_to_rust(value_type, "value"),
+                value_type.rust_output_type(),
+            ),
+            GroupType::Variant => value.to_string(),
+            _ => unimplemented!("{group:?}"),
+        },
         _ => panic!("Unhandled value type"),
     }
 }
@@ -254,12 +302,74 @@ fn generate_class_property(
     }
 }
 
+fn generate_class_callback(
+    writer: &mut Stream,
+    _dump: &Dump,
+    class: &Class,
+    callback: &ClassCallbackMember,
+) {
+    push!(
+        writer,
+        "pub fn {}<F: FnMut({}) -> {} + 'static>(&self, mut callback: F) {{",
+        to_snake(&callback.name),
+        &callback
+            .parameters
+            .iter()
+            .map(|v| v.value_type.rust_output_type())
+            .collect::<Vec<String>>()
+            .join(", "),
+        &callback.return_type.rust_input_type()
+    );
+    push!(writer, "unsafe {{");
+    push!(
+        writer,
+        "extern \"C\" fn drop_result(value: {}) {{",
+        &callback.return_type.ffi_output_type()
+    );
+    note!(
+        writer,
+        "std::mem::drop({});",
+        convert_ffi_output_to_rust(&callback.return_type, "value")
+    );
+    pull!(writer, "}}");
+    push!(
+        writer,
+        "{}(self.to_ptr(), drop_result, Box::new(move |{}| {{",
+        callback_extern_name(class, callback),
+        &callback
+            .parameters
+            .iter()
+            .map(|v| format!("p_{}", to_snake(&v.name)))
+            .collect::<Vec<String>>()
+            .join(", ")
+    );
+    let result = convert_rust_input_to_ffi(
+        &callback.return_type,
+        &format!(
+            "callback({})",
+            &callback
+                .parameters
+                .iter()
+                .map(|v| convert_ffi_output_to_rust(
+                    &v.value_type,
+                    &format!("p_{}", to_snake(&v.name))
+                ))
+                .collect::<Vec<String>>()
+                .join(", ")
+        ),
+    );
+    note!(writer, "{}", result);
+    pull!(writer, "}}))");
+    pull!(writer, "}}");
+    pull!(writer, "}}");
+}
+
 fn generate_class_member(writer: &mut Stream, dump: &Dump, class: &Class, member: &ClassMember) {
     match member {
         ClassMember::Event(event) => generate_class_event(writer, dump, class, event),
         ClassMember::Function(function) => generate_class_function(writer, dump, class, function),
         ClassMember::Property(property) => generate_class_property(writer, dump, class, property),
-        ClassMember::Callback(_) => {}
+        ClassMember::Callback(callback) => generate_class_callback(writer, dump, class, callback),
     }
 }
 
@@ -352,15 +462,36 @@ fn generate_impl(writer: &mut Stream, dump: &Dump) {
     );
 }
 
+pub fn generate_enums(writer: &mut Stream, dump: &Dump) {
+    push!(writer, "pub mod enums {{");
+    note!(writer, "{}", RUST_ROBLOX_ENUM_MACRO);
+
+    for roblox_enum in &dump.enums {
+        push!(writer, "roblox_macro!({}; {{", roblox_enum.name);
+        for enum_item in &roblox_enum.items {
+            note!(
+                writer,
+                "{} = {},",
+                sanitize_identifier(&enum_item.name),
+                enum_item.value
+            );
+        }
+        pull!(writer, "}});");
+    }
+
+    pull!(writer, "}}");
+}
+
 pub fn generate(dump: &Dump) -> String {
     let mut writer = Stream::new();
     note!(
         writer,
-        "// Generated by wlausam-bindings at {}",
+        "// Generated by roblox-rs at {}",
         chrono::offset::Local::now().format("%A, %B %Y %r")
     );
     note!(writer, "pub use super::*;");
     generate_extern(&mut writer, dump);
+    generate_enums(&mut writer, dump);
     generate_const_text(&mut writer);
     generate_impl_macros(&mut writer, dump);
     generate_impl(&mut writer, dump);

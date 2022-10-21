@@ -9,19 +9,58 @@ use structs::{
 };
 
 use crate::{
-    config::{NON_OPTIONAL_EVENT_PARAMETERS, OPTIONAL_FUNCTION_PARAMETERS},
+    config::{COMPLEX_GROUP_TYPES, NON_OPTIONAL_EVENT_PARAMETERS, OPTIONAL_FUNCTION_PARAMETERS},
     CLASS_BLACKLIST,
 };
 
 use self::{
     lang::{is_camel_case, to_snake},
-    structs::ClassCallbackMember,
+    structs::{ClassCallbackMember, GroupType},
 };
 
 enum SecurityKind {
     Read,
     Write,
     Either,
+}
+
+enum GroupSource {
+    Parameter(usize),
+    Result,
+}
+
+fn get_fallback_group(value_type: &ValueType) -> Option<GroupType> {
+    if let ValueType::Group(name) = value_type {
+        if name == "Variant" || name == "Dictionary" {
+            return Some(GroupType::Variant);
+        } else {
+            return None;
+        }
+    }
+
+    None
+}
+
+fn get_detailed_group(
+    class: &Class,
+    member: &ClassMember,
+    kind: &GroupSource,
+    value_type: &ValueType,
+) -> Option<GroupType> {
+    let config_name = format!(
+        "{}.{}({})",
+        &class.name,
+        &member.name(),
+        match kind {
+            GroupSource::Parameter(idx) => idx.to_string(),
+            _ => "".to_string(),
+        }
+    );
+
+    let detailed_group = COMPLEX_GROUP_TYPES.get(config_name.as_str());
+    detailed_group
+        .cloned()
+        .or_else(|| get_fallback_group(value_type))
 }
 
 fn should_generate_class(dump: &Dump, class: &Class) -> bool {
@@ -35,24 +74,32 @@ fn should_generate_class(dump: &Dump, class: &Class) -> bool {
 
 fn is_type_generated(dump: &Dump, value_type: &ValueType) -> bool {
     match value_type {
-        ValueType::Class(kind) => {
-            return should_generate_class(dump, dump.class(kind));
-        }
+        ValueType::Class(kind) => should_generate_class(dump, dump.class(kind)),
         ValueType::DataType(
             DataTypeKind::BinaryString
             | DataTypeKind::Function
             | DataTypeKind::QDir
             | DataTypeKind::QFont
             | DataTypeKind::ProtectedString
-            | DataTypeKind::Objects,
+            | DataTypeKind::Objects
+            | DataTypeKind::RbxScriptSignal,
         )
-        | ValueType::Enum(_)
-        | ValueType::Group(_) => {
-            return false;
-        }
-        _ => {}
+        | ValueType::Group(_) => false,
+        _ => true,
     }
-    true
+}
+
+fn is_group_type_generated(
+    class: &Class,
+    member: &ClassMember,
+    kind: &GroupSource,
+    value_type: &ValueType,
+) -> bool {
+    if let ValueType::Group(_) | ValueType::DataType(DataTypeKind::Objects) = value_type {
+        get_detailed_group(class, member, kind, value_type).is_some()
+    } else {
+        false
+    }
 }
 
 fn is_security_accessible(security: &Security, kind: &SecurityKind) -> bool {
@@ -84,13 +131,33 @@ fn transform_value_type(value_type: &ValueType) -> ValueType {
     }
 }
 
-fn transform_parameter_value_type(value_type: &ValueType) -> ValueType {
+fn transform_detailed_value_type(
+    class: &Class,
+    member: &ClassMember,
+    kind: &GroupSource,
+    value_type: &ValueType,
+) -> ValueType {
+    if let ValueType::Group(_) | ValueType::DataType(DataTypeKind::Objects) = value_type {
+        ValueType::DetailedGroup(Box::new(
+            get_detailed_group(class, member, kind, value_type).unwrap(),
+        ))
+    } else {
+        transform_value_type(value_type)
+    }
+}
+
+fn transform_parameter_value_type(
+    class: &Class,
+    member: &ClassMember,
+    kind: &GroupSource,
+    value_type: &ValueType,
+) -> ValueType {
     // Function arguments should not have optional-by-default arguments.
     if let ValueType::Class(_) = value_type {
         return value_type.clone();
     }
 
-    transform_value_type(value_type)
+    transform_detailed_value_type(class, member, kind, value_type)
 }
 
 fn is_valid_class_member(class: &Class, member: &ClassMember) -> bool {
@@ -143,7 +210,14 @@ fn transform_class_function(
     class: &Class,
     function: &ClassFunctionMember,
 ) -> Option<ClassMember> {
-    if !is_type_generated(dump, &function.return_type) {
+    if !is_type_generated(dump, &function.return_type)
+        && !is_group_type_generated(
+            class,
+            &function.clone().into(),
+            &GroupSource::Result,
+            &function.return_type,
+        )
+    {
         return None;
     }
 
@@ -155,18 +229,38 @@ fn transform_class_function(
     if !function
         .parameters
         .iter()
-        .all(|parameter| is_type_generated(dump, &parameter.value_type))
+        .enumerate()
+        .all(|(i, parameter)| {
+            is_type_generated(dump, &parameter.value_type)
+                || is_group_type_generated(
+                    class,
+                    &function.clone().into(),
+                    &GroupSource::Parameter(i),
+                    &parameter.value_type,
+                )
+        })
     {
         return None;
     }
 
     let mut function = ClassFunctionMember {
-        return_type: transform_value_type(&function.return_type),
+        return_type: transform_detailed_value_type(
+            class,
+            &function.clone().into(),
+            &GroupSource::Result,
+            &function.return_type,
+        ),
         parameters: function
             .parameters
             .iter()
-            .map(|v| ClassFunctionParameter {
-                value_type: transform_parameter_value_type(&v.value_type),
+            .enumerate()
+            .map(|(i, v)| ClassFunctionParameter {
+                value_type: transform_parameter_value_type(
+                    class,
+                    &function.clone().into(),
+                    &GroupSource::Parameter(i),
+                    &v.value_type,
+                ),
                 ..v.clone()
             })
             .collect(),
@@ -212,11 +306,15 @@ fn transform_class_event(
     class: &Class,
     event: &ClassEventMember,
 ) -> Option<ClassMember> {
-    if !event
-        .parameters
-        .iter()
-        .all(|parameter| is_type_generated(dump, &parameter.value_type))
-    {
+    if !event.parameters.iter().enumerate().all(|(i, parameter)| {
+        is_type_generated(dump, &parameter.value_type)
+            || is_group_type_generated(
+                class,
+                &event.clone().into(),
+                &GroupSource::Parameter(i),
+                &parameter.value_type,
+            )
+    }) {
         return None;
     }
 
@@ -224,8 +322,14 @@ fn transform_class_event(
         parameters: event
             .parameters
             .iter()
-            .map(|v| ClassFunctionParameter {
-                value_type: transform_value_type(&v.value_type),
+            .enumerate()
+            .map(|(i, v)| ClassFunctionParameter {
+                value_type: transform_detailed_value_type(
+                    class,
+                    &event.clone().into(),
+                    &GroupSource::Parameter(i),
+                    &v.value_type,
+                ),
                 ..v.clone()
             })
             .collect(),
@@ -237,7 +341,16 @@ fn transform_class_event(
         event.event_name = Some("Changed".into());
     }
 
-    let qualified_name = format!("{}.{}", &class.name, &event.name);
+    if event.name.starts_with("On") {
+        event.event_name = Some(event.name.clone());
+        event.name = event.name[2..].to_string();
+    }
+
+    let qualified_name = format!(
+        "{}.{}",
+        &class.name,
+        &event.event_name.as_ref().unwrap_or(&event.name)
+    );
     if let Some(non_optional) = NON_OPTIONAL_EVENT_PARAMETERS.get(qualified_name.as_str()) {
         for (i, v) in event.parameters.iter_mut().enumerate() {
             if non_optional.contains(&i) {
@@ -259,16 +372,67 @@ fn transform_class_callback(
     if !callback
         .parameters
         .iter()
-        .all(|parameter| is_type_generated(dump, &parameter.value_type))
+        .enumerate()
+        .all(|(i, parameter)| {
+            is_type_generated(dump, &parameter.value_type)
+                || is_group_type_generated(
+                    class,
+                    &callback.clone().into(),
+                    &GroupSource::Parameter(i),
+                    &parameter.value_type,
+                )
+        })
     {
         return None;
     }
 
-    if !is_type_generated(dump, &callback.return_type) {
+    if !is_type_generated(dump, &callback.return_type)
+        && !is_group_type_generated(
+            class,
+            &callback.clone().into(),
+            &GroupSource::Result,
+            &callback.return_type,
+        )
+    {
         return None;
     }
 
-    Some(ClassMember::Callback(callback.clone()))
+    let mut callback = ClassCallbackMember {
+        return_type: transform_detailed_value_type(
+            class,
+            &callback.clone().into(),
+            &GroupSource::Result,
+            &callback.return_type,
+        ),
+        parameters: callback
+            .parameters
+            .iter()
+            .enumerate()
+            .map(|(i, v)| ClassFunctionParameter {
+                value_type: transform_detailed_value_type(
+                    class,
+                    &callback.clone().into(),
+                    &GroupSource::Parameter(i),
+                    &v.value_type,
+                ),
+                ..v.clone()
+            })
+            .collect(),
+        ..callback.clone()
+    };
+
+    let qualified_name = format!("{}.{}", &class.name, &callback.name);
+    if let Some(non_optional) = NON_OPTIONAL_EVENT_PARAMETERS.get(qualified_name.as_str()) {
+        for (i, v) in callback.parameters.iter_mut().enumerate() {
+            if non_optional.contains(&i) {
+                if let ValueType::Optional(value_type) = &v.value_type {
+                    v.value_type = *value_type.clone();
+                }
+            }
+        }
+    }
+
+    Some(ClassMember::Callback(callback))
 }
 
 fn transform_class_member(dump: &Dump, class: &Class, member: &ClassMember) -> Option<ClassMember> {
@@ -290,7 +454,13 @@ fn transform_class(dump: &Dump, class: Class) -> Option<Class> {
             members: class
                 .members
                 .iter()
-                .filter_map(|member| transform_class_member(dump, &class, member))
+                .filter_map(|member| {
+                    let result = transform_class_member(dump, &class, member);
+                    if is_valid_class_member(&class, member) && result.is_none() {
+                        println!("cant generate: {}.{}", class.name, member.name());
+                    };
+                    result
+                })
                 .collect(),
             name: class.name,
             tags: class.tags,
@@ -304,6 +474,7 @@ fn transform_class(dump: &Dump, class: Class) -> Option<Class> {
 pub fn transform_dump(dump: &Dump) -> Dump {
     let mut new_dump = Dump {
         classes: Vec::new(),
+        enums: dump.enums.clone(),
     };
 
     for class in dump.classes.iter().cloned() {

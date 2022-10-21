@@ -1,3 +1,28 @@
+pub const RUST_VEC: &str = "\
+#[repr(C)]
+pub struct RustVec<T> {
+    content: *mut T,
+    length: usize,
+}
+
+impl<T> From<Vec<T>> for RustVec<T> {
+    fn from(mut vec: Vec<T>) -> RustVec<T> {
+		let content = vec.as_mut_ptr();
+		let length = vec.len();
+		let capacity = vec.capacity();
+		std::mem::forget(vec);
+        assert!(length == capacity);
+        RustVec { content, length }
+    }
+}
+
+impl<T> From<RustVec<T>> for Vec<T> {
+    fn from(string: RustVec<T>) -> Vec<T> {
+        unsafe { Vec::from_raw_parts(string.content, string.length, string.length) }
+    }
+}
+";
+
 pub const RUST_OPTION: &str = "\
 #[repr(C)]
 pub enum RustOption<T> {
@@ -25,6 +50,7 @@ impl<T> From<RustOption<T>> for Option<T> {
 ";
 
 pub const RUST_STR: &str = "\
+/// A FFI-safe string slice to pass to bindings.
 #[repr(C)]
 pub struct RustStr {
 	content: *const u8,
@@ -39,11 +65,21 @@ impl From<&str> for RustStr {
 		}
 	}
 }
+";
 
-impl From<RustStr> for String {
-	fn from(string: RustStr) -> String {
+pub const RUST_STRING: &str = "\
+/// A FFI-safe string received from bindings.
+/// Capacity is guaranteed to be equal to length as Luau never resizes strings.
+#[repr(C)]
+pub struct RustString {
+	content: *mut u8,
+	length: usize,
+}
+
+impl From<RustString> for String {
+	fn from(string: RustString) -> String {
 		unsafe {
-			std::str::from_utf8(std::slice::from_raw_parts(string.content, string.length)).unwrap().to_string()
+			String::from_raw_parts(string.content, string.length, string.length)
 		}
 	}
 }
@@ -108,3 +144,16 @@ impl From<$name> for LuaValue {
 	}
 }
 ";
+
+pub const RUST_ROBLOX_ENUM_MACRO: &str = "\
+macro_rules! roblox_macro {
+    ($name:ident; { $($field:ident = $value:expr),*, }) => {
+		#[allow(non_camel_case_types)]
+		#[repr(C)]
+        pub enum $name {
+            $(
+                $field = $value
+            ),*
+        }
+    }
+}";

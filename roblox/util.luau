@@ -42,9 +42,10 @@ return function(rt, wasm, memory)
 		wasm.func_list.__drop_box_dyn_fn(data, vtable);
 	end
 
+	-- Usable on FnOnce()
+	-- FnOnce() will clean itself up, so dropFunctionRef is unnecessary
 	local function invokeOnce(data, vtable, ...)
-		invokeFunction(data, vtable, ...);
-		dropFunctionRef(data, vtable);
+		return invokeFunction(data, vtable, ...);
 	end
 
 	local function allocString(text)

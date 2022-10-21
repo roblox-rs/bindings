@@ -13,7 +13,7 @@ pub fn to_snake(name: &str) -> String {
 
 pub fn raw_name(name: &str) -> String {
     let name = to_snake(name);
-    if name == "loop" {
+    if matches!(name.as_str(), "loop" | "type") {
         format!("r#{}", name)
     } else {
         name

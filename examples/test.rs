@@ -1,9 +1,6 @@
-#![feature(backtrace)]
-#![feature(ptr_metadata, fn_traits)]
-#![feature(unsize)]
-// extern crate roblox_rs;
 extern crate wee_alloc;
-// pub mod bindings;
+use std::convert::TryFrom;
+
 use roblox_rs::{println, *};
 
 // Use `wee_alloc` as the global allocator.
@@ -19,6 +16,14 @@ pub fn main() {
     };
 
     task::delay(3., fnn1);
+
+    CollectionService::instance().add_tag(&Workspace::instance().downcast(), "god1");
+    CollectionService::instance().add_tag(&Workspace::instance().downcast(), "god2");
+    CollectionService::instance().add_tag(&Workspace::instance().downcast(), "god3");
+
+    for tag in CollectionService::instance().get_tags(&Workspace::instance().downcast()) {
+        println!("workspace has tag: {tag}");
+    }
 
     let value = "Workspace".to_string();
 
@@ -52,6 +57,43 @@ pub fn main() {
 
     // std::mem::transmute::<_, Instance>(0).set_name("hello god");
     // std::mem::transmute::<_, Instance>(0).name();
+
+    let my_remote = RemoteEvent::new();
+    my_remote.set_name("GOD REMOTE");
+    my_remote.set_parent(Some(&Workspace::instance().downcast()));
+
+    let my_func = RemoteFunction::new();
+    my_func.set_name("GOD FUNC");
+    my_func.set_parent(Some(&Workspace::instance().downcast()));
+
+    my_func.on_server_invoke(move |player, values| {
+        println!(
+            "Wow, {} sent me messages that I will respond to:",
+            player.name()
+        );
+        for (i, message) in values.into_iter().enumerate() {
+            if let Ok(str) = String::try_from(message) {
+                println!("got string: {str}");
+            } else {
+                println!("index {i} is not a string");
+            }
+        }
+        println!("Responding with: 1, Rust, 2");
+        vec![1.into(), "Rust".into(), 2.into()]
+    });
+
+    my_remote
+        .on_server_event(move |player, values| {
+            println!("Wow, {} sent me messages:", player.name());
+            for (i, message) in values.into_iter().enumerate() {
+                if let Ok(str) = String::try_from(message) {
+                    println!("got string: {str}");
+                } else {
+                    println!("index {i} is not a string");
+                }
+            }
+        })
+        .leak();
 
     let my_fancy_part = Part::new();
     my_fancy_part.set_anchored(true);

@@ -2,26 +2,42 @@ use crate::codegen::{
     constants::{
         luau::{
             LUAU_CREATE_CONNECTION, LUAU_DISCONNECT_CONNECTION, LUAU_LUA_VALUE_CONVERSION,
-            LUA_VALUE_NUMBER_TYPES,
+            LUAU_LUA_VALUE_CONVERSION_VARIABLE, LUA_VALUE_NUMBER_TYPES,
         },
         MULTI_VALUE_SUPPORT,
     },
     lang::callback_extern_name,
     stream::{note, pull, push, Stream},
     structs::{
-        Class, ClassCallbackMember, ClassEventMember, ClassFunctionMember, ClassMember,
-        ClassPropertyMember, Dump, PrimitiveKind, ValueType,
+        Class, ClassCallbackMember, ClassEventMember, ClassFunctionMember, ClassFunctionParameter,
+        ClassMember, ClassPropertyMember, Dump, GroupType, PrimitiveKind, ValueType,
     },
 };
 
 use super::{dyn_fn_extern_name, event_extern_name, get_prop_extern_name, set_prop_extern_name};
 
-fn get_ffi_input_count(value_type: &ValueType) -> i32 {
+fn get_ffi_size(value_type: &ValueType) -> i32 {
     match value_type {
         ValueType::Primitive(PrimitiveKind::String) => 2,
-        ValueType::Class(_) | ValueType::DataType(_) | ValueType::Primitive(_) => 1,
-        ValueType::Optional(value_type) => 1 + get_ffi_input_count(value_type),
+        ValueType::Class(_)
+        | ValueType::DataType(_)
+        | ValueType::Primitive(_)
+        | ValueType::Enum(_) => 1,
+        ValueType::Optional(value_type) => 1 + get_ffi_size(value_type),
+        ValueType::DetailedGroup(group) => match group.as_ref() {
+            GroupType::Array(_) | GroupType::Tuple(_) => 2,
+            GroupType::Variant => 1,
+            _ => panic!("Unhandled group type"),
+        },
         _ => panic!("Unhandled value type"),
+    }
+}
+
+fn format_parameter_name(parameter: &ClassFunctionParameter) -> String {
+    if parameter.value_type.is_multi_value() {
+        "...".to_string()
+    } else {
+        format!("p_{}", &parameter.name)
     }
 }
 
@@ -34,11 +50,11 @@ fn new_variable_id(variable_id: &mut i32) -> i32 {
 fn convert_ffi_input_to_lua_value(
     writer: &mut Stream,
     value_type: &ValueType,
-    value: &str,
     parameters: &[String],
     variable_id: &mut i32,
 ) -> String {
     match value_type {
+        ValueType::Enum(_) => parameters[0].clone(),
         ValueType::Class(_) | ValueType::DataType(_) => format!("getPointer({})", parameters[0]),
         ValueType::Primitive(PrimitiveKind::String) => {
             format!("loadString(memory, {}, {})", parameters[0], parameters[1])
@@ -49,18 +65,47 @@ fn convert_ffi_input_to_lua_value(
             let id = new_variable_id(variable_id);
             note!(writer, "local value{id};");
             push!(writer, "if {} == 1 then", parameters[0]);
-            let result = convert_ffi_input_to_lua_value(
-                writer,
-                value_type,
-                value,
-                &parameters[1..],
-                variable_id,
-            );
+            let result =
+                convert_ffi_input_to_lua_value(writer, value_type, &parameters[1..], variable_id);
             note!(writer, "value{id} = {};", result);
             pull!(writer, "end");
             format!("value{id}")
         }
-        _ => format!("{value} --[[ unimplemented ]]"),
+        ValueType::DetailedGroup(group) => match group.as_ref() {
+            GroupType::Array(value_type) | GroupType::Tuple(value_type) => {
+                let id = new_variable_id(variable_id);
+                let size = get_ffi_size(value_type);
+                note!(writer, "local result{id} = table.create({})", parameters[1]);
+                push!(writer, "for i = 1, {} do", parameters[1]);
+                for i in 0..size {
+                    note!(
+                        writer,
+                        "local value{id}_{i} = loadU32(memory, {} + (i - 1) * {} + {});",
+                        parameters[0],
+                        size * 4,
+                        i * 4
+                    );
+                }
+                let result = convert_ffi_input_to_lua_value(
+                    writer,
+                    value_type,
+                    &(0..size)
+                        .map(|v| format!("value{id}_{v}"))
+                        .collect::<Vec<_>>()[..],
+                    variable_id,
+                );
+                note!(writer, "result{id}[i] = {}", result);
+                pull!(writer, "end");
+                if matches!(group.as_ref(), GroupType::Tuple(_)) {
+                    format!("unpack(result{id}, 1, {})", parameters[1])
+                } else {
+                    format!("result{id}")
+                }
+            }
+            GroupType::Variant => format!("getPointer({})", parameters[0]),
+            _ => panic!("Unhandled group type"),
+        },
+        _ => "nil --[[ unimplemented ]]".to_string(),
     }
 }
 
@@ -71,6 +116,7 @@ fn convert_lua_value_to_ffi_output(
     variable_id: &mut i32,
 ) -> Vec<String> {
     match value_type {
+        ValueType::Enum(_) => vec![format!("({value}).Value")],
         ValueType::Class(_) | ValueType::DataType(_) => vec![format!("createPointer({value})")],
         ValueType::Primitive(PrimitiveKind::String) => {
             let id = new_variable_id(variable_id);
@@ -103,6 +149,67 @@ fn convert_lua_value_to_ffi_output(
                 unimplemented!("Optional fields require a single usize value");
             }
         }
+        ValueType::DetailedGroup(group) => match group.as_ref() {
+            GroupType::Array(value_type) => {
+                let id = new_variable_id(variable_id);
+                note!(writer, "local result{id} = {value};");
+                note!(
+                    writer,
+                    "local vec{id} = allocVec(#result{id} * {});",
+                    get_ffi_size(value_type) * 4
+                );
+                push!(writer, "for i, v in ipairs(result{id}) do");
+                let result = convert_lua_value_to_ffi_output(writer, value_type, "v", variable_id);
+                for (i, expression) in result.iter().enumerate() {
+                    note!(
+                        writer,
+                        "storeU32(memory, vec{id} + (i - 1) * {} + {}, {expression})",
+                        result.len() * 4,
+                        i * 4
+                    );
+                }
+                pull!(writer, "end");
+                vec![format!("vec{id}"), format!("#result{id}")]
+            }
+            GroupType::Tuple(value_type) => {
+                let id = new_variable_id(variable_id);
+                let is_dots = value == "...";
+                if is_dots {
+                    note!(writer, "local length{id} = select('#', ...);");
+                } else {
+                    note!(writer, "local value{id} = {value};");
+                    note!(writer, "local length{id} = #value{id};");
+                }
+                note!(
+                    writer,
+                    "local vec{id} = allocVec(length{id} * {});",
+                    get_ffi_size(value_type)
+                );
+                push!(writer, "for i = 1, length{id} do");
+                let result = convert_lua_value_to_ffi_output(
+                    writer,
+                    value_type,
+                    &if is_dots {
+                        "select(i, ...)".to_string()
+                    } else {
+                        format!("value{id}[i]")
+                    },
+                    variable_id,
+                );
+                for (i, v) in result.iter().enumerate() {
+                    note!(
+                        writer,
+                        "storeU32(memory, vec{id} + (i - 1) * {} + {}, {v})",
+                        result.len() * 4,
+                        i
+                    );
+                }
+                pull!(writer, "end");
+                vec![format!("vec{id}"), format!("length{id}")]
+            }
+            GroupType::Variant => vec![format!("createPointer({value})")],
+            _ => unimplemented!(),
+        },
         _ => panic!("Unhandled value type"),
     }
 }
@@ -122,7 +229,7 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
         writer,
         "function abi.ffi.{}({})",
         get_prop_extern_name(class, member),
-        if get_ffi_input_count(&member.value_type) > 1 && !MULTI_VALUE_SUPPORT {
+        if get_ffi_size(&member.value_type) > 1 && !MULTI_VALUE_SUPPORT {
             "output, instance"
         } else {
             "instance"
@@ -139,7 +246,7 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
 
     if !member.tags.contains("ReadOnly") {
         let mut input_parameters = Vec::<String>::new();
-        for i in 0..get_ffi_input_count(&member.value_type) {
+        for i in 0..get_ffi_size(&member.value_type) {
             input_parameters.push(format!("p_{}{i}", member.name));
         }
 
@@ -152,7 +259,6 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
         let result = convert_ffi_input_to_lua_value(
             writer,
             &member.value_type,
-            &format!("p_{}", member.name),
             input_parameters.as_slice(),
             &mut 0,
         );
@@ -163,13 +269,13 @@ fn generate_class_property(writer: &mut Stream, class: &Class, member: &ClassPro
 
 fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFunctionMember) {
     let mut input_parameters = vec!["instance".to_string()];
-    if get_ffi_input_count(&member.return_type) > 1 && !MULTI_VALUE_SUPPORT {
+    if get_ffi_size(&member.return_type) > 1 && !MULTI_VALUE_SUPPORT {
         input_parameters.insert(0, "output".to_string());
     }
 
     for parameter in &member.parameters {
-        for i in 0..get_ffi_input_count(&parameter.value_type) {
-            input_parameters.push(format!("p_{}{i}", parameter.name));
+        for i in 0..get_ffi_size(&parameter.value_type) {
+            input_parameters.push(format!("p_{}{i}", &parameter.name));
         }
     }
 
@@ -184,29 +290,32 @@ fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFun
     let mut variable_id = 0;
     for parameter in &member.parameters {
         let mut parameters = vec![];
-        for i in 0..get_ffi_input_count(&parameter.value_type) {
-            parameters.push(format!("p_{}{i}", parameter.name));
+        for i in 0..get_ffi_size(&parameter.value_type) {
+            parameters.push(format!("p_{}{i}", &parameter.name));
         }
 
         output_parameters.push(convert_ffi_input_to_lua_value(
             writer,
             &parameter.value_type,
-            &format!("p_{}", parameter.name),
             parameters.as_slice(),
             &mut variable_id,
         ));
     }
 
-    let result = convert_lua_value_to_ffi_output(
-        writer,
-        &member.return_type,
-        &format!(
+    let value = if member.return_type.is_multi_value() {
+        format!(
+            "{{ getPointer(instance):{}({}) }}",
+            member.name,
+            output_parameters.join(", ")
+        )
+    } else {
+        format!(
             "getPointer(instance):{}({})",
             member.name,
             output_parameters.join(", ")
-        ),
-        &mut 0,
-    );
+        )
+    };
+    let result = convert_lua_value_to_ffi_output(writer, &member.return_type, &value, &mut 0);
     store_in_memory_or_return(writer, result);
     pull!(writer, "end");
 }
@@ -214,7 +323,7 @@ fn generate_class_function(writer: &mut Stream, class: &Class, member: &ClassFun
 fn generate_class_event(writer: &mut Stream, class: &Class, member: &ClassEventMember) {
     let mut input_parameters = Vec::<String>::new();
     for parameter in &member.parameters {
-        input_parameters.push(format!("p_{}", parameter.name));
+        input_parameters.push(format_parameter_name(parameter));
     }
 
     push!(
@@ -238,7 +347,7 @@ fn generate_class_event(writer: &mut Stream, class: &Class, member: &ClassEventM
         parameters.append(&mut convert_lua_value_to_ffi_output(
             writer,
             &parameter.value_type,
-            &format!("p_{}", parameter.name),
+            &format_parameter_name(parameter),
             &mut variable_id,
         ));
     }
@@ -249,13 +358,59 @@ fn generate_class_event(writer: &mut Stream, class: &Class, member: &ClassEventM
 }
 
 fn generate_class_callback(writer: &mut Stream, class: &Class, member: &ClassCallbackMember) {
+    let mut input_parameters = Vec::<String>::new();
+    for parameter in &member.parameters {
+        input_parameters.push(format_parameter_name(parameter));
+    }
+
     push!(
         writer,
-        "function abi.ffi.{}(instance, data, vtable)",
+        "function abi.ffi.{}(instance, destructor, data, vtable)",
         callback_extern_name(class, member)
     );
-    push!(writer, "getPointer(instance).{}  = function()", member.name);
+    push!(
+        writer,
+        "getPointer(instance).{} = function({})",
+        member.name,
+        input_parameters.join(", ")
+    );
 
+    let mut parameters = Vec::<String>::new();
+    parameters.push("data".to_string());
+    parameters.push("vtable".to_string());
+
+    let mut variable_id = 0;
+    for parameter in &member.parameters {
+        parameters.append(&mut convert_lua_value_to_ffi_output(
+            writer,
+            &parameter.value_type,
+            &format_parameter_name(parameter),
+            &mut variable_id,
+        ));
+    }
+
+    let mut results = Vec::<String>::with_capacity(get_ffi_size(&member.return_type) as usize);
+    for _ in 0..get_ffi_size(&member.return_type) {
+        results.push(format!("response{}", new_variable_id(&mut variable_id)));
+    }
+
+    note!(
+        writer,
+        "local {} = invokeFunction({})",
+        results.join(", "),
+        parameters.join(", ")
+    );
+
+    let response =
+        convert_ffi_input_to_lua_value(writer, &member.return_type, &results[..], &mut variable_id);
+
+    note!(
+        writer,
+        "functions.data[destructor]({});",
+        results.join(", ")
+    );
+
+    note!(writer, "return {response};",);
     pull!(writer, "end");
     pull!(writer, "end");
 }
@@ -283,6 +438,7 @@ fn generate_lua_value_conversion(writer: &mut Stream) {
     pull!(writer, "end");
 
     note!(writer, "{}", LUAU_LUA_VALUE_CONVERSION);
+    note!(writer, "{}", LUAU_LUA_VALUE_CONVERSION_VARIABLE);
 
     for number in LUA_VALUE_NUMBER_TYPES {
         note!(writer, "abi.ffi.lua_value_{number} = lua_value_number;");
@@ -297,8 +453,11 @@ fn generate_abi_start(writer: &mut Stream) {
         ("storeU8", "rt.store.i32_n8"),
         ("storeU32", "rt.store.i32"),
         ("loadU8", "rt.load.i32_u8"),
+        ("loadU32", "rt.load.i32"),
         ("loadString", "rt.load.string"),
         ("allocString", "wasm.func_list.__heap_alloc_string"),
+        ("allocVec", "wasm.func_list.__heap_alloc_vec"),
+        ("functions", "wasm.table_list.__indirect_function_table"),
         ("invokeFunction", "util.invokeFunction"),
         ("dropFunctionRef", "util.dropFunctionRef"),
     ];
@@ -336,7 +495,11 @@ fn generate_abi_tail(writer: &mut Stream) {
 
 pub fn generate(dump: &Dump) -> String {
     let mut writer = Stream::new();
-    note!(writer, "-- Generated by roblox-rs");
+    note!(
+        writer,
+        "-- Generated by roblox-rs at {}",
+        chrono::offset::Local::now().format("%A, %B %Y %r")
+    );
     generate_abi_start(&mut writer);
     generate_classes(&mut writer, dump);
     generate_lua_value_conversion(&mut writer);
