@@ -32,39 +32,6 @@ local env = {
 		task.wait(delay);
 	end,
 
-	-- datatype constructors
-	vector3_new = wrapConstructorNumber(Vector3.new),
-
-	color3_new = wrapConstructorNumber(Color3.new),
-	color3_from_rgb = wrapConstructorNumber(Color3.fromRGB),
-	color3_from_hsv = wrapConstructorString(Color3.fromHSV),
-
-	instance_new = function(name_addr, name_len)
-		return createPointer(Instance.new(readString(name_addr, name_len)));
-	end,
-
-	-- Color3
-
-	get_color3_r = function(id)
-		return getPointer(id).R;
-	end,
-
-	get_color3_g = function(id)
-		return getPointer(id).G;
-	end,
-
-	get_color3_b = function(id)
-		return getPointer(id).B;
-	end,
-
-	color3_to_hex = function(ret, id)
-		writeStringReturn(ret, getPointer(id):ToHex());
-	end,
-
-	color3_lerp = function(start, target, alpha)
-		return createPointer(getPointer(start):Lerp(getPointer(target), alpha));
-	end,
-
 	-- pointers
 	drop_pointer = function(ptr)
 		dropPointer(ptr);
@@ -72,48 +39,6 @@ local env = {
 
 	clone_pointer = function(ptr)
 		return createPointer(getPointer(ptr));
-	end,
-
-	-- Vector3
-
-	get_vector3_x = function(id)
-		return getPointer(id).X;
-	end,
-
-	get_vector3_y = function(id)
-		return getPointer(id).Y;
-	end,
-
-	get_vector3_z = function(id)
-		return getPointer(id).Z;
-	end,
-
-	add_datatype = function(lhs, rhs)
-		return createPointer(getPointer(lhs) + getPointer(rhs));
-	end,
-
-	sub_datatype = function(lhs, rhs)
-		return createPointer(getPointer(lhs) - getPointer(rhs));
-	end,
-
-	mul_datatype = function(lhs, rhs)
-		return createPointer(getPointer(lhs) * getPointer(rhs));
-	end,
-
-	div_datatype = function(lhs, rhs)
-		return createPointer(getPointer(lhs) / getPointer(rhs));
-	end,
-
-	mul_datatype_scalar = function(lhs, rhs)
-		return createPointer(getPointer(lhs) * getPointer(rhs));
-	end,
-
-	div_datatype_scalar = function(lhs, rhs)
-		return createPointer(getPointer(lhs) / getPointer(rhs));
-	end,
-
-	get_datatype_scalar = function(vec, name_addr, name_len)
-		return getPointer(vec)[readString(name_addr, name_len)];
 	end,
 
 	-- Instances
@@ -147,8 +72,8 @@ util = require(script.util)(rt, wasm, memory);
 
 abi.load(wasm, rt, util);
 
-createPointer, getPointer, dropPointer, invokeOnce, readString, writeStringReturn =
-	util.createPointer, util.getPointer, util.dropPointer, util.invokeOnce, util.readString, util.writeStringReturn;
+createPointer, getPointer, dropPointer, invokeOnce, readString =
+	util.createPointer, util.getPointer, util.dropPointer, util.invokeOnce, util.readString;
 
 task.wait(2);
 print("start wasm");

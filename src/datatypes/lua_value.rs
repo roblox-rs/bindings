@@ -1,20 +1,13 @@
 use std::convert::TryFrom;
 
-use crate::{RustOption, RustStr, RustString};
-
-extern "C" {
-    fn lua_value_string(string: RustStr) -> u32;
-    fn string_lua_value(lua_value: LuaValue) -> RustOption<RustString>;
-}
+use crate::{drop_pointer, internal};
 
 #[repr(transparent)]
 pub struct LuaValue(pub(crate) u32);
 
-crate::impl_datatype_drop!(LuaValue);
-
-impl LuaValue {
-    fn to_ptr(&self) -> u32 {
-        self.0
+impl Drop for LuaValue {
+    fn drop(&mut self) {
+        unsafe { drop_pointer(self.0) }
     }
 }
 
@@ -22,18 +15,13 @@ impl TryFrom<LuaValue> for String {
     type Error = ();
 
     fn try_from(value: LuaValue) -> Result<String, Self::Error> {
-        unsafe {
-            match string_lua_value(value) {
-                RustOption::Some(value) => Ok(value.into()),
-                RustOption::None => Err(()),
-            }
-        }
+        internal::lua_value_to_string(&value).ok_or(())
     }
 }
 
 impl From<&str> for LuaValue {
     fn from(value: &str) -> LuaValue {
-        unsafe { LuaValue(lua_value_string(value.into())) }
+        internal::string_to_lua_value(value)
     }
 }
 

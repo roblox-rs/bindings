@@ -1,3 +1,5 @@
+use crate::drop_pointer;
+
 extern "C" {
     fn disconnect_connection(connection: u32);
     fn is_connected(connection: u32) -> bool;
@@ -6,22 +8,22 @@ extern "C" {
 #[repr(transparent)]
 pub struct RbxScriptConnection(pub(crate) u32);
 
-impl RbxScriptConnection {
-    fn to_ptr(&self) -> u32 {
-        self.0
+impl Drop for RbxScriptConnection {
+    fn drop(&mut self) {
+        unsafe { drop_pointer(self.0) }
     }
+}
 
+impl RbxScriptConnection {
     pub fn connected(&self) -> bool {
-        unsafe { is_connected(self.to_ptr()) }
+        unsafe { is_connected(self.0) }
     }
 
     pub fn disconnect(&self) {
-        unsafe { disconnect_connection(self.to_ptr()) }
+        unsafe { disconnect_connection(self.0) }
     }
 
     pub fn leak(self) {
         std::mem::forget(self);
     }
 }
-
-crate::impl_datatype_drop!(RbxScriptConnection, |self| { self.disconnect() });

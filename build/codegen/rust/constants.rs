@@ -1,3 +1,5 @@
+/// TODO: maybe make FFI conversions on the Rust side
+/// E.g impl<T> ToForeign<RustVec<T>> for Vec<T>
 pub const RUST_VEC: &str = "\
 #[repr(C)]
 pub struct RustVec<T> {
@@ -12,6 +14,7 @@ impl<T> From<Vec<T>> for RustVec<T> {
 		let capacity = vec.capacity();
 		std::mem::forget(vec);
         assert!(length == capacity);
+
         RustVec { content, length }
     }
 }
@@ -49,21 +52,20 @@ impl<T> From<RustOption<T>> for Option<T> {
 }
 ";
 
-pub const RUST_STR: &str = "\
-/// A FFI-safe string slice to pass to bindings.
+pub const RUST_SLICE: &str = "\
 #[repr(C)]
-pub struct RustStr {
-	content: *const u8,
+pub struct RustSlice<T> {
+	content: *const T,
 	length: usize,
 }
 
-impl From<&str> for RustStr {
-	fn from(string: &str) -> RustStr {
-		RustStr {
-			content: string.as_ptr(),
-			length: string.len(),
+impl<T> From<&[T]> for RustSlice<T> {
+    fn from(slice: &[T]) -> RustSlice<T> {
+		RustSlice {
+			content: slice.as_ptr(),
+			length: slice.len(),
 		}
-	}
+    }
 }
 ";
 
@@ -95,7 +97,7 @@ macro_rules! creatable {
 		$(
 			impl RobloxCreatable for $name {
 				fn new() -> $name {
-					unsafe {{ Self(instance_new(stringify!($name))) }}
+					unsafe { std::mem::transmute(internal::instance_new(stringify!($name))) }
 				}
 			}
 		)*
@@ -146,7 +148,7 @@ impl From<$name> for LuaValue {
 ";
 
 pub const RUST_ROBLOX_ENUM_MACRO: &str = "\
-macro_rules! roblox_macro {
+macro_rules! roblox_enum {
     ($name:ident; { $($field:ident = $value:expr),*, }) => {
 		#[allow(non_camel_case_types)]
 		#[repr(C)]
@@ -156,4 +158,48 @@ macro_rules! roblox_macro {
             ),*
         }
     }
+}";
+
+pub const CUSTOM_IMPL_SERVICE: &str = "\
+pub fn instance() -> Self {
+	unsafe {
+		std::mem::transmute::<_, Self>(DataModel::instance().get_service(stringify!($name)).unwrap())
+	}
+}";
+
+pub const CUSTOM_IMPL_DATA_MODEL: &str = "\
+pub fn instance() -> Self {
+	extern \"C\" {
+		fn get_game() -> u32;
+	}
+
+	Self(unsafe { get_game() })
+}";
+
+pub const CUSTOM_IMPL_INSTANCE: &str = "\
+fn to_ptr(&self) -> u32 {
+	self.0
+}
+pub fn downcast<I: From<$name>>(&self) -> I {
+	self.clone().into()
+}";
+
+pub const DATATYPE_IMPL_MACRO: &str = "\
+macro_rules! impl_data_type {
+	($name:ident) => {
+		#[repr(transparent)]
+		pub struct $name(u32);
+
+		impl Drop for $name {
+			fn drop(&mut self) {
+				unsafe { drop_pointer(self.0) }
+			}
+		}
+
+		impl From<$name> for LuaValue {
+			fn from(value: $name) -> LuaValue {
+				unsafe { std::mem::transmute::<_, LuaValue>(value) }
+			}
+		}
+	}
 }";

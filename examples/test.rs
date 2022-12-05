@@ -10,18 +10,18 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// # Safety
 #[allow(unreachable_code)]
 pub fn main() {
-    let x = "wow!!";
+    let x = "wow!!!";
     let fnn1 = move || {
         println!("Wow, hello {}!", x);
     };
 
     task::delay(3., fnn1);
 
-    CollectionService::instance().add_tag(&Workspace::instance().downcast(), "god1");
-    CollectionService::instance().add_tag(&Workspace::instance().downcast(), "god2");
-    CollectionService::instance().add_tag(&Workspace::instance().downcast(), "god3");
+    CollectionService::instance().add_tag(&Workspace::instance(), "god1");
+    CollectionService::instance().add_tag(&Workspace::instance(), "god2");
+    CollectionService::instance().add_tag(&Workspace::instance(), "god3");
 
-    for tag in CollectionService::instance().get_tags(&Workspace::instance().downcast()) {
+    for tag in CollectionService::instance().get_tags(&Workspace::instance()) {
         println!("workspace has tag: {tag}");
     }
 
@@ -60,11 +60,11 @@ pub fn main() {
 
     let my_remote = RemoteEvent::new();
     my_remote.set_name("GOD REMOTE");
-    my_remote.set_parent(Some(&Workspace::instance().downcast()));
+    my_remote.set_parent(&Some(&Workspace::instance()));
 
     let my_func = RemoteFunction::new();
     my_func.set_name("GOD FUNC");
-    my_func.set_parent(Some(&Workspace::instance().downcast()));
+    my_func.set_parent(&Some(&Workspace::instance()));
 
     my_func.on_server_invoke(move |player, values| {
         println!(
@@ -97,10 +97,10 @@ pub fn main() {
 
     let my_fancy_part = Part::new();
     my_fancy_part.set_anchored(true);
-    my_fancy_part.set_color(&Color3::from_rgb(255., 0., 0.));
-    my_fancy_part.set_parent(Some(&Workspace::instance().downcast()));
-    my_fancy_part.set_size(&Vector3::new(25., 420., 25.));
-    my_fancy_part.set_position(&Vector3::new(55., 160., 30.));
+    my_fancy_part.set_color(&Color3::from_rgb(254., 0., 0.));
+    my_fancy_part.set_parent(&Some(&Workspace::instance()));
+    my_fancy_part.set_size(&Vector3::new_with_position(25., 420., 25.));
+    my_fancy_part.set_position(&Vector3::new_with_position(55., 160., 30.));
 
     my_fancy_part
         .on_touched(|value| {
@@ -125,6 +125,8 @@ pub fn main() {
         })
         .leak();
 
-    value.set_value(&Vector3::new(1., 0., 1.));
-    value.set_value(&Vector3::new(0., 2., 1.));
+    value.set_value(
+        &(Vector3::new_with_position(1., 0., 1.) + Vector3::new_with_position(1., 2., 3.)),
+    );
+    value.set_value(&Vector3::new_with_position(0., 2., 1.));
 }
