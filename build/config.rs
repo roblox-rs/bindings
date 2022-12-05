@@ -1,6 +1,46 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::codegen::structs::{DataTypeKind, GroupType, PrimitiveKind, ValueType};
+pub const MULTI_VALUE_SUPPORT: bool = cfg!(feature = "multivalue");
+
+pub const DEPRECATED_APIS: bool = cfg!(feature = "deprecated_apis");
+
+pub const DATATYPES: [&str; 35] = [
+    "Function",
+    "CatalogSearchParams",
+    "RaycastParams",
+    "DockWidgetPluginGuiInfo",
+    "OverlapParams",
+    "Vector3int16",
+    "Region3",
+    "Vector2",
+    "Ray",
+    "RbxScriptSignal",
+    "Objects",
+    "Rect",
+    "Axes",
+    "UDim2",
+    "Faces",
+    "CFrame",
+    "RaycastResult",
+    "ProtectedString",
+    "RotationCurveKey",
+    "NumberRange",
+    "Region3int16",
+    "PhysicalProperties",
+    "BinaryString",
+    "Content",
+    "BrickColor",
+    "ColorSequence",
+    "NumberSequence",
+    "FloatCurveKey",
+    "Font",
+    "QDir",
+    "QFont",
+    "DateTime",
+    "TweenInfo",
+    "UDim",
+    "Color3",
+];
 
 lazy_static::lazy_static!(
     pub static ref NON_OPTIONAL_EVENT_PARAMETERS: HashMap<&'static str, &'static [usize]> = {
@@ -9,95 +49,6 @@ lazy_static::lazy_static!(
             ("Humanoid.Touched", &[0, 1]),
             ("RemoteEvent.OnServerEvent", &[0]),
             ("RemoteFunction.OnServerInvoke", &[0]),
-        ];
-
-        let mut map = HashMap::<&'static str, &'static [usize]>::new();
-        for item in items { map.insert(item.0, item.1); };
-        map
-    };
-);
-
-lazy_static::lazy_static!(
-    pub static ref COMPLEX_GROUP_TYPES: HashMap<&'static str, GroupType> = {
-        let items: Vec<(&str, GroupType)> = vec![
-            // Return Type: Class.Func()
-            // Parameter: Class.Func(n) where n = parameter index
-            ("CollectionService.GetTags()", GroupType::Array(ValueType::Primitive(PrimitiveKind::String))),
-
-            ("RemoteEvent.OnClientEvent(0)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteEvent.OnServerEvent(1)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteEvent.FireAllClients(0)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteEvent.FireClient(1)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteEvent.FireServer(0)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-
-            ("RemoteFunction.OnServerInvoke(1)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteFunction.OnServerInvoke()", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteFunction.OnClientInvoke(0)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteFunction.OnClientInvoke()", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteFunction.InvokeServer(0)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteFunction.InvokeServer()", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteFunction.InvokeClient(1)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("RemoteFunction.InvokeClient()", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-
-            ("BindableEvent.Event(0)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("BindableFunction.Invoke(0)", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-            ("BindableFunction.Invoke()", GroupType::Tuple(ValueType::DetailedGroup(Box::new(GroupType::Variant)))),
-
-            ("Teams.GetTeams()", GroupType::Array(ValueType::Class("Team".to_string()))),
-            ("Instance.GetChildren()", GroupType::Array(ValueType::Class("Instance".to_string()))),
-            ("KeyframeSequence.GetKeyframes()", GroupType::Array(ValueType::Class("Keyframe".to_string()))),
-            ("BasePlayerGui.GetGuiObjectsAtPosition()", GroupType::Array(ValueType::Class("GuiObject".to_string()))),
-            ("Camera.GetPartsObscuringTarget()", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("CollectionService.GetTagged()", GroupType::Array(ValueType::Class("Instance".to_string()))),
-            ("Dialog.GetCurrentPlayers()", GroupType::Array(ValueType::Class("Player".to_string()))),
-            ("Dragger.MouseDown(2)", GroupType::Array(ValueType::Class("Instance".to_string()))),
-            ("Keyframe.GetMarkers()", GroupType::Array(ValueType::Class("KeyframeMarker".to_string()))),
-            ("Keyframe.GetPoses()", GroupType::Array(ValueType::Class("Pose".to_string()))),
-            ("LocalizationService.GetCorescriptLocalizations()", GroupType::Array(ValueType::Class("LocalizationTable".to_string()))),
-            ("BasePart.GetConnectedParts()", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("BasePart.GetTouchingParts()", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("BasePart.GetJoints()", GroupType::Array(ValueType::Class("Instance".to_string()))),
-            ("BasePart.SubtractAsync(0)", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("BasePart.UnionAsync(0)", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("WorldRoot.ArePartsTouchingOthers(0)", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("WorldRoot.BulkMoveTo(0)", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("WorldRoot.BulkMoveTo(1)", GroupType::Array(ValueType::DataType(DataTypeKind::CFrame))),
-            ("WorldRoot.GetPartBoundsInBox()", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("WorldRoot.GetPartBoundsInRadius()", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("WorldRoot.GetPartsInPart()", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("Workspace.JoinToOutsiders(0)", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("Workspace.UnjoinFromOutsiders(0)", GroupType::Array(ValueType::Class("BasePart".to_string()))),
-            ("Players.GetPlayers()", GroupType::Array(ValueType::Class("Player".to_string()))),
-            ("Pose.GetSubPoses()", GroupType::Array(ValueType::Class("Pose".to_string()))),
-            ("Team.GetPlayers()", GroupType::Array(ValueType::Class("Player".to_string()))),
-            ("TeleportService.TeleportToPrivateServer(2)", GroupType::Array(ValueType::Class("Player".to_string()))),
-            ("TeleportService.TeleportAsync(1)", GroupType::Array(ValueType::Class("Player".to_string()))),
-            ("TeleportService.TeleportPartyAsync(1)", GroupType::Array(ValueType::Class("Player".to_string()))),
-            ("UserInputService.GetConnectedGamepads()", GroupType::Array(ValueType::Enum("UserInputType".to_string()))),
-            ("UserInputService.GetGamepadState()", GroupType::Array(ValueType::Class("InputObject".to_string()))),
-            ("UserInputService.GetKeysPressed()", GroupType::Array(ValueType::Class("InputObject".to_string()))),
-            ("UserInputService.GetMouseButtonsPressed()", GroupType::Array(ValueType::Class("InputObject".to_string()))),
-            ("UserInputService.GetNavigationGamepads()", GroupType::Array(ValueType::Enum("UserInputType".to_string()))),
-            ("UserInputService.GetSupportedGamepadKeyCodes()", GroupType::Array(ValueType::Enum("KeyCode".to_string()))),
-            ("UserInputService.TouchLongPress(0)", GroupType::Array(ValueType::Class("Vector2".to_string()))),
-            ("UserInputService.TouchPan(0)", GroupType::Array(ValueType::Class("Vector2".to_string()))),
-            ("UserInputService.TouchPinch(0)", GroupType::Array(ValueType::Class("Vector2".to_string()))),
-            ("UserInputService.TouchRotate(0)", GroupType::Array(ValueType::Class("Vector2".to_string()))),
-            ("UserInputService.TouchTap(0)", GroupType::Array(ValueType::Class("Vector2".to_string()))),
-            ("UserService.GetUserInfosByUserIdsAsync(0)", GroupType::Array(ValueType::Primitive(PrimitiveKind::Float))),
-            ("UserService.GetUserInfosByUserIdsAsync(0)", GroupType::Array(ValueType::Primitive(PrimitiveKind::Float))),
-        ];
-
-        let mut map = HashMap::<&'static str, GroupType>::new();
-        for item in items { map.insert(item.0, item.1); };
-        map
-    };
-);
-
-lazy_static::lazy_static!(
-    pub static ref OPTIONAL_FUNCTION_PARAMETERS: HashMap<&'static str, &'static [usize]> = {
-        let items: Vec<(&str, &[usize])> = vec![
-            // ("Instance.IsDescendantOf", &[0]),
         ];
 
         let mut map = HashMap::<&'static str, &'static [usize]>::new();

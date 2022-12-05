@@ -56,14 +56,6 @@ return function(rt, wasm, memory)
 		return vec;
 	end
 
-	local function writeStringReturn(return_addr, text)
-		-- *mut u8 contents, usize capacity, usize length
-		local contents = allocString(text);
-		rt.store.i32(memory, return_addr, contents);
-		rt.store.i32(memory, return_addr + 4, #text);
-		rt.store.i32(memory, return_addr + 8, #text);
-	end
-
 	local function readString(addr, len)
 		local s = "";
 		for i = 1, len do
