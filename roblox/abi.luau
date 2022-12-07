@@ -13445,15 +13445,15 @@ end
 function abi.ffi.property_setter_weld_constraint_part_1_set_part_1(self, value)
 	getPointer(self).Part1 = getPointer(value);
 end
-function abi.ffi.pointer_conversion_internal_string_string_to_lua_value(string_addr, string_len)
+function abi.ffi.pointer_conversion_internal_string_to_lua_value(string_addr, string_len)
 	local result_0 = loadString(memory, string_addr, string_len);
 	return createPointer(result_0);
 end
-function abi.ffi.pointer_conversion_internal_float_float_to_lua_value(float)
+function abi.ffi.pointer_conversion_internal_float_to_lua_value(float)
 	local result_0 = float;
 	return createPointer(result_0);
 end
-function abi.ffi.primitive_conversion_internal_string_lua_value_to_string(value)
+function abi.ffi.primitive_conversion_internal_lua_value_to_string(value)
 	local text = getPointer(value);
 	local result_0 = if type(text) == "string" then text else nil;
 	local result_0_optional, result_0_optional_0, result_0_optional_1 = 0, 0, 0;
@@ -13467,7 +13467,7 @@ function abi.ffi.primitive_conversion_internal_string_lua_value_to_string(value)
 	end
 	return result_0_optional, result_0_optional_0, result_0_optional_1;
 end
-function abi.ffi.primitive_conversion_internal_float_lua_value_to_float(value)
+function abi.ffi.primitive_conversion_internal_lua_value_to_float(value)
 	local text = getPointer(value);
 	local result_0 = if type(text) == "number" then text else nil;
 	local result_0_optional, result_0_optional_0 = 0, 0;

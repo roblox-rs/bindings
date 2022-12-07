@@ -1,6 +1,6 @@
 use convert_case::{Case, Casing};
 
-use crate::codegen::structs::{implementations, CodegenKind, Member, MemberFlags, Parameter};
+use crate::codegen::structs::{implementations::*, CodegenKind, Member, MemberFlags, Parameter};
 
 pub struct PartialNamespace {
     /// Name of this namespace
@@ -159,51 +159,76 @@ pub fn get_datatypes() -> Vec<PartialNamespace> {
 }
 
 pub fn internal_namespace() -> PartialNamespace {
+    let unknown = CodegenKind::Unknown;
+    let number = CodegenKind::Number;
+    let string = CodegenKind::String;
+
     PartialNamespace {
         name: "Internal".to_string(),
         members: vec![
-            Member {
-                flags: MemberFlags::default(),
-                implementation: implementations::PointerConversion.into(),
-                api_name: "string".to_string(),
-                name: "string_to_lua_value".to_string(),
-                inputs: vec![Parameter::new("string", CodegenKind::String)],
-                outputs: vec![CodegenKind::Unknown],
+            member! {
+                string_to_lua_value(PointerConversion);
+
+                signature = (string: string) -> unknown;
             },
-            Member {
-                flags: MemberFlags::default(),
-                implementation: implementations::PointerConversion.into(),
-                api_name: "float".to_string(),
-                name: "float_to_lua_value".to_string(),
-                inputs: vec![Parameter::new("float", CodegenKind::Number)],
-                outputs: vec![CodegenKind::Unknown],
+            member! {
+                float_to_lua_value(PointerConversion);
+
+                signature = (float: number) -> unknown;
             },
-            Member {
-                flags: MemberFlags::default(),
-                implementation: implementations::PrimitiveConversion("string").into(),
-                api_name: "string".to_string(),
-                name: "lua_value_to_string".to_string(),
-                inputs: vec![Parameter::new("value", CodegenKind::Unknown)],
-                outputs: vec![optional!(CodegenKind::String)],
+            member! {
+                lua_value_to_string(PrimitiveConversion("string"));
+
+                signature = (value: unknown) -> optional!(string);
             },
-            Member {
-                flags: MemberFlags::default(),
-                implementation: implementations::PrimitiveConversion("number").into(),
-                api_name: "float".to_string(),
-                name: "lua_value_to_float".to_string(),
-                inputs: vec![Parameter::new("value", CodegenKind::Unknown)],
-                outputs: vec![optional!(CodegenKind::Number)],
+            member! {
+                lua_value_to_float(PrimitiveConversion("number"));
+
+                signature = (value: unknown) -> optional!(number);
             },
-            Member {
-                flags: MemberFlags::default(),
-                implementation: implementations::StaticFunction(Some("Instance"), None).into(),
-                name: "instance_new".to_string(),
-                api_name: "new".to_string(),
-                inputs: vec![Parameter::new("class_name", CodegenKind::String)],
-                outputs: vec![instance!(Instance)],
+            member! {
+                new::instance_new(StaticFunction(Some("Instance"), None));
+
+                signature = (class_name: string) -> instance!(Instance);
             },
         ],
     }
+}
+
+macro_rules! parse_member_opts {
+    ($member:expr; signature = ($($name:ident : $kind:expr),*) -> ($($output:expr),*); $($rest:tt)*) => {
+        $member.inputs = vec![$(Parameter::new(stringify!($name), $kind.clone())),*];
+        $member.outputs = vec![$($output.clone()),*];
+        parse_member_opts!($member; $($rest)*);
+    };
+    ($member:expr; signature = ($($name:ident : $kind:expr),*) -> $output:expr; $($rest:tt)*) => {
+        $member.inputs = vec![$(Parameter::new(stringify!($name), $kind.clone())),*];
+        $member.outputs = vec![$output.clone()];
+        parse_member_opts!($member; $($rest)*);
+    };
+    ($member:expr; flags = $flags:expr; $($rest:tt)*) => {
+        $member.flags = $flags;
+        parse_member_opts!($member; $($rest)*);
+    };
+    ($member:expr;) => {}
+}
+
+macro_rules! member {
+    ($name:ident($impl:expr); $($rest:tt)*) => {
+        member!($name::$name($impl); $($rest)*)
+    };
+    ($api_name:ident::$name:ident($impl:expr); $($rest:tt)*) => {{
+        let mut member = Member {
+            flags: MemberFlags::default(),
+            implementation: $impl.into(),
+            name: stringify!($name).to_string(),
+            api_name: stringify!($api_name).to_string(),
+            inputs: vec![],
+            outputs: vec![],
+        };
+        parse_member_opts!(member; $($rest)*);
+        member
+    }};
 }
 
 macro_rules! event {
@@ -213,7 +238,7 @@ macro_rules! event {
     ($api_name:ident::$name:ident($($parameter:ident : $kind:expr),*)) => {
         vec![Member {
             flags: MemberFlags::default(),
-            implementation: implementations::Event.into(),
+            implementation: Event.into(),
             api_name: stringify!($api_name).to_string(),
             name: stringify!($name).to_case(Case::Snake),
             inputs: vec![
@@ -235,7 +260,7 @@ macro_rules! callback {
     ($api_name:ident::$name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
         vec![Member {
             flags: MemberFlags::default(),
-            implementation: implementations::Callback.into(),
+            implementation: Callback.into(),
             api_name: stringify!($api_name).to_string(),
             name: stringify!($name).to_case(Case::Snake),
             inputs: vec![
@@ -258,7 +283,7 @@ macro_rules! method {
     (static $api_name:ident::$name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
         vec![Member {
             flags: MemberFlags::default(),
-            implementation: implementations::StaticFunction(None, Some(stringify!($api_name))).into(),
+            implementation: StaticFunction(None, Some(stringify!($api_name))).into(),
             api_name: stringify!($api_name).to_string(),
             name: stringify!($name).to_case(Case::Snake),
             inputs: vec![$(Parameter::new(stringify!($parameter), $kind.clone())),*],
@@ -269,7 +294,7 @@ macro_rules! method {
     ($name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
         vec![Member {
             flags: MemberFlags::default(),
-            implementation: implementations::Method.into(),
+            implementation: Method.into(),
             api_name: stringify!($name).to_string(),
             name: stringify!($name).to_case(Case::Snake),
             inputs: vec![
@@ -288,7 +313,7 @@ macro_rules! operator {
                 operator: Some(stringify!($trait)),
                 ..MemberFlags::default()
             },
-            implementation: implementations::BinOp(stringify!($op)).into(),
+            implementation: BinOp(stringify!($op)).into(),
             api_name: format!("{}_{}", stringify!($trait), stringify!($rhs)),
             name: stringify!($trait).to_case(Case::Snake),
             inputs: vec![
@@ -304,7 +329,7 @@ macro_rules! field {
     (static $field:ident : $kind:expr) => {
         vec![Member {
             flags: MemberFlags::default(),
-            implementation: implementations::StaticProperty(None, Some(stringify!($field))).into(),
+            implementation: StaticProperty(None, Some(stringify!($field))).into(),
             api_name: stringify!($field).to_string(),
             name: stringify!($field).to_case(Case::Snake),
             inputs: vec![],
@@ -314,7 +339,7 @@ macro_rules! field {
     (readonly $field:ident : $kind:expr) => {{
         vec![Member {
             flags: MemberFlags::default(),
-            implementation: implementations::PropertyGetter.into(),
+            implementation: PropertyGetter.into(),
             api_name: stringify!($field).to_string(),
             name: stringify!($field).to_case(Case::Snake),
             inputs: vec![Parameter::new("self", CodegenKind::Unknown)],
@@ -325,7 +350,7 @@ macro_rules! field {
         vec![
             Member {
                 flags: MemberFlags::default(),
-                implementation: implementations::PropertyGetter.into(),
+                implementation: PropertyGetter.into(),
                 api_name: stringify!($field).to_string(),
                 name: stringify!($field).to_case(Case::Snake),
                 inputs: vec![Parameter::new("self", CodegenKind::Unknown)],
@@ -333,7 +358,7 @@ macro_rules! field {
             },
             Member {
                 flags: MemberFlags::default(),
-                implementation: implementations::PropertySetter.into(),
+                implementation: PropertySetter.into(),
                 api_name: stringify!($field).to_string(),
                 name: format!("set_{}", stringify!($field).to_case(Case::Snake)),
                 inputs: vec![
@@ -407,6 +432,6 @@ macro_rules! r#enum {
 }
 
 use {
-    array, callback, datatype, event, field, instance, method, namespaces, operator, optional,
-    r#enum, tuple,
+    array, callback, datatype, event, field, instance, member, method, namespaces, operator,
+    optional, parse_member_opts, r#enum, tuple,
 };
