@@ -307,6 +307,10 @@ macro_rules! parse_namespace_fields {
 
             api_name = format!("{}_{}", stringify!($trait), stringify!($rhs));
             signature = (self: $kind, value: $rhs) -> ($type);
+            flags = MemberFlags {
+                operator: Some(stringify!($trait)),
+                ..MemberFlags::default()
+            };
         });
 
         parse_namespace_fields!(($namespace;$kind) $($tt)*);
