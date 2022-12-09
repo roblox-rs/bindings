@@ -21,51 +21,49 @@ pub fn get_instances() -> Vec<PartialNamespace> {
     let void = CodegenKind::Void;
 
     namespaces! {
-        Instance;
+        struct Instance: Instance {
+            Parent: optional!(instance);
 
-        struct Instance {
-            field!(Parent: optional!(instance)),
-
-            event!(Changed::on_instance_changed(property: string)),
+            event Changed::on_instance_changed(property: string);
         };
 
-        struct BasePart {
-            event!(Touched::on_touched(part: instance)),
+        struct BasePart: Instance {
+            event Touched::on_touched(part: instance);
         };
 
-        struct Humanoid {
-            event!(Touched::on_humanoid_touched(part: instance, limb: instance)),
+        struct Humanoid: Instance {
+            event Touched::on_humanoid_touched(part: instance, limb: instance);
         };
 
-        struct RemoteEvent {
-            event!(OnServerEvent(player: player, values: tuple!(unknown))),
-            event!(OnClientEvent(values: tuple!(unknown))),
+        struct RemoteEvent: Instance {
+            event OnServerEvent(player: player, values: tuple!(unknown));
+            event OnClientEvent(values: tuple!(unknown));
 
-            method!(FireAllClients(values: tuple!(unknown)) -> void),
-            method!(FireClient(player: player, values: tuple!(unknown)) -> void),
-            method!(FireServer(values: tuple!(unknown)) -> void),
+            FireAllClients(values: tuple!(unknown)) -> ();
+            FireClient(player: player, values: tuple!(unknown)) -> ();
+            FireServer(values: tuple!(unknown)) -> ();
         };
 
-        struct RemoteFunction {
-            callback!(OnServerInvoke(player: player, values: tuple!(unknown)) -> tuple!(unknown)),
-            callback!(OnClientInvoke(values: tuple!(unknown)) -> tuple!(unknown)),
+        struct RemoteFunction: Instance {
+            callback OnServerInvoke(player: player, values: tuple!(unknown)) -> tuple!(unknown);
+            callback OnClientInvoke(values: tuple!(unknown)) -> tuple!(unknown);
 
-            method!(InvokeServer(values: tuple!(unknown)) -> tuple!(unknown)),
-            method!(InvokeClient(player: player, values: tuple!(unknown)) -> tuple!(unknown)),
+            InvokeServer(values: tuple!(unknown)) -> (tuple!(unknown));
+            InvokeClient(player: player, values: tuple!(unknown)) -> (tuple!(unknown));
         };
 
-        struct BindableEvent {
-            event!(Event(values: tuple!(unknown))),
+        struct BindableEvent: Instance {
+            event Event(values: tuple!(unknown));
 
-            method!(Fire(values: tuple!(unknown)) -> void),
+            Fire(values: tuple!(unknown)) -> (void);
         };
 
-        struct UserInputService {
-            method!(GetKeysPressed() -> array!(key_code)),
+        struct UserInputService: Instance {
+            GetKeysPressed() -> (array!(key_code));
         };
 
-        struct CollectionService {
-            method!(GetTags(instance: instance) -> array!(string)),
+        struct CollectionService: Instance {
+            GetTags(instance: instance) -> (array!(string));
         };
     }
 }
@@ -82,78 +80,76 @@ pub fn get_datatypes() -> Vec<PartialNamespace> {
     let bool = CodegenKind::Bool;
 
     namespaces! {
-        DataType;
+        struct Vector3: DataType {
+            static new::new() -> (vector3);
+            static new::new_with_position(x: number, y: number, z: number) -> (vector3);
+            static new::new_with_vector3(v3: vector3) -> (vector3);
+            static new::new_with_normal(normal: normal_id) -> (vector3);
+            static new::new_with_axis(axis: axis) -> (vector3);
 
-        struct Vector3 {
-            method!(static new::new() -> vector3),
-            method!(static new::new_with_position(x: number, y: number, z: number) -> vector3),
-            method!(static new::new_with_vector3(v3: vector3) -> vector3),
-            method!(static new::new_with_normal(normal: normal_id) -> vector3),
-            method!(static new::new_with_axis(axis: axis) -> vector3),
+            static zero: vector3;
+            static one: vector3;
+            static xAxis: vector3;
+            static yAxis: vector3;
+            static zAxis: vector3;
 
-            field!(static zero: vector3),
-            field!(static one: vector3),
-            field!(static xAxis: vector3),
-            field!(static yAxis: vector3),
-            field!(static zAxis: vector3),
+            readonly X: number;
+            readonly Y: number;
+            readonly Z: number;
+            readonly Magnitude: number;
+            readonly Unit: vector3;
 
-            field!(readonly X: number),
-            field!(readonly Y: number),
-            field!(readonly Z: number),
-            field!(readonly Magnitude: number),
-            field!(readonly Unit: vector3),
+            Lerp(goal: vector3, alpha: number) -> (vector3);
+            Cross(other: vector3) -> (vector3);
+            Angle(other: vector3, axis: vector3) -> (number);
+            Dot(other: vector3) -> (number);
+            FuzzyEq(other: vector3, epsilon: number) -> (bool);
+            Max(others: tuple!(vector3)) -> (vector3);
+            Min(others: tuple!(vector3)) -> (vector3);
 
-            method!(Lerp(goal: vector3, alpha: number) -> vector3),
-            method!(Cross(other: vector3) -> vector3),
-            method!(Angle(other: vector3, axis: vector3) -> number),
-            method!(Dot(other: vector3) -> number),
-            method!(FuzzyEq(other: vector3, epsilon: number) -> bool),
-            method!(Max(others: tuple!(vector3)) -> vector3),
-            method!(Min(others: tuple!(vector3)) -> vector3),
-
-            operator!(Add(+ vector3 => vector3)),
-            operator!(Sub(- vector3 => vector3)),
-            operator!(Div(/ vector3 => vector3)),
-            operator!(Div(/ number => vector3)),
-            operator!(Mul(* vector3 => vector3)),
-            operator!(Mul(* number => vector3)),
+            operator Add(+ vector3) -> vector3;
+            operator Sub(- vector3) -> vector3;
+            operator Div(/ vector3) -> vector3;
+            operator Div(/ number) -> vector3;
+            operator Mul(* vector3) -> vector3;
+            operator Mul(* number) -> vector3;
         };
 
-        struct CFrame {
-            method!(static new::new() -> cframe),
-            method!(static new::new_with_position(x: number, y: number, z: number) -> cframe),
+        struct CFrame: DataType {
+            static new::new() -> (cframe);
+            static new::new_with_position(x: number, y: number, z: number) -> (cframe);
 
-            field!(readonly Position: vector3),
-            field!(readonly Rotation: cframe),
-            field!(readonly LookVector: vector3),
-            field!(readonly RightVector: vector3),
-            field!(readonly UpVector: vector3),
-            field!(readonly XVector: vector3),
-            field!(readonly YVector: vector3),
-            field!(readonly ZVector: vector3),
-            field!(readonly X: number),
-            field!(readonly Y: number),
-            field!(readonly Z: number),
+            readonly Position: vector3;
+            readonly Rotation: cframe;
+            readonly LookVector: vector3;
+            readonly RightVector: vector3;
+            readonly UpVector: vector3;
+            readonly XVector: vector3;
+            readonly YVector: vector3;
+            readonly ZVector: vector3;
+            readonly X: number;
+            readonly Y: number;
+            readonly Z: number;
 
-            method!(Inverse() -> cframe),
-            method!(Lerp(goal: cframe, alpha: number) -> cframe),
-            method!(Orthonormalize() -> cframe),
-            method!(ToWorldSpace(cf: cframe) -> cframe),
-            method!(ToObjectSpace(cf: cframe) -> cframe),
-            method!(PointToWorldSpace(v3: vector3) -> vector3),
-            method!(PointToObjectSpace(v3: vector3) -> vector3),
-            method!(VectorToWorldSpace(v3: vector3) -> vector3),
-            method!(VectorToObjectSpace(v3: vector3) -> vector3),
-            method!(GetComponents() -> tuple!(number)),
+            Inverse() -> (cframe);
+            Lerp(goal: cframe, alpha: number) -> (cframe);
+            Orthonormalize() -> (cframe);
+            ToWorldSpace(cf: cframe) -> (cframe);
+            ToObjectSpace(cf: cframe) -> (cframe);
+            PointToWorldSpace(v3: vector3) -> (vector3);
+            PointToObjectSpace(v3: vector3) -> (vector3);
+            VectorToWorldSpace(v3: vector3) -> (vector3);
+            VectorToObjectSpace(v3: vector3) -> (vector3);
+            GetComponents() -> (tuple!(number));
 
-            operator!(Add(+ vector3 => cframe)),
-            operator!(Sub(- vector3 => cframe)),
-            operator!(Mul(* cframe => cframe)),
-            operator!(Mul(* vector3 => vector3)),
+            operator Add(+ vector3) -> cframe;
+            operator Sub(- vector3) -> cframe;
+            operator Mul(* cframe) -> cframe;
+            operator Mul(* vector3) -> vector3;
         };
 
-        struct Color3 {
-            method!(static fromRGB(r: number, g: number, b: number) -> color3),
+        struct Color3: DataType {
+            static fromRGB(r: number, g: number, b: number) -> (color3);
         };
     }
 }
@@ -168,46 +164,196 @@ pub fn internal_namespace() -> PartialNamespace {
         members: vec![
             member! {
                 string_to_lua_value(PointerConversion);
-
                 signature = (string: string) -> unknown;
             },
             member! {
                 float_to_lua_value(PointerConversion);
-
                 signature = (float: number) -> unknown;
             },
             member! {
                 lua_value_to_string(PrimitiveConversion("string"));
-
                 signature = (value: unknown) -> optional!(string);
             },
             member! {
                 lua_value_to_float(PrimitiveConversion("number"));
-
                 signature = (value: unknown) -> optional!(number);
             },
             member! {
                 new::instance_new(StaticFunction(Some("Instance"), None));
-
                 signature = (class_name: string) -> instance!(Instance);
             },
         ],
     }
 }
 
+macro_rules! parse_namespace_fields {
+    // Static properties
+    (($namespace:expr;$kind:expr) static $api_name:ident::$name:ident: $type:expr; $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $api_name::$name(StaticProperty(None, Some(stringify!($api_name))));
+
+            signature = () -> $type;
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+    (($namespace:expr;$kind:expr) static $name:ident: $type:expr; $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) static $name::$name: $type; $($tt)*);
+    };
+
+    // Readonly properties
+    (($namespace:expr;$kind:expr) readonly $api_name:ident::$name:ident: $type:expr; $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $api_name::$name(PropertyGetter);
+
+            signature = (self: $kind) -> $type;
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+    (($namespace:expr;$kind:expr) readonly $name:ident: $type:expr; $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) readonly $name::$name: $type; $($tt)*);
+    };
+
+    // Writable properties
+    (($namespace:expr;$kind:expr) $api_name:ident::$name:ident: $type:expr; $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) readonly $api_name::$name: $type;);
+
+        $namespace.members.push(member! {
+            $api_name(PropertySetter);
+
+            name = format!("set_{}", stringify!($name).to_case(Case::Snake));
+            signature = (self: $kind, value: $type) -> ();
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+    (($namespace:expr;$kind:expr) $name:ident: $type:expr; $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) $name::$name: $type; $($tt)*);
+    };
+
+    // Static methods
+    (($namespace:expr;$kind:expr) static $api_name:ident::$name:ident($($parameter:ident : $type:expr),*) -> ($($result:expr),*); $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $api_name::$name(StaticFunction(None, Some(stringify!($api_name))));
+
+            signature = ($($parameter: $type),*) -> ($($result),*);
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+    (($namespace:expr;$kind:expr) static $name:ident($($parameter:ident : $type:expr),*) -> $result:tt; $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) static $name::$name($($parameter:$type),*) -> $result; $($tt)*);
+    };
+
+    // Methods
+    (($namespace:expr;$kind:expr) $api_name:ident::$name:ident($($parameter:ident : $type:expr),*) -> ($($result:expr),*); $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $api_name::$name(Method);
+
+            signature = (self: $kind, $($parameter: $type),*) -> ($($result),*);
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+    (($namespace:expr;$kind:expr) $name:ident($($parameter:ident : $type:expr),*) -> $result:tt; $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) $name::$name($($parameter:$type),*) -> $result; $($tt)*);
+    };
+
+    // Events
+    (($namespace:expr;$kind:expr) event $api_name:ident::$name:ident($($parameter:ident : $type:expr),*); $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $api_name::$name(Event);
+
+            signature = (
+                self: $kind,
+                callback: CodegenKind::Function(
+                    vec![$(Parameter::new(stringify!($parameter), $type.clone())),*],
+                    Box::new(CodegenKind::Void)
+                )
+            ) -> (datatype!(RbxScriptConnection));
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+    (($namespace:expr;$kind:expr) event $name:ident($($parameter:ident : $type:expr),*); $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) event $name::$name($($parameter:$type),*); $($tt)*);
+    };
+
+    // Callbacks
+    (($namespace:expr;$kind:expr) callback $api_name:ident::$name:ident($($parameter:ident : $type:expr),*) -> $result:expr; $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $api_name::$name(Callback);
+
+            signature = (
+                self: $kind,
+                callback: CodegenKind::Function(
+                    vec![$(Parameter::new(stringify!($parameter), $type.clone())),*],
+                    Box::new($result.clone())
+                )
+            ) -> ();
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+    (($namespace:expr;$kind:expr) callback $name:ident($($parameter:ident : $type:expr),*) -> $result:expr; $($tt:tt)*) => {
+        parse_namespace_fields!(($namespace;$kind) callback $name::$name($($parameter:$type),*) -> $result; $($tt)*);
+    };
+
+    // Operators
+    (($namespace:expr;$kind:expr) operator $trait:ident($op:tt $rhs:expr) -> $type:expr; $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $trait(BinOp(stringify!($op)));
+
+            api_name = format!("{}_{}", stringify!($trait), stringify!($rhs));
+            signature = (self: $kind, value: $rhs) -> ($type);
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
+
+    // No more properties
+    (($namespace:expr;$kind:expr)) => {};
+}
+
+macro_rules! namespaces {
+    ($(struct $name:ident: $kind:ident { $($tt:tt)* };)*) => {
+        vec![$(
+            {
+            let mut namespace = PartialNamespace {
+                name: stringify!($name).to_string(),
+                members: vec![],
+            };
+            #[allow(unused)]
+            let kind = CodegenKind::$kind(stringify!($name).to_string());
+            parse_namespace_fields!((namespace;kind) $($tt)*);
+            namespace
+        }
+    ),*]
+    };
+}
+
 macro_rules! parse_member_opts {
-    ($member:expr; signature = ($($name:ident : $kind:expr),*) -> ($($output:expr),*); $($rest:tt)*) => {
+    ($member:expr; signature = ($($name:ident : $kind:expr),*$(,)?) -> ($($output:expr),*); $($rest:tt)*) => {
         $member.inputs = vec![$(Parameter::new(stringify!($name), $kind.clone())),*];
         $member.outputs = vec![$($output.clone()),*];
         parse_member_opts!($member; $($rest)*);
     };
-    ($member:expr; signature = ($($name:ident : $kind:expr),*) -> $output:expr; $($rest:tt)*) => {
+    ($member:expr; signature = ($($name:ident : $kind:expr),*$(,)?) -> $output:expr; $($rest:tt)*) => {
         $member.inputs = vec![$(Parameter::new(stringify!($name), $kind.clone())),*];
         $member.outputs = vec![$output.clone()];
         parse_member_opts!($member; $($rest)*);
     };
     ($member:expr; flags = $flags:expr; $($rest:tt)*) => {
         $member.flags = $flags;
+        parse_member_opts!($member; $($rest)*);
+    };
+    ($member:expr; name = $name:expr; $($rest:tt)*) => {
+        $member.name = $name;
+        parse_member_opts!($member; $($rest)*);
+    };
+    ($member:expr; api_name = $api_name:expr; $($rest:tt)*) => {
+        $member.api_name = $api_name;
         parse_member_opts!($member; $($rest)*);
     };
     ($member:expr;) => {}
@@ -221,7 +367,7 @@ macro_rules! member {
         let mut member = Member {
             flags: MemberFlags::default(),
             implementation: $impl.into(),
-            name: stringify!($name).to_string(),
+            name: stringify!($name).to_case(Case::Snake),
             api_name: stringify!($api_name).to_string(),
             inputs: vec![],
             outputs: vec![],
@@ -229,170 +375,6 @@ macro_rules! member {
         parse_member_opts!(member; $($rest)*);
         member
     }};
-}
-
-macro_rules! event {
-    ($name:ident($($parameter:ident : $kind:expr),*)) => {
-        event!($name::$name($($parameter:$kind),*))
-    };
-    ($api_name:ident::$name:ident($($parameter:ident : $kind:expr),*)) => {
-        vec![Member {
-            flags: MemberFlags::default(),
-            implementation: Event.into(),
-            api_name: stringify!($api_name).to_string(),
-            name: stringify!($name).to_case(Case::Snake),
-            inputs: vec![
-                Parameter::new("self", CodegenKind::Unknown),
-                Parameter::new("callback", CodegenKind::Function(
-                    vec![$(Parameter::new(stringify!($parameter), $kind.clone())),*],
-                    Box::new(CodegenKind::Void),
-                ))
-            ],
-            outputs: vec![CodegenKind::DataType("RbxScriptConnection".to_string())],
-        }]
-    };
-}
-
-macro_rules! callback {
-    ($name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
-        callback!($name::$name($($parameter:$kind),*) -> $result)
-    };
-    ($api_name:ident::$name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
-        vec![Member {
-            flags: MemberFlags::default(),
-            implementation: Callback.into(),
-            api_name: stringify!($api_name).to_string(),
-            name: stringify!($name).to_case(Case::Snake),
-            inputs: vec![
-                Parameter::new("self", CodegenKind::Unknown),
-                Parameter::new("callback", CodegenKind::Function(
-                    vec![$(Parameter::new(stringify!($parameter), $kind.clone())),*],
-                    Box::new($result.clone()),
-                )),
-            ],
-            outputs: vec![],
-        }]
-    };
-}
-
-macro_rules! method {
-    (static $name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
-        method!(static $name::$name($($parameter: $kind),*) -> $result)
-    };
-
-    (static $api_name:ident::$name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
-        vec![Member {
-            flags: MemberFlags::default(),
-            implementation: StaticFunction(None, Some(stringify!($api_name))).into(),
-            api_name: stringify!($api_name).to_string(),
-            name: stringify!($name).to_case(Case::Snake),
-            inputs: vec![$(Parameter::new(stringify!($parameter), $kind.clone())),*],
-            outputs: vec![$result.clone()],
-        }]
-    };
-
-    ($name:ident($($parameter:ident : $kind:expr),*) -> $result:expr) => {
-        vec![Member {
-            flags: MemberFlags::default(),
-            implementation: Method.into(),
-            api_name: stringify!($name).to_string(),
-            name: stringify!($name).to_case(Case::Snake),
-            inputs: vec![
-                Parameter::new("self", CodegenKind::Unknown),
-                $(Parameter::new(stringify!($parameter), $kind.clone())),*
-            ],
-            outputs: vec![$result.clone()],
-        }]
-    };
-}
-
-macro_rules! operator {
-    ($trait:ident($op:tt $rhs:expr => $output:expr)) => {
-        vec![Member {
-            flags: MemberFlags {
-                operator: Some(stringify!($trait)),
-                ..MemberFlags::default()
-            },
-            implementation: BinOp(stringify!($op)).into(),
-            api_name: format!("{}_{}", stringify!($trait), stringify!($rhs)),
-            name: stringify!($trait).to_case(Case::Snake),
-            inputs: vec![
-                Parameter::new("self", CodegenKind::Unknown),
-                Parameter::new("value", $rhs.clone()),
-            ],
-            outputs: vec![$output.clone()],
-        }]
-    };
-}
-
-macro_rules! field {
-    (static $field:ident : $kind:expr) => {
-        vec![Member {
-            flags: MemberFlags::default(),
-            implementation: StaticProperty(None, Some(stringify!($field))).into(),
-            api_name: stringify!($field).to_string(),
-            name: stringify!($field).to_case(Case::Snake),
-            inputs: vec![],
-            outputs: vec![$kind.clone()],
-        }]
-    };
-    (readonly $field:ident : $kind:expr) => {{
-        vec![Member {
-            flags: MemberFlags::default(),
-            implementation: PropertyGetter.into(),
-            api_name: stringify!($field).to_string(),
-            name: stringify!($field).to_case(Case::Snake),
-            inputs: vec![Parameter::new("self", CodegenKind::Unknown)],
-            outputs: vec![$kind.clone()],
-        }]
-    }};
-    ($field:ident : $kind:expr) => {{
-        vec![
-            Member {
-                flags: MemberFlags::default(),
-                implementation: PropertyGetter.into(),
-                api_name: stringify!($field).to_string(),
-                name: stringify!($field).to_case(Case::Snake),
-                inputs: vec![Parameter::new("self", CodegenKind::Unknown)],
-                outputs: vec![$kind.clone()],
-            },
-            Member {
-                flags: MemberFlags::default(),
-                implementation: PropertySetter.into(),
-                api_name: stringify!($field).to_string(),
-                name: format!("set_{}", stringify!($field).to_case(Case::Snake)),
-                inputs: vec![
-                    Parameter::new("self", CodegenKind::Unknown),
-                    Parameter::new("value", $kind.clone()),
-                ],
-                outputs: vec![],
-            },
-        ]
-    }};
-}
-
-macro_rules! namespaces {
-	($kind:ident; $(struct $name:ident { $($member:expr,)* };)*) => {
-        vec![$(
-            PartialNamespace {
-                name: stringify!($name).to_string(),
-                members: vec![
-                    $($member),*
-                ]
-                .into_iter()
-                .flatten()
-                .map(|mut v| {
-                    if let Some(mut input) = v.inputs.get_mut(0) {
-                        if input.name == "self" {
-                            input.kind = CodegenKind::$kind(stringify!($name).to_string());
-                        }
-                    }
-                    v
-                })
-                .collect()
-            }
-        ),*]
-	};
 }
 
 macro_rules! tuple {
@@ -432,6 +414,6 @@ macro_rules! r#enum {
 }
 
 use {
-    array, callback, datatype, event, field, instance, member, method, namespaces, operator,
-    optional, parse_member_opts, r#enum, tuple,
+    array, datatype, instance, member, namespaces, optional, parse_member_opts,
+    parse_namespace_fields, r#enum, tuple,
 };
