@@ -57,7 +57,11 @@ fn generate_body(namespace: &Namespace, member: &Member) -> String {
         let inputs = inputs.join(", ");
         let has_output = !member.outputs.is_empty();
 
-        let expression = format!("{ffi_name}({inputs})");
+        let expression = if member.flags.yielding && has_output {
+            format!("{ffi_name}({inputs}).await")
+        } else {
+            format!("{ffi_name}({inputs})")
+        };
         if has_output {
             let transformation = owned_ffi_to_rust(&expression, &member.outputs[0]);
 
@@ -80,6 +84,7 @@ fn get_declaration_functions(is_extern: bool) -> DeclarationFunctions {
 
 fn generate_member_declaration(member: &Member, name: &str, context: DeclarationContext) -> String {
     let is_extern = matches!(context, DeclarationContext::Extern);
+    let is_async = member.flags.yielding;
     let (get_owned_type, get_borrowed_type) = get_declaration_functions(is_extern);
 
     let name = raw_name(name);
@@ -117,9 +122,19 @@ fn generate_member_declaration(member: &Member, name: &str, context: Declaration
             write_to!(stream, "pub ");
         }
 
+        if is_async && !is_extern {
+            write_to!(stream, "async ");
+        }
+
         write_to!(stream, "fn {name}({parameters})");
 
-        if outputs.len() > 1 {
+        if is_async && is_extern {
+            if outputs.len() > 1 {
+                write_to!(stream, " -> LuaFuture<({return_types})>");
+            } else if !outputs.is_empty() {
+                write_to!(stream, " -> LuaFuture<{return_types}>");
+            }
+        } else if outputs.len() > 1 {
             write_to!(stream, " -> ({return_types})");
         } else if !outputs.is_empty() {
             write_to!(stream, " -> {return_types}");
@@ -225,6 +240,7 @@ pub fn generate(namespaces: &[Namespace], enums: &[Enum]) -> String {
     let mut output = Vec::new();
     output.push(generate_extern(namespaces));
     output.push("use super::*;".to_string());
+    output.push("use crate::futures::ffi::LuaFuture;".to_string());
     generate_constant(&mut output);
     generate_enums(&mut output, enums);
 

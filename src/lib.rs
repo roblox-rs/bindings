@@ -1,4 +1,8 @@
+#![allow(incomplete_features)]
+#![feature(async_fn_in_trait)]
+
 pub mod datatypes;
+pub mod futures;
 pub mod generated;
 pub mod libraries;
 pub mod mem;

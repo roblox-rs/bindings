@@ -76,7 +76,10 @@ impl TypeLayout {
 
     /// Returns the size with an alignment of 4 bytes
     pub fn size(&self) -> u32 {
-        align_to_usize(self.representation.iter().map(|v| self.size_of(v)).sum())
+        self.representation
+            .iter()
+            .map(|v| align_to_usize(self.size_of(v)))
+            .sum()
     }
 
     pub fn iter(&self) -> impl Iterator<Item = (u32, &Representation)> {

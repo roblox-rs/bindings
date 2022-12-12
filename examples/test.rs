@@ -10,6 +10,22 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// # Safety
 #[allow(unreachable_code)]
 pub fn main() {
+    futures::spawn(async {
+        loop {
+            let time = task::wait(4.0).await;
+            println!("spawned async? took {time}");
+
+            println!("now waiting for a part to be added!");
+            let instance = Workspace::instance()
+                .wait_for_child("a child", 69420.0)
+                .await;
+            println!(
+                "waited for instance, got {:?}",
+                instance.map(|v| v.get_full_name())
+            );
+        }
+    });
+
     let x = "wow!!!";
     let fnn1 = move || {
         println!("Wow, hello {}!", x);
@@ -28,7 +44,7 @@ pub fn main() {
     let value = "Workspace".to_string();
 
     let connection = Workspace::instance().on_instance_changed(|name| {
-        println!("On instance changed!!!, {}", name);
+        // println!("On instance changed!!!, {}", name);
     });
 
     task::delay(4.0, move || {

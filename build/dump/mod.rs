@@ -225,6 +225,7 @@ fn transform_class_function(
     Some(Member {
         flags: MemberFlags {
             deprecated: function.tags.contains("Deprecated"),
+            yielding: function.tags.contains("Yields") || function.tags.contains("CanYield"),
             ..MemberFlags::default()
         },
         implementation: implementations::Method.into(),

@@ -1,18 +1,73 @@
 local rt = require(script.runtime);
 local wasm, memory, util;
-local createPointer, getPointer, dropPointer, invokeOnce, readString, writeStringReturn;
+local createPointer, getPointer, dropPointer, updatePointer, invokeOnce, readString, writeStringReturn;
 
-local function wrapConstructorNumber(constructor)
-	return function(...)
-		return createPointer(constructor(...));
-	end
+-- TODO: dropped futures are unsafe
+local function createFuture(store, func, ...)
+	local future = createPointer(0);
+
+	task.spawn(function(...)
+		updatePointer(future, store(func(...)));
+		wasm.func_list.rors_wake_future(future);
+	end, ...);
+
+	return future;
 end
 
-local function wrapConstructorString(constructor)
-	return function(addr, len)
-		return createPointer(constructor(addr, len));
+local function createAsyncRuntime()
+	-- context, futures and tasks could be represented as a single pointer (Box) for simplicity
+	local queue = {};
+
+	local function createContext(awakener)
+		return wasm.function_list.create_context(createPointer(awakener));
 	end
+
+	local function awaken(context)
+		getPointer(context)();
+	end
+
+	local function pollFuture(future, context)
+		return wasm.function_list.poll_future(future, context);
+	end
+
+	local function runTask(task)
+		table.insert(queue, task);
+	end
+
+	local function waitOn(task)
+		local thread = coroutine.running();
+		local awake = false;
+		local context = createContext(function()
+			awake = true;
+			coroutine.resume(thread);
+		end);
+
+		local data;
+		while true do
+			data = table.pack(pollFuture(task, context));
+
+			-- Check for Poll::Ready
+			if (data[1] == 1) then
+				break;
+			end
+
+			-- If the task immediately awakens, don't yield
+			if (awake) then
+				awake = false;
+				continue;
+			end
+
+			coroutine.yield();
+		end
+
+		dropPointer(context);
+		return table.unpack(data, 2, data.n);
+	end
+
+	return { runTask = runTask, waitOn = waitOn, awaken = awaken };
 end
+
+local runtime = createAsyncRuntime();
 
 local env = {
 	-- lbiraries
@@ -29,7 +84,19 @@ local env = {
 	end,
 
 	lib_task_wait = function(delay)
-		task.wait(delay);
+		return createFuture(
+			function(value)
+				local addr = wasm.func_list.__heap_alloc_vec(2);
+				rt.store.f64(memory, addr, value);
+				return addr;
+			end,
+			task.wait,
+			delay
+		);
+	end,
+
+	get_poll_state = function(future)
+		return getPointer(future);
 	end,
 
 	-- pointers
@@ -72,8 +139,8 @@ util = require(script.util)(rt, wasm, memory);
 
 abi.load(wasm, rt, util);
 
-createPointer, getPointer, dropPointer, invokeOnce, readString =
-	util.createPointer, util.getPointer, util.dropPointer, util.invokeOnce, util.readString;
+createPointer, getPointer, dropPointer, updatePointer, invokeOnce, readString =
+	util.createPointer, util.getPointer, util.dropPointer, util.updatePointer, util.invokeOnce, util.readString;
 
 task.wait(2);
 print("start wasm");

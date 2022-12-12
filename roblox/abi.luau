@@ -1,5 +1,5 @@
 local abi = { ffi = {} };
-local getPointer, createPointer, memory, storeU8, storeU32, storeFloat, loadU8, loadU32, loadFloat, loadString, allocString, allocVec, functions, invokeFunction, dropFunctionRef;
+local getPointer, createPointer, updatePointer, memory, storeU8, storeU32, storeFloat, loadU8, loadU32, loadFloat, loadString, allocString, allocVec, functions, invokeFunction, dropFunctionRef, wakeFuture;
 local connections = {};
 local function createConnection(stack, vtable, connection)
 	local id = createPointer(connection);
@@ -7,7 +7,7 @@ local function createConnection(stack, vtable, connection)
 	return id;
 end
 function abi.load(wasm, rt, util)
-	getPointer, createPointer, memory, storeU8, storeU32, storeFloat, loadU8, loadU32, loadFloat, loadString, allocString, allocVec, functions, invokeFunction, dropFunctionRef = util.getPointer, util.createPointer, wasm.memory_list.memory, rt.store.i32_n8, rt.store.i32, rt.store.f64, rt.load.i32_u8, rt.load.i32, rt.load.f64, rt.load.string, wasm.func_list.__heap_alloc_string, wasm.func_list.__heap_alloc_vec, wasm.table_list.__indirect_function_table, util.invokeFunction, util.dropFunctionRef;
+	getPointer, createPointer, updatePointer, memory, storeU8, storeU32, storeFloat, loadU8, loadU32, loadFloat, loadString, allocString, allocVec, functions, invokeFunction, dropFunctionRef, wakeFuture = util.getPointer, util.createPointer, util.updatePointer, wasm.memory_list.memory, rt.store.i32_n8, rt.store.i32, rt.store.f64, rt.load.i32_u8, rt.load.i32, rt.load.f64, rt.load.string, wasm.func_list.__heap_alloc_string, wasm.func_list.__heap_alloc_vec, wasm.table_list.__indirect_function_table, util.invokeFunction, util.dropFunctionRef, wasm.func_list.rors_wake_future;
 end
 function abi.ffi.disconnect_connection(connection)
 	local func = connections[connection];
@@ -145,12 +145,20 @@ function abi.ffi.method_instance_is_descendant_of(self, ancestor)
 	return result_0 and 1 or 0;
 end
 function abi.ffi.method_instance_wait_for_child(self, child_name_addr, child_name_len, time_out)
-	local result_0 = getPointer(self):WaitForChild(loadString(memory, child_name_addr, child_name_len), time_out);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):WaitForChild(loadString(memory, child_name_addr, child_name_len), time_out);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_instance_ancestry_changed_on_ancestry_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AncestryChanged:Connect(function(child, parent)
@@ -330,20 +338,36 @@ function abi.ffi.method_animation_clip_provider_register_animation_clip(self, an
 	return createPointer(result_0);
 end
 function abi.ffi.method_animation_clip_provider_get_animation_clip_async(self, asset_id)
-	local result_0 = getPointer(self):GetAnimationClipAsync(getPointer(asset_id));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetAnimationClipAsync(getPointer(asset_id));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_animation_clip_provider_get_animations(self, user_id)
-	local result_0 = getPointer(self):GetAnimations(user_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetAnimations(user_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_animation_stream_track_is_playing(self)
 	local result_0 = getPointer(self).IsPlaying;
@@ -520,20 +544,42 @@ function abi.ffi.property_setter_asset_patch_settings_patch_id_set_patch_id(self
 	getPointer(self).PatchId = loadString(memory, value_addr, value_len);
 end
 function abi.ffi.method_asset_service_create_place_async(self, place_name_addr, place_name_len, template_place_id, description_addr, description_len)
-	local result_0 = getPointer(self):CreatePlaceAsync(loadString(memory, place_name_addr, place_name_len), template_place_id, loadString(memory, description_addr, description_len));
-	return result_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CreatePlaceAsync(loadString(memory, place_name_addr, place_name_len), template_place_id, loadString(memory, description_addr, description_len));
+		local output_addr = allocVec(8);
+		storeFloat(memory, output_addr + 0, result_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_asset_service_create_place_in_player_inventory_async(self, player, place_name_addr, place_name_len, template_place_id, description_addr, description_len)
-	local result_0 = getPointer(self):CreatePlaceInPlayerInventoryAsync(getPointer(player), loadString(memory, place_name_addr, place_name_len), template_place_id, loadString(memory, description_addr, description_len));
-	return result_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CreatePlaceInPlayerInventoryAsync(getPointer(player), loadString(memory, place_name_addr, place_name_len), template_place_id, loadString(memory, description_addr, description_len));
+		local output_addr = allocVec(8);
+		storeFloat(memory, output_addr + 0, result_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_asset_service_get_game_places_async(self)
-	local result_0 = getPointer(self):GetGamePlacesAsync();
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetGamePlacesAsync();
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_asset_service_save_place_async(self)
 	getPointer(self):SavePlaceAsync()
@@ -698,40 +744,79 @@ function abi.ffi.method_avatar_editor_service_prompt_update_outfit(self, outfit_
 	getPointer(self):PromptUpdateOutfit(outfit_id, getPointer(updated_outfit), rig_type)
 end
 function abi.ffi.method_avatar_editor_service_check_apply_default_clothing(self, humanoid_description)
-	local result_0 = getPointer(self):CheckApplyDefaultClothing(getPointer(humanoid_description));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CheckApplyDefaultClothing(getPointer(humanoid_description));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_avatar_editor_service_conform_to_avatar_rules(self, humanoid_description)
-	local result_0 = getPointer(self):ConformToAvatarRules(getPointer(humanoid_description));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):ConformToAvatarRules(getPointer(humanoid_description));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_avatar_editor_service_get_favorite(self, item_id, item_type)
-	local result_0 = getPointer(self):GetFavorite(item_id, item_type);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetFavorite(item_id, item_type);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_avatar_editor_service_get_outfits(self, outfit_source, outfit_type)
-	local result_0 = getPointer(self):GetOutfits(outfit_source, outfit_type);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetOutfits(outfit_source, outfit_type);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_avatar_editor_service_search_catalog(self, search_parameters)
-	local result_0 = getPointer(self):SearchCatalog(getPointer(search_parameters));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):SearchCatalog(getPointer(search_parameters));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_avatar_editor_service_prompt_allow_inventory_read_access_completed_on_prompt_allow_inventory_read_access_completed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptAllowInventoryReadAccessCompleted:Connect(function(result)
@@ -890,12 +975,26 @@ function abi.ffi.event_tool_unequipped_on_unequipped(self, callback_data, callba
 	return createPointer(result_0);
 end
 function abi.ffi.method_badge_service_award_badge(self, user_id, badge_id)
-	local result_0 = getPointer(self):AwardBadge(user_id, badge_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):AwardBadge(user_id, badge_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_badge_service_user_has_badge_async(self, user_id, badge_id)
-	local result_0 = getPointer(self):UserHasBadgeAsync(user_id, badge_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):UserHasBadgeAsync(user_id, badge_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_player_gui_current_screen_orientation(self)
 	local result_0 = getPointer(self).CurrentScreenOrientation;
@@ -1710,30 +1809,60 @@ function abi.ffi.method_chat_chat(self, part_or_character, message_addr, message
 	getPointer(self):Chat(getPointer(part_or_character), loadString(memory, message_addr, message_len), color)
 end
 function abi.ffi.method_chat_can_user_chat_async(self, user_id)
-	local result_0 = getPointer(self):CanUserChatAsync(user_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CanUserChatAsync(user_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_chat_can_users_chat_async(self, user_id_from, user_id_to)
-	local result_0 = getPointer(self):CanUsersChatAsync(user_id_from, user_id_to);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CanUsersChatAsync(user_id_from, user_id_to);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_chat_filter_string_async(self, string_to_filter_addr, string_to_filter_len, player_from, player_to)
-	local result_0 = getPointer(self):FilterStringAsync(loadString(memory, string_to_filter_addr, string_to_filter_len), getPointer(player_from), getPointer(player_to));
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):FilterStringAsync(loadString(memory, string_to_filter_addr, string_to_filter_len), getPointer(player_from), getPointer(player_to));
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_chat_filter_string_for_broadcast(self, string_to_filter_addr, string_to_filter_len, player_from)
-	local result_0 = getPointer(self):FilterStringForBroadcast(loadString(memory, string_to_filter_addr, string_to_filter_len), getPointer(player_from));
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):FilterStringForBroadcast(loadString(memory, string_to_filter_addr, string_to_filter_len), getPointer(player_from));
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_chat_chatted_on_chatted(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Chatted:Connect(function(part, message, color)
@@ -2939,12 +3068,20 @@ function abi.ffi.method_context_action_service_unbind_all_actions(self)
 	getPointer(self):UnbindAllActions()
 end
 function abi.ffi.method_context_action_service_get_button(self, action_name_addr, action_name_len)
-	local result_0 = getPointer(self):GetButton(loadString(memory, action_name_addr, action_name_len));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetButton(loadString(memory, action_name_addr, action_name_len));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_context_action_service_local_tool_equipped_on_local_tool_equipped(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).LocalToolEquipped:Connect(function(tool_equipped)
@@ -3378,12 +3515,20 @@ function abi.ffi.method_data_store_service_get_request_budget_for_request_type(s
 	return result_0;
 end
 function abi.ffi.method_data_store_service_list_data_stores_async(self, prefix_addr, prefix_len, page_size, cursor_addr, cursor_len)
-	local result_0 = getPointer(self):ListDataStoresAsync(loadString(memory, prefix_addr, prefix_len), page_size, loadString(memory, cursor_addr, cursor_len));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):ListDataStoresAsync(loadString(memory, prefix_addr, prefix_len), page_size, loadString(memory, cursor_addr, cursor_len));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_debris_add_item(self, item, lifetime)
 	getPointer(self):AddItem(getPointer(item), lifetime)
@@ -3930,39 +4075,71 @@ function abi.ffi.property_setter_get_text_bounds_params_width_set_width(self, va
 	getPointer(self).Width = value;
 end
 function abi.ffi.method_data_store_list_keys_async(self, prefix_addr, prefix_len, page_size, cursor_addr, cursor_len)
-	local result_0 = getPointer(self):ListKeysAsync(loadString(memory, prefix_addr, prefix_len), page_size, loadString(memory, cursor_addr, cursor_len));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):ListKeysAsync(loadString(memory, prefix_addr, prefix_len), page_size, loadString(memory, cursor_addr, cursor_len));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_data_store_list_versions_async(self, key_addr, key_len, sort_direction, min_date, max_date, page_size)
-	local result_0 = getPointer(self):ListVersionsAsync(loadString(memory, key_addr, key_len), sort_direction, min_date, max_date, page_size);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):ListVersionsAsync(loadString(memory, key_addr, key_len), sort_direction, min_date, max_date, page_size);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_data_store_remove_version_async(self, key_addr, key_len, version_addr, version_len)
 	getPointer(self):RemoveVersionAsync(loadString(memory, key_addr, key_len), loadString(memory, version_addr, version_len))
 end
 function abi.ffi.method_group_service_get_allies_async(self, group_id)
-	local result_0 = getPointer(self):GetAlliesAsync(group_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetAlliesAsync(group_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_group_service_get_enemies_async(self, group_id)
-	local result_0 = getPointer(self):GetEnemiesAsync(group_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetEnemiesAsync(group_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_gui_base_2_d_absolute_position(self)
 	local result_0 = getPointer(self).AbsolutePosition;
@@ -6429,8 +6606,15 @@ function abi.ffi.method_humanoid_apply_description_reset(self, humanoid_descript
 	getPointer(self):ApplyDescriptionReset(getPointer(humanoid_description), asset_type_verification)
 end
 function abi.ffi.method_humanoid_play_emote(self, emote_name_addr, emote_name_len)
-	local result_0 = getPointer(self):PlayEmote(loadString(memory, emote_name_addr, emote_name_len));
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):PlayEmote(loadString(memory, emote_name_addr, emote_name_len));
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_humanoid_climbing_on_climbing(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Climbing:Connect(function(speed)
@@ -7275,24 +7459,47 @@ function abi.ffi.method_input_object_is_modifier_key_down(self, modifier_key)
 	return result_0 and 1 or 0;
 end
 function abi.ffi.method_insert_service_get_latest_asset_version_async(self, asset_id)
-	local result_0 = getPointer(self):GetLatestAssetVersionAsync(asset_id);
-	return result_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetLatestAssetVersionAsync(asset_id);
+		local output_addr = allocVec(8);
+		storeFloat(memory, output_addr + 0, result_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_insert_service_load_asset(self, asset_id)
-	local result_0 = getPointer(self):LoadAsset(asset_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):LoadAsset(asset_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_insert_service_load_asset_version(self, asset_version_id)
-	local result_0 = getPointer(self):LoadAssetVersion(asset_version_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):LoadAssetVersion(asset_version_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_joint_instance_active(self)
 	local result_0 = getPointer(self).Active;
@@ -7440,20 +7647,36 @@ function abi.ffi.method_keyframe_sequence_provider_register_keyframe_sequence(se
 	return createPointer(result_0);
 end
 function abi.ffi.method_keyframe_sequence_provider_get_animations(self, user_id)
-	local result_0 = getPointer(self):GetAnimations(user_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetAnimations(user_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_keyframe_sequence_provider_get_keyframe_sequence_async(self, asset_id)
-	local result_0 = getPointer(self):GetKeyframeSequenceAsync(getPointer(asset_id));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetKeyframeSequenceAsync(getPointer(asset_id));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_light_brightness(self)
 	local result_0 = getPointer(self).Brightness;
@@ -7701,29 +7924,53 @@ function abi.ffi.method_localization_service_get_translator_for_player(self, pla
 	return result_0_optional, result_0_optional_0;
 end
 function abi.ffi.method_localization_service_get_country_region_for_player_async(self, player)
-	local result_0 = getPointer(self):GetCountryRegionForPlayerAsync(getPointer(player));
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetCountryRegionForPlayerAsync(getPointer(player));
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_localization_service_get_translator_for_locale_async(self, locale_addr, locale_len)
-	local result_0 = getPointer(self):GetTranslatorForLocaleAsync(loadString(memory, locale_addr, locale_len));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetTranslatorForLocaleAsync(loadString(memory, locale_addr, locale_len));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_localization_service_get_translator_for_player_async(self, player)
-	local result_0 = getPointer(self):GetTranslatorForPlayerAsync(getPointer(player));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetTranslatorForPlayerAsync(getPointer(player));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_localization_table_source_locale_id(self)
 	local result_0 = getPointer(self).SourceLocaleId;
@@ -7845,28 +8092,64 @@ function abi.ffi.method_marketplace_service_prompt_subscription_purchase(self, p
 	getPointer(self):PromptSubscriptionPurchase(getPointer(player), subscription_id)
 end
 function abi.ffi.method_marketplace_service_get_developer_products_async(self)
-	local result_0 = getPointer(self):GetDeveloperProductsAsync();
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetDeveloperProductsAsync();
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_marketplace_service_is_player_subscribed(self, player, subscription_id)
-	local result_0 = getPointer(self):IsPlayerSubscribed(getPointer(player), subscription_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):IsPlayerSubscribed(getPointer(player), subscription_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_marketplace_service_player_owns_asset(self, player, asset_id)
-	local result_0 = getPointer(self):PlayerOwnsAsset(getPointer(player), asset_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):PlayerOwnsAsset(getPointer(player), asset_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_marketplace_service_player_owns_bundle(self, player, bundle_id)
-	local result_0 = getPointer(self):PlayerOwnsBundle(getPointer(player), bundle_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):PlayerOwnsBundle(getPointer(player), bundle_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_marketplace_service_user_owns_game_pass_async(self, user_id, game_pass_id)
-	local result_0 = getPointer(self):UserOwnsGamePassAsync(user_id, game_pass_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):UserOwnsGamePassAsync(user_id, game_pass_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_marketplace_service_prompt_bundle_purchase_finished_on_prompt_bundle_purchase_finished(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptBundlePurchaseFinished:Connect(function(player, bundle_id, was_purchased)
@@ -9254,8 +9537,15 @@ function abi.ffi.property_getter_path_status(self)
 	return result_0;
 end
 function abi.ffi.method_path_check_occlusion_async(self, start)
-	local result_0 = getPointer(self):CheckOcclusionAsync(start);
-	return result_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CheckOcclusionAsync(start);
+		local output_addr = allocVec(8);
+		storeFloat(memory, output_addr + 0, result_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_path_compute_async(self, start, finish)
 	getPointer(self):ComputeAsync(getPointer(start), getPointer(finish))
@@ -9333,12 +9623,20 @@ function abi.ffi.property_setter_pathfinding_modifier_pass_through_set_pass_thro
 	getPointer(self).PassThrough = value == 1;
 end
 function abi.ffi.method_pathfinding_service_find_path_async(self, start, finish)
-	local result_0 = getPointer(self):FindPathAsync(getPointer(start), getPointer(finish));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):FindPathAsync(getPointer(start), getPointer(finish));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_physics_service_collision_group_contains_part(self, name_addr, name_len, part)
 	local result_0 = getPointer(self):CollisionGroupContainsPart(loadString(memory, name_addr, name_len), getPointer(part));
@@ -9624,25 +9922,54 @@ function abi.ffi.method_player_move(self, walk_direction, relative_to_camera)
 	getPointer(self):Move(getPointer(walk_direction), relative_to_camera == 1)
 end
 function abi.ffi.method_player_get_rank_in_group(self, group_id)
-	local result_0 = getPointer(self):GetRankInGroup(group_id);
-	return result_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetRankInGroup(group_id);
+		local output_addr = allocVec(8);
+		storeFloat(memory, output_addr + 0, result_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_player_get_role_in_group(self, group_id)
-	local result_0 = getPointer(self):GetRoleInGroup(group_id);
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetRoleInGroup(group_id);
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_player_is_friends_with(self, user_id)
-	local result_0 = getPointer(self):IsFriendsWith(user_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):IsFriendsWith(user_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_player_is_in_group(self, group_id)
-	local result_0 = getPointer(self):IsInGroup(group_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):IsInGroup(group_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_player_load_character(self)
 	getPointer(self):LoadCharacter()
@@ -9794,57 +10121,112 @@ function abi.ffi.method_players_get_player_from_character(self, character)
 	return result_0_optional, result_0_optional_0;
 end
 function abi.ffi.method_players_create_humanoid_model_from_description(self, description, rig_type, asset_type_verification)
-	local result_0 = getPointer(self):CreateHumanoidModelFromDescription(getPointer(description), rig_type, asset_type_verification);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CreateHumanoidModelFromDescription(getPointer(description), rig_type, asset_type_verification);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_players_create_humanoid_model_from_user_id(self, user_id)
-	local result_0 = getPointer(self):CreateHumanoidModelFromUserId(user_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CreateHumanoidModelFromUserId(user_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_players_get_friends_async(self, user_id)
-	local result_0 = getPointer(self):GetFriendsAsync(user_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetFriendsAsync(user_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_players_get_humanoid_description_from_outfit_id(self, outfit_id)
-	local result_0 = getPointer(self):GetHumanoidDescriptionFromOutfitId(outfit_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetHumanoidDescriptionFromOutfitId(outfit_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_players_get_humanoid_description_from_user_id(self, user_id)
-	local result_0 = getPointer(self):GetHumanoidDescriptionFromUserId(user_id);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetHumanoidDescriptionFromUserId(user_id);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_players_get_name_from_user_id_async(self, user_id)
-	local result_0 = getPointer(self):GetNameFromUserIdAsync(user_id);
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetNameFromUserIdAsync(user_id);
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_players_get_user_id_from_name_async(self, user_name_addr, user_name_len)
-	local result_0 = getPointer(self):GetUserIdFromNameAsync(loadString(memory, user_name_addr, user_name_len));
-	return result_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetUserIdFromNameAsync(loadString(memory, user_name_addr, user_name_len));
+		local output_addr = allocVec(8);
+		storeFloat(memory, output_addr + 0, result_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_players_player_added_on_player_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerAdded:Connect(function(player)
@@ -10811,8 +11193,15 @@ function abi.ffi.method_social_service_prompt_game_invite(self, player)
 	getPointer(self):PromptGameInvite(getPointer(player))
 end
 function abi.ffi.method_social_service_can_send_game_invite_async(self, player, recipient_id)
-	local result_0 = getPointer(self):CanSendGameInviteAsync(getPointer(player), recipient_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):CanSendGameInviteAsync(getPointer(player), recipient_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_sound_is_loaded(self)
 	local result_0 = getPointer(self).IsLoaded;
@@ -11726,12 +12115,20 @@ function abi.ffi.method_text_channel_display_system_message(self, system_message
 	return result_0_optional, result_0_optional_0;
 end
 function abi.ffi.method_text_channel_send_async(self, message_addr, message_len, metadata_addr, metadata_len)
-	local result_0 = getPointer(self):SendAsync(loadString(memory, message_addr, message_len), loadString(memory, metadata_addr, metadata_len));
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):SendAsync(loadString(memory, message_addr, message_len), loadString(memory, metadata_addr, metadata_len));
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.event_text_channel_message_received_on_message_received(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MessageReceived:Connect(function(incoming_message)
@@ -12083,47 +12480,86 @@ function abi.ffi.event_text_chat_service_sending_message_on_sending_message(self
 	return createPointer(result_0);
 end
 function abi.ffi.method_text_filter_result_get_chat_for_user_async(self, to_user_id)
-	local result_0 = getPointer(self):GetChatForUserAsync(to_user_id);
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetChatForUserAsync(to_user_id);
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_text_filter_result_get_non_chat_string_for_broadcast_async(self)
-	local result_0 = getPointer(self):GetNonChatStringForBroadcastAsync();
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetNonChatStringForBroadcastAsync();
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_text_filter_result_get_non_chat_string_for_user_async(self, to_user_id)
-	local result_0 = getPointer(self):GetNonChatStringForUserAsync(to_user_id);
-	local result_0_len = #result_0;
-	local result_0_content = allocString(result_0_len);
-	for i = 1, result_0_len do
-		storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
-	end
-	return result_0_content, result_0_len;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetNonChatStringForUserAsync(to_user_id);
+		local result_0_len = #result_0;
+		local result_0_content = allocString(result_0_len);
+		for i = 1, result_0_len do
+			storeU8(memory, result_0_content + (i - 1), string.byte(result_0:sub(i, i)));
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_content);
+		storeU32(memory, output_addr + 4, result_0_len);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_text_service_get_text_size(self, string_addr, string_len, font_size, font, frame_size)
 	local result_0 = getPointer(self):GetTextSize(loadString(memory, string_addr, string_len), font_size, font, getPointer(frame_size));
 	return createPointer(result_0);
 end
 function abi.ffi.method_text_service_filter_string_async(self, string_to_filter_addr, string_to_filter_len, from_user_id, text_context)
-	local result_0 = getPointer(self):FilterStringAsync(loadString(memory, string_to_filter_addr, string_to_filter_len), from_user_id, text_context);
-	local result_0_optional, result_0_optional_0 = 0, 0;
-	if (result_0 ~= nil) then
-		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
-	end
-	return result_0_optional, result_0_optional_0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):FilterStringAsync(loadString(memory, string_to_filter_addr, string_to_filter_len), from_user_id, text_context);
+		local result_0_optional, result_0_optional_0 = 0, 0;
+		if (result_0 ~= nil) then
+			result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+		end
+		local output_addr = allocVec(8);
+		storeU32(memory, output_addr + 0, result_0_optional);
+		storeU32(memory, output_addr + 4, result_0_optional_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_text_service_get_text_bounds_async(self, params)
-	local result_0 = getPointer(self):GetTextBoundsAsync(getPointer(params));
-	return createPointer(result_0);
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):GetTextBoundsAsync(getPointer(params));
+		local output_addr = allocVec(4);
+		storeU32(memory, output_addr + 0, createPointer(result_0));
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_text_source_can_send(self)
 	local result_0 = getPointer(self).CanSend;
@@ -13401,12 +13837,26 @@ function abi.ffi.method_vector_3_curve_z(self)
 	return result_0_optional, result_0_optional_0;
 end
 function abi.ffi.method_voice_chat_internal_is_voice_enabled_for_user_id_async(self, user_id)
-	local result_0 = getPointer(self):IsVoiceEnabledForUserIdAsync(user_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):IsVoiceEnabledForUserIdAsync(user_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.method_voice_chat_service_is_voice_enabled_for_user_id_async(self, user_id)
-	local result_0 = getPointer(self):IsVoiceEnabledForUserIdAsync(user_id);
-	return result_0 and 1 or 0;
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = getPointer(self):IsVoiceEnabledForUserIdAsync(user_id);
+		local output_addr = allocVec(4);
+		storeU8(memory, output_addr + 0, result_0 and 1 or 0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.property_getter_voice_source_user_id(self)
 	local result_0 = getPointer(self).UserId;

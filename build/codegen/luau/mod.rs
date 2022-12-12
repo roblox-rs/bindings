@@ -99,11 +99,12 @@ fn generate_member(out: &mut Vec<String>, namespace: &Namespace, member: &Member
         &mut effect_prereqs,
     );
 
+    let is_async = member.flags.yielding;
     let layout = TypeLayout::from_tuple(&member.outputs);
     let effect = if layout.width() == 0 {
         effect
     } else {
-        if layout.needs_spill() {
+        if layout.needs_spill() && !is_async {
             parameters.insert(0, "output".to_string());
         }
 
@@ -137,12 +138,32 @@ fn generate_member(out: &mut Vec<String>, namespace: &Namespace, member: &Member
             .flat_map(|(i, kind)| convert_luau_to_rust(&ids, &names[i], kind, &mut prereqs, false))
             .collect();
 
-        let stores = store_memory_or_return(layout, "output", &results);
+        if is_async {
+            let addr = ids.next_names(&["output_addr"]);
+            let future = ids.next_names(&["future"]);
+            let size = layout.size();
 
-        Stream::expression(|stream| {
-            note!(stream in prereqs);
-            note!(stream, "{stores}");
-        })
+            let stores = store_memory(layout, &addr, &results);
+
+            Stream::expression(|stream| {
+                note!(stream, "local {future} = createPointer(0);");
+                push!(stream, "task.spawn(function()");
+                note!(stream in prereqs);
+                note!(stream, "local {addr} = allocVec({size});");
+                note!(stream, "{stores}");
+                note!(stream, "updatePointer({future}, {addr});");
+                note!(stream, "wakeFuture({future});");
+                pull!(stream, "end)");
+                note!(stream, "return {future};");
+            })
+        } else {
+            let stores = store_memory_or_return(layout, "output", &results);
+
+            Stream::expression(|stream| {
+                note!(stream in prereqs);
+                note!(stream, "{stores}");
+            })
+        }
     };
 
     Stream::prereq(out, |stream| {
@@ -166,6 +187,7 @@ fn generate_abi_start() -> String {
     let paths = vec![
         ("getPointer", "util.getPointer"),
         ("createPointer", "util.createPointer"),
+        ("updatePointer", "util.updatePointer"),
         ("memory", "wasm.memory_list.memory"),
         ("storeU8", "rt.store.i32_n8"),
         ("storeU32", "rt.store.i32"),
@@ -179,6 +201,7 @@ fn generate_abi_start() -> String {
         ("functions", "wasm.table_list.__indirect_function_table"),
         ("invokeFunction", "util.invokeFunction"),
         ("dropFunctionRef", "util.dropFunctionRef"),
+        ("wakeFuture", "wasm.func_list.rors_wake_future"),
     ];
 
     Stream::expression(|stream| {

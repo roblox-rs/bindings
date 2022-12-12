@@ -63,6 +63,7 @@ impl Parameter {
 #[derive(Default)]
 pub struct MemberFlags {
     pub deprecated: bool,
+    pub yielding: bool,
     pub operator: Option<&'static str>,
 }
 
