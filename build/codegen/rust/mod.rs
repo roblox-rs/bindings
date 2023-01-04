@@ -2,14 +2,15 @@ use crate::{
     codegen::{
         rust::conversion::owned_ffi_to_rust,
         stream::{note, pull, write_to},
+        structs::Async,
     },
     dump::types::Enum,
 };
 
 use self::{
     constants::{
-        EXCLUSIVE_INSTANCE, ROBLOX_CREATABLE, RUST_OPTION, RUST_ROBLOX_ENUM_MACRO, RUST_SLICE,
-        RUST_STRING, RUST_VEC,
+        EXCLUSIVE_INSTANCE, ROBLOX_CREATABLE, RUST_CLOSURE, RUST_OPTION, RUST_ROBLOX_ENUM_MACRO,
+        RUST_SLICE, RUST_STRING, RUST_VEC,
     },
     conversion::{
         borrowed_rust_to_ffi, get_borrowed_ffi_type, get_borrowed_rust_type, get_owned_ffi_type,
@@ -101,10 +102,13 @@ fn generate_member_declaration(member: &Member, name: &str, context: Declaration
         let parameter_type = get_borrowed_type(kind);
         if name == "self" {
             parameters.push("&self".to_string());
-        } else if let CodegenKind::Function(inputs, output) = &kind {
+        } else if let CodegenKind::Function(inputs, output, is_async) = &kind {
             let is_definition = matches!(context, DeclarationContext::Trait) || is_extern;
 
-            if inputs.is_empty() && matches!(output.as_ref(), CodegenKind::Void) || is_definition {
+            if inputs.is_empty() && matches!(output.as_ref(), CodegenKind::Void)
+                || is_definition
+                || matches!(is_async, Async::Yes)
+            {
                 parameters.push(format!("{name}: {parameter_type}"))
             } else {
                 parameters.push(format!("mut {name}: {parameter_type}"));
@@ -126,7 +130,19 @@ fn generate_member_declaration(member: &Member, name: &str, context: Declaration
             write_to!(stream, "async ");
         }
 
-        write_to!(stream, "fn {name}({parameters})");
+        write_to!(stream, "fn {name}");
+
+        // TODO: support multiple async closures?
+        if !is_extern {
+            for input in &member.inputs {
+                if let CodegenKind::Function(_, result, Async::Yes) = &input.kind {
+                    let return_type = get_owned_rust_type(result);
+                    write_to!(stream, "<Fut: Future<Output = {return_type}>>")
+                }
+            }
+        }
+
+        write_to!(stream, "({parameters})");
 
         if is_async && is_extern {
             if outputs.len() > 1 {
@@ -231,6 +247,7 @@ fn generate_constant(output: &mut Vec<String>) {
             ROBLOX_CREATABLE,
             RUST_ROBLOX_ENUM_MACRO,
             EXCLUSIVE_INSTANCE,
+            RUST_CLOSURE,
         ]
         .map(ToString::to_string),
     );
@@ -239,8 +256,6 @@ fn generate_constant(output: &mut Vec<String>) {
 pub fn generate(namespaces: &[Namespace], enums: &[Enum]) -> String {
     let mut output = Vec::new();
     output.push(generate_extern(namespaces));
-    output.push("use super::*;".to_string());
-    output.push("use crate::futures::ffi::LuaFuture;".to_string());
     generate_constant(&mut output);
     generate_enums(&mut output, enums);
 

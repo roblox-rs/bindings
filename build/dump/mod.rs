@@ -8,7 +8,7 @@ use types::{
 
 use crate::{
     codegen::structs::{
-        implementations, CodegenKind, InstanceMetadata, Member, MemberFlags, Namespace,
+        implementations, Async, CodegenKind, InstanceMetadata, Member, MemberFlags, Namespace,
         NamespaceKind, Parameter,
     },
     config::{CLASS_BLACKLIST, DEPRECATED_APIS},
@@ -272,7 +272,7 @@ fn transform_class_event(dump: &Dump, event: &ClassEventMember) -> Option<Member
             Parameter::new("self", CodegenKind::Instance("Instance".to_string())),
             Parameter::new(
                 "callback",
-                CodegenKind::Function(inputs, Box::new(CodegenKind::Void)),
+                CodegenKind::Function(inputs, Box::new(CodegenKind::Void), Async::No),
             ),
         ],
         outputs: vec![CodegenKind::DataType("RbxScriptConnection".to_string())],
@@ -318,6 +318,7 @@ fn transform_class_callback(dump: &Dump, callback: &ClassCallbackMember) -> Opti
                 CodegenKind::Function(
                     inputs,
                     Box::new(transform_value_type(&callback.return_type, false)),
+                    Async::Yes,
                 ),
             ),
         ],

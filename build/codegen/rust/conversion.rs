@@ -1,6 +1,6 @@
 use crate::codegen::{
     stream::{note, pull, push, Stream},
-    structs::CodegenKind,
+    structs::{Async, CodegenKind},
 };
 
 use super::raw_name;
@@ -8,7 +8,7 @@ use super::raw_name;
 // The bindings pass these types to the Luau bindings
 pub fn get_borrowed_ffi_type(kind: &CodegenKind) -> String {
     match kind {
-        CodegenKind::Function(inputs, result) => {
+        CodegenKind::Function(inputs, result, is_async) => {
             let return_type = get_owned_ffi_type(result);
             let parameters = inputs
                 .iter()
@@ -16,7 +16,11 @@ pub fn get_borrowed_ffi_type(kind: &CodegenKind) -> String {
                 .collect::<Vec<_>>()
                 .join(", ");
 
-            format!("Box<dyn FnMut({parameters}) -> {return_type}>")
+            if matches!(is_async, Async::Yes) {
+                format!("RustClosure<Box<dyn Fn({parameters}) -> RustFuture>, {return_type}>")
+            } else {
+                format!("Box<dyn FnMut({parameters}) -> {return_type}>")
+            }
         }
         CodegenKind::Optional(kind) => format!("RustOption<{}>", get_borrowed_ffi_type(kind)),
         CodegenKind::Tuple(kind) => format!("RustSlice<{}>", get_borrowed_ffi_type(kind)),
@@ -35,7 +39,7 @@ pub fn get_borrowed_ffi_type(kind: &CodegenKind) -> String {
 // The bindings receive these types from the Lua bindings
 pub fn get_owned_ffi_type(kind: &CodegenKind) -> String {
     match kind {
-        CodegenKind::Function(_, _) => unimplemented!(),
+        CodegenKind::Function(_, _, _) => unimplemented!(),
         CodegenKind::Optional(kind) => format!("RustOption<{}>", get_owned_ffi_type(kind)),
         CodegenKind::Tuple(kind) => format!("RustVec<{}>", get_owned_ffi_type(kind)),
         CodegenKind::Vec(kind) => format!("RustVec<{}>", get_owned_ffi_type(kind)),
@@ -53,7 +57,7 @@ pub fn get_owned_ffi_type(kind: &CodegenKind) -> String {
 // Users pass these types to the Rust bindings
 pub fn get_borrowed_rust_type(kind: &CodegenKind) -> String {
     match kind {
-        CodegenKind::Function(inputs, result) => {
+        CodegenKind::Function(inputs, result, is_async) => {
             let return_type = get_owned_rust_type(result);
             let parameters = inputs
                 .iter()
@@ -61,7 +65,11 @@ pub fn get_borrowed_rust_type(kind: &CodegenKind) -> String {
                 .collect::<Vec<_>>()
                 .join(", ");
 
-            format!("impl FnMut({parameters}) -> {return_type} + 'static")
+            if matches!(is_async, Async::Yes) {
+                format!("impl Fn({parameters}) -> Fut + 'static")
+            } else {
+                format!("impl FnMut({parameters}) -> {return_type} + 'static")
+            }
         }
         CodegenKind::Optional(kind) => format!("&Option<{}>", get_borrowed_rust_type(kind)),
         CodegenKind::Tuple(kind) => format!("&[{}]", get_borrowed_rust_type(kind)),
@@ -80,7 +88,7 @@ pub fn get_borrowed_rust_type(kind: &CodegenKind) -> String {
 // Users receive these types from the Rust bindings
 pub fn get_owned_rust_type(kind: &CodegenKind) -> String {
     match kind {
-        CodegenKind::Function(_, _) => unimplemented!(),
+        CodegenKind::Function(_, _, _) => unimplemented!(),
         CodegenKind::Optional(kind) => format!("Option<{}>", get_owned_rust_type(kind)),
         CodegenKind::Tuple(kind) => format!("Vec<{}>", get_owned_rust_type(kind)),
         CodegenKind::Vec(kind) => format!("Vec<{}>", get_owned_rust_type(kind)),
@@ -97,8 +105,9 @@ pub fn get_owned_rust_type(kind: &CodegenKind) -> String {
 
 pub fn borrowed_rust_to_ffi(expression: &str, kind: &CodegenKind) -> String {
     match kind {
-        CodegenKind::Function(inputs, output) => {
-            if inputs.is_empty() && matches!(output.as_ref(), CodegenKind::Void) {
+        CodegenKind::Function(inputs, output, is_async) => {
+            let is_async = matches!(is_async, Async::Yes);
+            if inputs.is_empty() && matches!(output.as_ref(), CodegenKind::Void) && !is_async {
                 return format!("Box::new({expression})");
             }
 
@@ -108,22 +117,53 @@ pub fn borrowed_rust_to_ffi(expression: &str, kind: &CodegenKind) -> String {
                 .map(|v| owned_ffi_to_rust(&raw_name(&v.name), &v.kind))
                 .collect();
 
-            Stream::expression(|stream| {
+            let closure = Stream::expression(|stream| {
                 let input_names = input_names.join(", ");
                 let transformed_inputs = transformed_inputs.join(", ");
                 let has_return = !matches!(output.as_ref(), CodegenKind::Void);
-                let expression = format!("{expression}({transformed_inputs})");
+                let conversion = if is_async {
+                    format!("callback({transformed_inputs}).await")
+                } else {
+                    format!("{expression}({transformed_inputs})")
+                };
 
-                push!(stream, "Box::new(move |{input_names}| {{");
+                if is_async {
+                    push!(stream, "{{");
+                    note!(stream, "let callback = Rc::new({expression});");
+                    push!(stream, "Box::new(move |{input_names}| {{");
+                    note!(stream, "let callback = callback.clone();");
+                    push!(stream, "RustFuture::new(Box::new(async move {{");
+                } else {
+                    push!(stream, "Box::new(move |{input_names}| {{");
+                }
+
                 if has_return {
-                    let transformation = owned_rust_to_ffi(&expression, output);
+                    let transformation = owned_rust_to_ffi(&conversion, output);
 
                     note!(stream, "{transformation}");
                 } else {
-                    note!(stream, "{expression}");
+                    note!(stream, "{conversion}");
                 }
-                pull!(stream, "}})");
-            })
+
+                if is_async {
+                    pull!(stream, "}}))");
+                    pull!(stream, "}})");
+                    pull!(stream, "}}");
+                } else {
+                    pull!(stream, "}})");
+                }
+            });
+
+            if is_async {
+                Stream::expression(|stream| {
+                    push!(stream, "RustClosure {{");
+                    note!(stream, "closure: {closure},");
+                    note!(stream, "poll: RustFuture::poll_future,");
+                    pull!(stream, "}}");
+                })
+            } else {
+                closure
+            }
         }
         CodegenKind::Optional(kind) => {
             let conversion = borrowed_rust_to_ffi("value", kind);
@@ -154,7 +194,7 @@ pub fn borrowed_rust_to_ffi(expression: &str, kind: &CodegenKind) -> String {
 
 pub fn owned_ffi_to_rust(expression: &str, kind: &CodegenKind) -> String {
     match kind {
-        CodegenKind::Function(_, _) => unreachable!(),
+        CodegenKind::Function(_, _, _) => unreachable!(),
         CodegenKind::Optional(kind) => {
             let conversion = owned_ffi_to_rust("value", kind);
             let conversion_type = get_owned_ffi_type(kind);
@@ -183,7 +223,7 @@ pub fn owned_ffi_to_rust(expression: &str, kind: &CodegenKind) -> String {
 
 pub fn owned_rust_to_ffi(expression: &str, kind: &CodegenKind) -> String {
     match kind {
-        CodegenKind::Function(_, _) => unimplemented!(),
+        CodegenKind::Function(_, _, _) => unimplemented!(),
         CodegenKind::Tuple(kind) => {
             let transformation = borrowed_rust_to_ffi("value", kind);
 

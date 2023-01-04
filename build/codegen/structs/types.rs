@@ -1,8 +1,14 @@
 use super::{Parameter, TypeLayout};
 
 #[derive(Clone, Debug)]
+pub enum Async {
+    Yes,
+    No,
+}
+
+#[derive(Clone, Debug)]
 pub enum CodegenKind {
-    Function(Vec<Parameter>, Box<CodegenKind>),
+    Function(Vec<Parameter>, Box<CodegenKind>, Async),
     Optional(Box<CodegenKind>),
     Tuple(Box<CodegenKind>),
     Vec(Box<CodegenKind>),
@@ -24,9 +30,10 @@ impl CodegenKind {
                 1 => Some("len".to_string()),
                 _ => unreachable!(),
             },
-            CodegenKind::Function(_, _) => match index {
+            CodegenKind::Function(_, _, _) => match index {
                 0 => Some("data".to_string()),
                 1 => Some("vtable".to_string()),
+                2 => Some("poll".to_string()),
                 _ => unreachable!(),
             },
             CodegenKind::Optional(kind) => match index {

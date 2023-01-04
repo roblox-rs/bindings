@@ -26,6 +26,14 @@ impl<T> From<RustVec<T>> for Vec<T> {
 }
 ";
 
+pub const RUST_CLOSURE: &str = "\
+#[repr(C)]
+pub struct RustClosure<F, O> {
+	closure: F,
+	poll: unsafe extern \"C\" fn(id: u32) -> TaskResult<O>,
+}
+";
+
 pub const RUST_OPTION: &str = "\
 #[repr(C)]
 pub enum RustOption<T> {

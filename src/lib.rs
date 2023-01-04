@@ -1,6 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(async_fn_in_trait)]
 
+mod conversion;
 pub mod datatypes;
 pub mod futures;
 pub mod generated;

@@ -4,8 +4,8 @@ use std::convert::TryFrom;
 use roblox_rs::{println, *};
 
 // Use `wee_alloc` as the global allocator.
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+// #[global_allocator]
+// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 /// # Safety
 #[allow(unreachable_code)]
@@ -82,7 +82,7 @@ pub fn main() {
     my_func.set_name("GOD FUNC");
     my_func.set_parent(&Some(&Workspace::instance()));
 
-    my_func.on_server_invoke(move |player, values| {
+    my_func.on_server_invoke(move |player, values| async move {
         println!(
             "Wow, {} sent me messages that I will respond to:",
             player.name()

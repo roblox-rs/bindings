@@ -1,6 +1,8 @@
 use convert_case::{Case, Casing};
 
-use crate::codegen::structs::{implementations::*, CodegenKind, Member, MemberFlags, Parameter};
+use crate::codegen::structs::{
+    implementations::*, Async, CodegenKind, Member, MemberFlags, Parameter,
+};
 
 pub struct PartialNamespace {
     /// Name of this namespace
@@ -276,7 +278,8 @@ macro_rules! parse_namespace_fields {
                 self: $kind,
                 callback: CodegenKind::Function(
                     vec![$(Parameter::new(stringify!($parameter), $type.clone())),*],
-                    Box::new(CodegenKind::Void)
+                    Box::new(CodegenKind::Void),
+                    Async::No
                 )
             ) -> (datatype!(RbxScriptConnection));
         });
@@ -296,7 +299,8 @@ macro_rules! parse_namespace_fields {
                 self: $kind,
                 callback: CodegenKind::Function(
                     vec![$(Parameter::new(stringify!($parameter), $type.clone())),*],
-                    Box::new($result.clone())
+                    Box::new($result.clone()),
+                    Async::Yes
                 )
             ) -> ();
         });

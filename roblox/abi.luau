@@ -10714,7 +10714,7 @@ function abi.ffi.method_remote_event_fire_server(self, values_addr, values_len)
 	end
 	getPointer(self):FireServer(unpack(values_vec, 1, values_len))
 end
-function abi.ffi.callback_remote_function_on_server_invoke(self, callback_data, callback_vtable)
+function abi.ffi.callback_remote_function_on_server_invoke(self, callback_data, callback_vtable, callback_poll)
 	getPointer(self).OnServerInvoke = function(player, ...)
 		local values_tuple = { ... };
 		local values_len = select("#", ...);
@@ -10732,7 +10732,7 @@ function abi.ffi.callback_remote_function_on_server_invoke(self, callback_data, 
 		return unpack(callback_vec, 1, result_1);
 	end;
 end
-function abi.ffi.callback_remote_function_on_client_invoke(self, callback_data, callback_vtable)
+function abi.ffi.callback_remote_function_on_client_invoke(self, callback_data, callback_vtable, callback_poll)
 	getPointer(self).OnClientInvoke = function(...)
 		local values_tuple = { ... };
 		local values_len = select("#", ...);

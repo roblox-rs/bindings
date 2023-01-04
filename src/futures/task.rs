@@ -6,21 +6,22 @@ use std::{
     task::{Context, RawWaker, Waker},
 };
 
-use super::waker::WAKER_VTABLE;
+use super::waker::task_waker;
 
 pub struct TaskFuture {
     future: Pin<Box<dyn Future<Output = ()> + 'static>>,
     waker: Waker,
 }
 
+/// Rust executor
 pub struct Task {
     future: RefCell<Option<TaskFuture>>,
     queued: Cell<bool>,
 }
 
 impl Task {
-    pub fn new(future: Pin<Box<dyn Future<Output = ()> + 'static>>) -> Rc<Task> {
-        let task = Rc::new(Task {
+    pub fn new(future: Pin<Box<dyn Future<Output = ()> + 'static>>) -> Rc<Self> {
+        let task = Rc::new(Self {
             future: RefCell::new(None),
             queued: Cell::new(false),
         });
@@ -39,7 +40,7 @@ impl Task {
     }
 
     pub fn raw_waker(self: Rc<Self>) -> RawWaker {
-        RawWaker::new(Rc::into_raw(self) as *const (), &WAKER_VTABLE)
+        RawWaker::new(Rc::into_raw(self) as *const (), &task_waker::WAKER)
     }
 
     pub fn execute(&self) {
@@ -59,3 +60,45 @@ impl Task {
         }
     }
 }
+
+// #[repr(C)]
+// pub enum TaskResult<T> {
+//     Ready(T),
+//     None,
+// }
+
+// Lua executor
+// We don't store the waker as it is up to the future to store it
+// pub struct LuaTask {
+//     task_id: u32,
+//     future: Pin<Box<dyn Future<Output = ()> + 'static>>,
+// }
+
+// impl LuaTask {
+//     pub fn wake_by_ref(self: &Rc<Self>) {
+//         unsafe { wake_task(self.task_id) };
+//     }
+
+//     pub fn raw_waker(self: Rc<Self>) -> RawWaker {
+//         RawWaker::new(Rc::into_raw(self) as *const (), &lua_task_waker::WAKER)
+//     }
+// }
+
+// rust bindings pass closure that returns FfiFuture
+
+// (nevermind) lua code creates LuaTask with a unique id (createPointer(awakenFunc))
+
+// rust bindings call new_task which is passed with FfiFuture
+// lua bindings update that pointer with the awaker
+
+// rust code calls wake_task with custom waker
+// lua code awakenFunc is called and the closure's poll function is called (passed from async closures)
+
+// impl Drop for LuaTask {
+//     fn drop(&mut self) {
+//         TASKS.with(|v| {
+//             let mut tasks = v.borrow_mut();
+//             tasks.retain(|v| v.task_id != self.task_id);
+//         });
+//     }
+// }

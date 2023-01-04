@@ -1,6 +1,6 @@
 use crate::config::MULTI_VALUE_SUPPORT;
 
-use super::CodegenKind;
+use super::{Async, CodegenKind};
 
 pub enum Representation {
     /// u32 / usize
@@ -25,7 +25,16 @@ impl TypeLayout {
                 representations.extend(TypeLayout::represent(kind));
                 representations
             }
-            CodegenKind::Function(_, _) => vec![Representation::Pointer, Representation::Pointer],
+            CodegenKind::Function(_, _, Async::Yes) => {
+                vec![
+                    Representation::Pointer,
+                    Representation::Pointer,
+                    Representation::Pointer,
+                ]
+            }
+            CodegenKind::Function(_, _, Async::No) => {
+                vec![Representation::Pointer, Representation::Pointer]
+            }
             CodegenKind::Instance(_) => vec![Representation::Pointer],
             CodegenKind::DataType(_) => vec![Representation::Pointer],
             CodegenKind::Tuple(_) => vec![Representation::Pointer, Representation::Pointer],

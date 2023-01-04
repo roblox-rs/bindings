@@ -9,6 +9,6 @@ extern "C" {
 #[macro_export]
 macro_rules! println {
     ($($tts:tt)*) => {
-        unsafe {{ roblox_print(&format!($($tts)*)) }};
+        unsafe {{ $crate::roblox_print(&format!($($tts)*)) }};
     }
 }

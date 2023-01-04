@@ -42,7 +42,7 @@ pub fn convert_luau_to_rust(
     variadic: bool,
 ) -> Vec<String> {
     match &kind {
-        CodegenKind::Function(_, _) => panic!(),
+        CodegenKind::Function(_, _, _) => panic!(),
         CodegenKind::Optional(kind) => {
             let param_optional = ids.next_names(&[identifier, "optional"]);
             let width = kind.width();
@@ -138,7 +138,7 @@ pub fn convert_rust_to_luau(
     prereqs: &mut Vec<String>,
 ) -> String {
     match &parameter.kind {
-        CodegenKind::Function(parameters, output) => {
+        CodegenKind::Function(parameters, output, _) => {
             let layout = output.layout();
             let parameter_names: Vec<_> = parameters.iter().map(get_lua_parameter_name).collect();
 
