@@ -10,20 +10,35 @@ use crate::codegen::{
 fn generate_operator(output: &mut Vec<String>, namespace: &Namespace, member: &Member, op: &str) {
     let class = &namespace.name;
     let func = &member.name;
-    let name = &member.inputs[1].name;
 
-    let kind = get_owned_rust_type(&member.inputs[1].kind);
     let output_type = get_owned_rust_type(&member.outputs[0]);
     let body = generate_body(namespace, member);
 
-    Stream::prereq(output, |stream| {
-        push!(stream, "impl std::ops::{op}<{kind}> for {class} {{");
-        note!(stream, "type Output = {output_type};");
-        push!(stream, "fn {func}(self, {name}: {kind}) -> Self::Output {{");
-        note!(stream, "unsafe {{ {body} }}");
-        pull!(stream, "}}");
-        pull!(stream, "}}");
-    })
+    match &member.inputs[1..] {
+        // unary operators
+        [] => Stream::prereq(output, |stream| {
+            push!(stream, "impl std::ops::{op} for {class} {{");
+            note!(stream, "type Output = {output_type};");
+            push!(stream, "fn {func}(self) -> Self::Output {{");
+            note!(stream, "unsafe {{ {body} }}");
+            pull!(stream, "}}");
+            pull!(stream, "}}");
+        }),
+        // binary operators
+        [rhs] => {
+            let name = &rhs.name;
+            let kind = get_owned_rust_type(&rhs.kind);
+            Stream::prereq(output, |stream| {
+                push!(stream, "impl std::ops::{op}<{kind}> for {class} {{");
+                note!(stream, "type Output = {output_type};");
+                push!(stream, "fn {func}(self, {name}: {kind}) -> Self::Output {{");
+                note!(stream, "unsafe {{ {body} }}");
+                pull!(stream, "}}");
+                pull!(stream, "}}");
+            })
+        }
+        other => panic!("unsupported operator arity {}", other.len()),
+    }
 }
 
 pub fn generate_datatypes(output: &mut Vec<String>, namespaces: &[&Namespace]) {

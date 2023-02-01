@@ -13578,6 +13578,10 @@ function abi.ffi.method_vector_3_min(self, others_addr, others_len)
 	local result_0 = getPointer(self):Min(unpack(others_vec, 1, others_len));
 	return createPointer(result_0);
 end
+function abi.ffi.un_op_vector_3_neg(self)
+	local result_0 = -getPointer(self);
+	return createPointer(result_0);
+end
 function abi.ffi.bin_op_vector_3_add_vector_3_add(self, value)
 	local result_0 = getPointer(self) + getPointer(value);
 	return createPointer(result_0);
