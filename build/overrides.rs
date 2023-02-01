@@ -149,7 +149,13 @@ pub fn get_datatypes() -> Vec<PartialNamespace> {
         };
 
         struct Color3: DataType {
+            static new(r: number, g: number, b: number) -> (color3);
             static fromRGB(r: number, g: number, b: number) -> (color3);
+            static fromHSV(h: number, s: number, v: number) -> (color3);
+
+            readonly R: number;
+            readonly G: number;
+            readonly B: number;
         };
     }
 }
