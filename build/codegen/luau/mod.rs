@@ -201,7 +201,7 @@ fn generate_abi_start() -> String {
 
 fn generate_lua_value_conversion() -> String {
     Stream::expression(|stream| {
-        push!(stream, "function lua_value_number(value)");
+        push!(stream, "local function lua_value_number(value)");
         note!(stream, "return createPointer(value);");
         pull!(stream, "end");
 
