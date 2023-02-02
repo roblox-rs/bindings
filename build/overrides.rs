@@ -107,6 +107,7 @@ pub fn get_datatypes() -> Vec<PartialNamespace> {
             Max(others: tuple!(vector3)) -> (vector3);
             Min(others: tuple!(vector3)) -> (vector3);
 
+            operator Neg(-) -> vector3;
             operator Add(+ vector3) -> vector3;
             operator Sub(- vector3) -> vector3;
             operator Div(/ vector3) -> vector3;
@@ -149,7 +150,13 @@ pub fn get_datatypes() -> Vec<PartialNamespace> {
         };
 
         struct Color3: DataType {
+            static new(r: number, g: number, b: number) -> (color3);
             static fromRGB(r: number, g: number, b: number) -> (color3);
+            static fromHSV(h: number, s: number, v: number) -> (color3);
+
+            readonly R: number;
+            readonly G: number;
+            readonly B: number;
         };
     }
 }
@@ -301,6 +308,20 @@ macro_rules! parse_namespace_fields {
     };
 
     // Operators
+    (($namespace:expr;$kind:expr) operator $trait:ident($op:tt) -> $type:expr; $($tt:tt)*) => {
+        $namespace.members.push(member! {
+            $trait(UnOp(stringify!($op)));
+
+            api_name = format!("{}", stringify!($trait));
+            signature = (self: $kind) -> ($type);
+            flags = MemberFlags {
+                operator: Some(stringify!($trait)),
+                ..MemberFlags::default()
+            };
+        });
+
+        parse_namespace_fields!(($namespace;$kind) $($tt)*);
+    };
     (($namespace:expr;$kind:expr) operator $trait:ident($op:tt $rhs:expr) -> $type:expr; $($tt:tt)*) => {
         $namespace.members.push(member! {
             $trait(BinOp(stringify!($op)));

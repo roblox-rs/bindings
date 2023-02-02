@@ -3,10 +3,10 @@ use std::{
     collections::HashMap,
 };
 
-pub mod structs;
 pub mod luau;
 pub mod rust;
 pub mod stream;
+pub mod structs;
 
 #[derive(Clone)]
 pub struct UniqueIds(Cell<u32>, RefCell<HashMap<String, u32>>);

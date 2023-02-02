@@ -13578,6 +13578,10 @@ function abi.ffi.method_vector_3_min(self, others_addr, others_len)
 	local result_0 = getPointer(self):Min(unpack(others_vec, 1, others_len));
 	return createPointer(result_0);
 end
+function abi.ffi.un_op_vector_3_neg(self)
+	local result_0 = -getPointer(self);
+	return createPointer(result_0);
+end
 function abi.ffi.bin_op_vector_3_add_vector_3_add(self, value)
 	local result_0 = getPointer(self) + getPointer(value);
 	return createPointer(result_0);
@@ -13716,9 +13720,29 @@ function abi.ffi.bin_op_c_frame_mul_vector_3_mul(self, value)
 	local result_0 = getPointer(self) * getPointer(value);
 	return createPointer(result_0);
 end
+function abi.ffi.static_function_color_3_new(r, g, b)
+	local result_0 = Color3.new(r, g, b);
+	return createPointer(result_0);
+end
 function abi.ffi.static_function_color_3_from_rgb(r, g, b)
 	local result_0 = Color3.fromRGB(r, g, b);
 	return createPointer(result_0);
+end
+function abi.ffi.static_function_color_3_from_hsv(h, s, v)
+	local result_0 = Color3.fromHSV(h, s, v);
+	return createPointer(result_0);
+end
+function abi.ffi.property_getter_color_3_r(self)
+	local result_0 = getPointer(self).R;
+	return result_0;
+end
+function abi.ffi.property_getter_color_3_g(self)
+	local result_0 = getPointer(self).G;
+	return result_0;
+end
+function abi.ffi.property_getter_color_3_b(self)
+	local result_0 = getPointer(self).B;
+	return result_0;
 end
 local function lua_value_number(value)
 	return createPointer(value);

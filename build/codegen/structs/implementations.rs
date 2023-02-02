@@ -101,6 +101,15 @@ create_impl!(PrimitiveConversion; |self, { prereqs, arguments, .. }| {
     format!("if type(text) == \"{kind}\" then text else nil")
 });
 
+pub struct UnOp(pub &'static str);
+
+create_impl!(UnOp; |self, { arguments, .. }| {
+    let rhs = &arguments[0];
+    let op = self.0;
+
+    format!("{op}{rhs}")
+});
+
 pub struct BinOp(pub &'static str);
 
 create_impl!(BinOp; |self, { arguments, .. }| {
