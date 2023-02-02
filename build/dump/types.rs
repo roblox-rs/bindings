@@ -1,236 +1,326 @@
 use serde::{Deserialize, Deserializer};
 
-use std::collections::HashSet;
+use std::{collections::HashSet, hash::Hash};
 
-fn set_from_vec<'de, D>(deserializer: D) -> Result<HashSet<String>, D::Error>
+fn set_from_vec<'de, T, D>(deserializer: D) -> Result<HashSet<T>, D::Error>
 where
+    T: Deserialize<'de> + Eq + Hash,
     D: Deserializer<'de>,
 {
-    let s: Vec<String> = Deserialize::deserialize(deserializer)?;
+    let s: Vec<T> = Deserialize::deserialize(deserializer)?;
     Ok(s.into_iter().collect())
 }
 
-#[derive(Clone, Deserialize)]
+fn superclass_from_root_or_class_name<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: String = Deserialize::deserialize(deserializer)?;
+    Ok(if s != "<<<ROOT>>>" { Some(s) } else { None })
+}
+
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Dump {
     pub classes: Vec<Class>,
     pub enums: Vec<Enum>,
 }
 
-#[derive(Clone, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct Enum {
-    pub items: Vec<EnumItem>,
-    pub name: String,
-}
-
-#[derive(Clone, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct EnumItem {
-    pub name: String,
-    pub value: i32,
-}
-
-#[derive(Clone, Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct Class {
     pub name: String,
-    pub superclass: String,
     #[serde(deserialize_with = "set_from_vec")]
     #[serde(default)]
-    pub tags: HashSet<String>,
+    pub tags: HashSet<ClassTag>,
+
+    #[serde(deserialize_with = "superclass_from_root_or_class_name")]
+    pub superclass: Option<String>,
     pub members: Vec<ClassMember>,
 }
 
-#[derive(Clone, Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum ClassTag {
+    Deprecated,
+    NotBrowsable,
+    NotCreatable,
+    NotReplicated,
+    PlayerReplicated,
+    Service,
+    Settings,
+    UserSettings,
+}
+
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 #[serde(tag = "MemberType")]
 pub enum ClassMember {
-    Function(ClassFunctionMember),
     Property(ClassPropertyMember),
-    Callback(ClassCallbackMember),
+    Function(ClassFunctionMember),
     Event(ClassEventMember),
+    Callback(ClassCallbackMember),
 }
 
-#[derive(Clone, Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "PascalCase")]
-pub struct ClassEventMember {
+pub struct ClassPropertyMember {
     pub name: String,
+    pub security: Security,
+    pub thread_safety: ThreadSafety,
     #[serde(deserialize_with = "set_from_vec")]
     #[serde(default)]
-    pub tags: HashSet<String>,
-    pub security: Security,
-    pub parameters: Vec<ClassFunctionParameter>,
+    pub tags: HashSet<ClassMemberTag>,
 
-    /// The real Roblox event name.
-    /// This differs from name in cases like `Instance.Changed`
-    pub event_name: Option<String>,
+    pub serialization: Serialization,
+    pub value_type: ValueType,
 }
 
-#[derive(Clone, Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = "PascalCase")]
-pub struct ClassCallbackMember {
-    pub name: String,
-    pub return_type: ValueType,
-    #[serde(deserialize_with = "set_from_vec")]
-    #[serde(default)]
-    pub tags: HashSet<String>,
-    pub security: Security,
-    pub parameters: Vec<ClassFunctionParameter>,
+pub struct Serialization {
+    pub can_load: bool,
+    pub can_save: bool,
 }
 
-#[derive(Clone, Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct ClassFunctionMember {
     pub name: String,
-    pub return_type: ValueType,
+    pub security: Security,
+    pub thread_safety: ThreadSafety,
     #[serde(deserialize_with = "set_from_vec")]
     #[serde(default)]
-    pub tags: HashSet<String>,
-    pub security: Security,
-    pub parameters: Vec<ClassFunctionParameter>,
+    pub tags: HashSet<ClassMemberTag>,
 
-    /// The real Roblox function name.
-    /// This differs from name in case of collisions like SetAxis() and .Axis =
-    pub func_name: Option<String>,
+    pub parameters: Vec<ClassFunctionParameter>,
+    pub return_type: ValueType,
 }
 
-#[derive(Clone, Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct ClassFunctionParameter {
     pub name: String,
     #[serde(rename = "Type")]
     pub value_type: ValueType,
+    pub default: Option<String>,
 }
 
-#[derive(Clone, Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(rename_all = "PascalCase")]
-pub struct ClassPropertyMember {
+pub struct ClassEventMember {
     pub name: String,
-    pub value_type: ValueType,
+    pub security: Security,
+    pub thread_safety: ThreadSafety,
     #[serde(deserialize_with = "set_from_vec")]
     #[serde(default)]
-    pub tags: HashSet<String>,
-    pub security: Security,
+    pub tags: HashSet<ClassMemberTag>,
+
+    pub parameters: Vec<ClassFunctionParameter>,
 }
 
-#[derive(Deserialize, Hash, Eq, PartialEq, Clone)]
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct ClassCallbackMember {
+    pub name: String,
+    pub security: Security,
+    pub thread_safety: ThreadSafety,
+    #[serde(deserialize_with = "set_from_vec")]
+    #[serde(default)]
+    pub tags: HashSet<ClassMemberTag>,
+
+    pub parameters: Vec<ClassFunctionParameter>,
+    pub return_type: ValueType,
+}
+
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum ClassMemberTag {
+    CanYield,
+    CustomLuaState,
+    Deprecated,
+    Hidden,
+    NotBrowsable,
+    NotReplicated,
+    NotScriptable,
+    NoYield,
+    ReadOnly,
+    Yields,
+}
+
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[serde(untagged)]
 pub enum Security {
-    Uniform(String),
+    Uniform(SecurityLevel),
     NonUniform(NonUniformSecurity),
 }
 
-#[derive(Deserialize, Hash, Eq, PartialEq, Clone)]
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = "PascalCase")]
 pub struct NonUniformSecurity {
-    pub read: String,
-    pub write: String,
+    pub read: SecurityLevel,
+    pub write: SecurityLevel,
 }
 
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum SecurityLevel {
+    None,
+    LocalUserSecurity,
+    PluginSecurity,
+    RobloxScriptSecurity,
+    RobloxSecurity,
+    NotAccessibleSecurity,
+}
+
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum ThreadSafety {
+    Unsafe,
+    ReadSafe,
+    Safe,
+}
+
+// TODO: handle optional types better?
+
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = "PascalCase")]
 #[serde(tag = "Category", content = "Name")]
 pub enum ValueType {
     Primitive(PrimitiveKind),
     DataType(DataTypeKind),
     Class(String),
-    Group(String),
     Enum(String),
+    Group(GroupKind),
 }
 
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
-pub enum DataTypeKind {
-    Function,
-    CatalogSearchParams,
-    RaycastParams,
-    DockWidgetPluginGuiInfo,
-    OverlapParams,
-    Vector3int16,
-    Region3,
-    Vector3,
-    Vector2,
-    Ray,
-    #[serde(rename = "RBXScriptSignal")]
-    RbxScriptSignal,
-    #[serde(rename = "RBXScriptConnection")]
-    RbxScriptConnection,
-    Objects,
-    Rect,
-    Axes,
-    UDim2,
-    Faces,
-    CFrame,
-    RaycastResult,
-    ProtectedString,
-    RotationCurveKey,
-    NumberRange,
-    Region3int16,
-    PhysicalProperties,
-    BinaryString,
-    Content,
-    Color3,
-    BrickColor,
-    ColorSequence,
-    NumberSequence,
-    FloatCurveKey,
-    Font,
-    QDir,
-    QFont,
-    DateTime,
-    TweenInfo,
-    UDim,
-    #[serde(rename = "CoordinateFrame?")]
-    PossibleCFrame,
-}
-
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum PrimitiveKind {
-    String,
     Void,
     Bool,
     Int,
     Int64,
     Float,
     Double,
-    #[serde(rename = "float?")]
+    String,
+
     #[serde(alias = "int?")]
-    PossibleFloat,
+    OptionalInt,
+    #[serde(rename = "float?")]
+    OptionalFloat,
+}
+
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum DataTypeKind {
+    Axes,
+    BinaryString,
+    BrickColor,
+    CatalogSearchParams,
+    CFrame,
+    Color3,
+    ColorSequence,
+    Content,
+    DateTime,
+    DockWidgetPluginGuiInfo,
+    Faces,
+    FloatCurveKey,
+    Font,
+    Function,
+    NumberRange,
+    NumberSequence,
+    Objects,
+    OverlapParams,
+    PhysicalProperties,
+    ProtectedString,
+    QDir,
+    QFont,
+    Ray,
+    RaycastParams,
+    RaycastResult,
+    #[serde(rename = "RBXScriptConnection")]
+    RbxScriptConnection,
+    #[serde(rename = "RBXScriptSignal")]
+    RbxScriptSignal,
+    Rect,
+    Region3,
+    Region3int16,
+    RotationCurveKey,
+    TweenInfo,
+    UDim,
+    UDim2,
+    Vector2,
+    // Vector2int16
+    Vector3,
+    Vector3int16,
+
+    #[serde(rename = "CoordinateFrame?")]
+    OptionalCFrame,
+}
+
+#[derive(Deserialize, Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum GroupKind {
+    Array,
+    Dictionary,
+    Map,
+    Tuple,
+    Variant,
+}
+
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct Enum {
+    pub name: String,
+    pub items: Vec<EnumItem>,
+}
+
+#[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
+#[serde(rename_all = "PascalCase")]
+pub struct EnumItem {
+    pub name: String,
+    #[serde(default)]
+    pub legacy_names: Vec<String>,
+    pub value: i32,
 }
 
 impl ClassMember {
-    pub fn tags(&self) -> &HashSet<String> {
+    pub fn name(&self) -> &str {
         match self {
-            ClassMember::Event(event) => &event.tags,
-            ClassMember::Function(function) => &function.tags,
-            ClassMember::Property(property) => &property.tags,
-            ClassMember::Callback(callback) => &callback.tags,
+            ClassMember::Property(property) => &property.name,
+            ClassMember::Function(function) => &function.name,
+            ClassMember::Event(event) => &event.name,
+            ClassMember::Callback(callback) => &callback.name,
         }
     }
 
     pub fn security(&self) -> &Security {
         match self {
-            ClassMember::Event(event) => &event.security,
-            ClassMember::Function(function) => &function.security,
             ClassMember::Property(property) => &property.security,
+            ClassMember::Function(function) => &function.security,
+            ClassMember::Event(event) => &event.security,
             ClassMember::Callback(callback) => &callback.security,
         }
     }
 
-    pub fn name(&self) -> &str {
+    #[allow(dead_code)]
+    pub fn thread_safety(&self) -> &ThreadSafety {
         match self {
-            ClassMember::Event(event) => &event.name,
-            ClassMember::Function(function) => &function.name,
-            ClassMember::Property(property) => &property.name,
-            ClassMember::Callback(callback) => &callback.name,
+            ClassMember::Property(property) => &property.thread_safety,
+            ClassMember::Function(function) => &function.thread_safety,
+            ClassMember::Event(event) => &event.thread_safety,
+            ClassMember::Callback(callback) => &callback.thread_safety,
+        }
+    }
+
+    pub fn tags(&self) -> &HashSet<ClassMemberTag> {
+        match self {
+            ClassMember::Property(property) => &property.tags,
+            ClassMember::Function(function) => &function.tags,
+            ClassMember::Event(event) => &event.tags,
+            ClassMember::Callback(callback) => &callback.tags,
         }
     }
 }
 
-impl From<ClassCallbackMember> for ClassMember {
-    fn from(callback: ClassCallbackMember) -> Self {
-        ClassMember::Callback(callback)
+impl From<ClassPropertyMember> for ClassMember {
+    fn from(property: ClassPropertyMember) -> Self {
+        ClassMember::Property(property)
     }
 }
 
@@ -246,15 +336,21 @@ impl From<ClassEventMember> for ClassMember {
     }
 }
 
+impl From<ClassCallbackMember> for ClassMember {
+    fn from(callback: ClassCallbackMember) -> Self {
+        ClassMember::Callback(callback)
+    }
+}
+
 impl Dump {
-    pub fn class(&self, class: &str) -> &Class {
-        self.classes
-            .iter()
-            .find(|value| value.name == class)
-            .unwrap()
+    pub fn class(&self, class: &str) -> Option<&Class> {
+        self.classes.iter().find(|value| value.name == class)
     }
 
     pub fn parent(&self, class: &Class) -> Option<&Class> {
-        self.classes.iter().find(|v| v.name == class.superclass)
+        class
+            .superclass
+            .as_ref()
+            .and_then(|superclass| self.class(superclass))
     }
 }

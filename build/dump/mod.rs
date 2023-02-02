@@ -2,8 +2,8 @@ pub mod types;
 
 use convert_case::{Case, Casing};
 use types::{
-    Class, ClassEventMember, ClassFunctionMember, ClassMember, ClassPropertyMember, DataTypeKind,
-    Dump, PrimitiveKind, Security, ValueType,
+    Class, ClassEventMember, ClassFunctionMember, ClassMember, ClassMemberTag, ClassPropertyMember,
+    ClassTag, DataTypeKind, Dump, PrimitiveKind, Security, SecurityLevel, ValueType,
 };
 
 use crate::{
@@ -35,7 +35,7 @@ fn is_security_accessible(security: &Security, kind: &SecurityKind) -> bool {
         },
     };
 
-    security_level == "None"
+    *security_level == SecurityLevel::None
 }
 
 pub fn to_snake(name: &str) -> String {
@@ -57,7 +57,7 @@ fn should_generate_class(dump: &Dump, class: &Class) -> bool {
 
 fn is_type_generated(dump: &Dump, value_type: &ValueType) -> bool {
     match value_type {
-        ValueType::Class(kind) => should_generate_class(dump, dump.class(kind)),
+        ValueType::Class(kind) => should_generate_class(dump, dump.class(kind).unwrap()),
         ValueType::DataType(
             DataTypeKind::BinaryString
             | DataTypeKind::Function
@@ -77,12 +77,12 @@ fn is_valid_class_member(class: &Class, member: &ClassMember) -> bool {
         return false;
     }
 
-    if member.tags().contains("NotScriptable") {
+    if member.tags().contains(&ClassMemberTag::NotScriptable) {
         return false;
     }
 
     // Remove deprecated members at least temporarily
-    if member.tags().contains("Deprecated") && !DEPRECATED_APIS {
+    if member.tags().contains(&ClassMemberTag::Deprecated) && !DEPRECATED_APIS {
         return false;
     }
 
@@ -107,17 +107,19 @@ fn is_valid_class_member(class: &Class, member: &ClassMember) -> bool {
 fn transform_value_type(value_type: &ValueType, is_getter: bool) -> CodegenKind {
     match value_type {
         ValueType::Primitive(kind) => match kind {
-            PrimitiveKind::String => CodegenKind::String,
             PrimitiveKind::Void => CodegenKind::Void,
             PrimitiveKind::Bool => CodegenKind::Bool,
-            PrimitiveKind::Int => CodegenKind::Number,
-            PrimitiveKind::Int64 => CodegenKind::Number,
-            PrimitiveKind::Float => CodegenKind::Number,
-            PrimitiveKind::Double => CodegenKind::Number,
-            PrimitiveKind::PossibleFloat => CodegenKind::Optional(Box::new(CodegenKind::Number)),
+            PrimitiveKind::Int
+            | PrimitiveKind::Int64
+            | PrimitiveKind::Float
+            | PrimitiveKind::Double => CodegenKind::Number,
+            PrimitiveKind::String => CodegenKind::String,
+            PrimitiveKind::OptionalInt | PrimitiveKind::OptionalFloat => {
+                CodegenKind::Optional(Box::new(CodegenKind::Number))
+            }
         },
         ValueType::DataType(kind) => match kind {
-            DataTypeKind::PossibleCFrame => {
+            DataTypeKind::OptionalCFrame => {
                 CodegenKind::Optional(Box::new(CodegenKind::DataType("CFrame".to_string())))
             }
             _ => CodegenKind::DataType(format!("{kind:?}")),
@@ -139,7 +141,7 @@ fn transform_class_property(dump: &Dump, property: &ClassPropertyMember) -> Vec<
     let mut interfaces: Vec<Member> = Vec::new();
     interfaces.push(Member {
         flags: MemberFlags {
-            deprecated: property.tags.contains("Deprecated"),
+            deprecated: property.tags.contains(&ClassMemberTag::Deprecated),
             ..MemberFlags::default()
         },
         implementation: implementations::PropertyGetter.into(),
@@ -152,10 +154,10 @@ fn transform_class_property(dump: &Dump, property: &ClassPropertyMember) -> Vec<
         outputs: vec![transform_value_type(&property.value_type, true)],
     });
 
-    if !property.tags.contains("ReadOnly") {
+    if !property.tags.contains(&ClassMemberTag::ReadOnly) {
         interfaces.push(Member {
             flags: MemberFlags {
-                deprecated: property.tags.contains("Deprecated"),
+                deprecated: property.tags.contains(&ClassMemberTag::Deprecated),
                 ..MemberFlags::default()
             },
             implementation: implementations::PropertySetter.into(),
@@ -224,7 +226,7 @@ fn transform_class_function(
 
     Some(Member {
         flags: MemberFlags {
-            deprecated: function.tags.contains("Deprecated"),
+            deprecated: function.tags.contains(&ClassMemberTag::Deprecated),
             ..MemberFlags::default()
         },
         implementation: implementations::Method.into(),
@@ -261,7 +263,7 @@ fn transform_class_event(dump: &Dump, event: &ClassEventMember) -> Option<Member
 
     Some(Member {
         flags: MemberFlags {
-            deprecated: event.tags.contains("Deprecated"),
+            deprecated: event.tags.contains(&ClassMemberTag::Deprecated),
             ..MemberFlags::default()
         },
         implementation: implementations::Event.into(),
@@ -304,7 +306,7 @@ fn transform_class_callback(dump: &Dump, callback: &ClassCallbackMember) -> Opti
 
     Some(Member {
         flags: MemberFlags {
-            deprecated: callback.tags.contains("Deprecated"),
+            deprecated: callback.tags.contains(&ClassMemberTag::Deprecated),
             ..MemberFlags::default()
         },
         implementation: implementations::Callback.into(),
@@ -345,15 +347,11 @@ fn transform_class(dump: &Dump, class: Class) -> Option<Namespace> {
     if should_generate_class(dump, &class) {
         Some(Namespace {
             kind: NamespaceKind::Instance(InstanceMetadata {
-                creatable: !class.tags.contains("NotCreatable"),
-                service: class.tags.contains("Service"),
+                creatable: !class.tags.contains(&ClassTag::NotCreatable),
+                service: class.tags.contains(&ClassTag::Service),
             }),
             name: class.name.clone(),
-            extends: if class.superclass == "<<<ROOT>>>" {
-                None
-            } else {
-                Some(class.superclass.clone())
-            },
+            extends: class.superclass.clone(),
             members: class
                 .members
                 .iter()
