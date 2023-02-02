@@ -13744,7 +13744,7 @@ function abi.ffi.property_getter_color_3_b(self)
 	local result_0 = getPointer(self).B;
 	return result_0;
 end
-function lua_value_number(value)
+local function lua_value_number(value)
 	return createPointer(value);
 end
 abi.ffi.lua_value_f32 = lua_value_number;
