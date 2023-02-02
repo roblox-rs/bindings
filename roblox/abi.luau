@@ -13720,7 +13720,7 @@ function abi.ffi.static_function_color_3_from_rgb(r, g, b)
 	local result_0 = Color3.fromRGB(r, g, b);
 	return createPointer(result_0);
 end
-function lua_value_number(value)
+local function lua_value_number(value)
 	return createPointer(value);
 end
 abi.ffi.lua_value_f32 = lua_value_number;
