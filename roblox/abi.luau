@@ -160,6 +160,20 @@ function abi.ffi.method_instance_wait_for_child(self, child_name_addr, child_nam
 	end)
 	return future;
 end
+function abi.ffi.event_instance_ancestry_changed_on_ancestry_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AncestryChanged:Connect(function(child, parent)
+		local child_optional, child_optional_0 = 0, 0;
+		if (child ~= nil) then
+			child_optional, child_optional_0 = 1, createPointer(child);
+		end
+		local parent_optional, parent_optional_0 = 0, 0;
+		if (parent ~= nil) then
+			parent_optional, parent_optional_0 = 1, createPointer(parent);
+		end
+		invokeFunction(callback_data, callback_vtable, child_optional, child_optional_0, parent_optional, parent_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_instance_ancestry_changed_on_ancestry_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AncestryChanged:Connect(function(child, parent)
 		local child_optional, child_optional_0 = 0, 0;
@@ -174,6 +188,17 @@ function abi.ffi.event_instance_ancestry_changed_on_ancestry_changed(self, callb
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_instance_attribute_changed_on_attribute_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AttributeChanged:Connect(function(attribute)
+		local attribute_len = #attribute;
+		local attribute_content = allocString(attribute_len);
+		for i = 1, attribute_len do
+			storeU8(memory, attribute_content + (i - 1), string.byte(attribute:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, attribute_content, attribute_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_instance_attribute_changed_on_attribute_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AttributeChanged:Connect(function(attribute)
 		local attribute_len = #attribute;
@@ -185,8 +210,28 @@ function abi.ffi.event_instance_attribute_changed_on_attribute_changed(self, cal
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_instance_child_added_on_child_added_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ChildAdded:Connect(function(child)
+		local child_optional, child_optional_0 = 0, 0;
+		if (child ~= nil) then
+			child_optional, child_optional_0 = 1, createPointer(child);
+		end
+		invokeFunction(callback_data, callback_vtable, child_optional, child_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_instance_child_added_on_child_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ChildAdded:Connect(function(child)
+		local child_optional, child_optional_0 = 0, 0;
+		if (child ~= nil) then
+			child_optional, child_optional_0 = 1, createPointer(child);
+		end
+		invokeFunction(callback_data, callback_vtable, child_optional, child_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_instance_child_removed_on_child_removed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ChildRemoved:Connect(function(child)
 		local child_optional, child_optional_0 = 0, 0;
 		if (child ~= nil) then
 			child_optional, child_optional_0 = 1, createPointer(child);
@@ -205,8 +250,28 @@ function abi.ffi.event_instance_child_removed_on_child_removed(self, callback_da
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_instance_descendant_added_on_descendant_added_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DescendantAdded:Connect(function(descendant)
+		local descendant_optional, descendant_optional_0 = 0, 0;
+		if (descendant ~= nil) then
+			descendant_optional, descendant_optional_0 = 1, createPointer(descendant);
+		end
+		invokeFunction(callback_data, callback_vtable, descendant_optional, descendant_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_instance_descendant_added_on_descendant_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DescendantAdded:Connect(function(descendant)
+		local descendant_optional, descendant_optional_0 = 0, 0;
+		if (descendant ~= nil) then
+			descendant_optional, descendant_optional_0 = 1, createPointer(descendant);
+		end
+		invokeFunction(callback_data, callback_vtable, descendant_optional, descendant_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_instance_descendant_removing_on_descendant_removing_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DescendantRemoving:Connect(function(descendant)
 		local descendant_optional, descendant_optional_0 = 0, 0;
 		if (descendant ~= nil) then
 			descendant_optional, descendant_optional_0 = 1, createPointer(descendant);
@@ -222,6 +287,12 @@ function abi.ffi.event_instance_descendant_removing_on_descendant_removing(self,
 			descendant_optional, descendant_optional_0 = 1, createPointer(descendant);
 		end
 		invokeFunction(callback_data, callback_vtable, descendant_optional, descendant_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_instance_destroying_on_destroying_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Destroying:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
@@ -453,9 +524,26 @@ end
 function abi.ffi.method_animation_track_stop(self, fade_time)
 	getPointer(self):Stop(fade_time)
 end
+function abi.ffi.event_animation_track_did_loop_on_did_loop_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DidLoop:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_animation_track_did_loop_on_did_loop(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DidLoop:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_animation_track_keyframe_reached_on_keyframe_reached_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).KeyframeReached:Connect(function(keyframe_name)
+		local keyframe_name_len = #keyframe_name;
+		local keyframe_name_content = allocString(keyframe_name_len);
+		for i = 1, keyframe_name_len do
+			storeU8(memory, keyframe_name_content + (i - 1), string.byte(keyframe_name:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, keyframe_name_content, keyframe_name_len)
 	end));
 	return createPointer(result_0);
 end
@@ -467,6 +555,12 @@ function abi.ffi.event_animation_track_keyframe_reached_on_keyframe_reached(self
 			storeU8(memory, keyframe_name_content + (i - 1), string.byte(keyframe_name:sub(i, i)));
 		end
 		invokeFunction(callback_data, callback_vtable, keyframe_name_content, keyframe_name_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_animation_track_stopped_on_stopped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Stopped:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
@@ -491,6 +585,16 @@ function abi.ffi.method_animator_load_animation(self, animation)
 	end
 	return result_0_optional, result_0_optional_0;
 end
+function abi.ffi.event_animator_animation_played_on_animation_played_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AnimationPlayed:Connect(function(animation_track)
+		local animation_track_optional, animation_track_optional_0 = 0, 0;
+		if (animation_track ~= nil) then
+			animation_track_optional, animation_track_optional_0 = 1, createPointer(animation_track);
+		end
+		invokeFunction(callback_data, callback_vtable, animation_track_optional, animation_track_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_animator_animation_played_on_animation_played(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AnimationPlayed:Connect(function(animation_track)
 		local animation_track_optional, animation_track_optional_0 = 0, 0;
@@ -498,6 +602,12 @@ function abi.ffi.event_animator_animation_played_on_animation_played(self, callb
 			animation_track_optional, animation_track_optional_0 = 1, createPointer(animation_track);
 		end
 		invokeFunction(callback_data, callback_vtable, animation_track_optional, animation_track_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_asset_import_session_upload_progress_on_upload_progress_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).UploadProgress:Connect(function(progress_ratio)
+		invokeFunction(callback_data, callback_vtable, progress_ratio)
 	end));
 	return createPointer(result_0);
 end
@@ -818,8 +928,20 @@ function abi.ffi.method_avatar_editor_service_search_catalog(self, search_parame
 	end)
 	return future;
 end
+function abi.ffi.event_avatar_editor_service_prompt_allow_inventory_read_access_completed_on_prompt_allow_inventory_read_access_completed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptAllowInventoryReadAccessCompleted:Connect(function(result)
+		invokeFunction(callback_data, callback_vtable, result)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_avatar_editor_service_prompt_allow_inventory_read_access_completed_on_prompt_allow_inventory_read_access_completed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptAllowInventoryReadAccessCompleted:Connect(function(result)
+		invokeFunction(callback_data, callback_vtable, result)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_avatar_editor_service_prompt_delete_outfit_completed_on_prompt_delete_outfit_completed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptDeleteOutfitCompleted:Connect(function(result)
 		invokeFunction(callback_data, callback_vtable, result)
 	end));
 	return createPointer(result_0);
@@ -830,9 +952,25 @@ function abi.ffi.event_avatar_editor_service_prompt_delete_outfit_completed_on_p
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_avatar_editor_service_prompt_rename_outfit_completed_on_prompt_rename_outfit_completed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptRenameOutfitCompleted:Connect(function(result)
+		invokeFunction(callback_data, callback_vtable, result)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_avatar_editor_service_prompt_rename_outfit_completed_on_prompt_rename_outfit_completed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptRenameOutfitCompleted:Connect(function(result)
 		invokeFunction(callback_data, callback_vtable, result)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_avatar_editor_service_prompt_save_avatar_completed_on_prompt_save_avatar_completed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptSaveAvatarCompleted:Connect(function(result, humanoid_description)
+		local humanoid_description_optional, humanoid_description_optional_0 = 0, 0;
+		if (humanoid_description ~= nil) then
+			humanoid_description_optional, humanoid_description_optional_0 = 1, createPointer(humanoid_description);
+		end
+		invokeFunction(callback_data, callback_vtable, result, humanoid_description_optional, humanoid_description_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -846,8 +984,20 @@ function abi.ffi.event_avatar_editor_service_prompt_save_avatar_completed_on_pro
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_avatar_editor_service_prompt_set_favorite_completed_on_prompt_set_favorite_completed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptSetFavoriteCompleted:Connect(function(result)
+		invokeFunction(callback_data, callback_vtable, result)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_avatar_editor_service_prompt_set_favorite_completed_on_prompt_set_favorite_completed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptSetFavoriteCompleted:Connect(function(result)
+		invokeFunction(callback_data, callback_vtable, result)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_avatar_editor_service_prompt_update_outfit_completed_on_prompt_update_outfit_completed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptUpdateOutfitCompleted:Connect(function(result)
 		invokeFunction(callback_data, callback_vtable, result)
 	end));
 	return createPointer(result_0);
@@ -946,8 +1096,20 @@ end
 function abi.ffi.method_tool_deactivate(self)
 	getPointer(self):Deactivate()
 end
+function abi.ffi.event_tool_activated_on_activated_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Activated:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_tool_activated_on_activated(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Activated:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_tool_deactivated_on_deactivated_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Deactivated:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -958,6 +1120,16 @@ function abi.ffi.event_tool_deactivated_on_deactivated(self, callback_data, call
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_tool_equipped_on_equipped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Equipped:Connect(function(mouse)
+		local mouse_optional, mouse_optional_0 = 0, 0;
+		if (mouse ~= nil) then
+			mouse_optional, mouse_optional_0 = 1, createPointer(mouse);
+		end
+		invokeFunction(callback_data, callback_vtable, mouse_optional, mouse_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_tool_equipped_on_equipped(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Equipped:Connect(function(mouse)
 		local mouse_optional, mouse_optional_0 = 0, 0;
@@ -965,6 +1137,12 @@ function abi.ffi.event_tool_equipped_on_equipped(self, callback_data, callback_v
 			mouse_optional, mouse_optional_0 = 1, createPointer(mouse);
 		end
 		invokeFunction(callback_data, callback_vtable, mouse_optional, mouse_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_tool_unequipped_on_unequipped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Unequipped:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
@@ -1388,6 +1566,12 @@ function abi.ffi.method_body_position_get_last_force(self)
 	local result_0 = getPointer(self):GetLastForce();
 	return createPointer(result_0);
 end
+function abi.ffi.event_body_position_reached_target_on_reached_target_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ReachedTarget:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_body_position_reached_target_on_reached_target(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ReachedTarget:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
@@ -1520,6 +1704,12 @@ end
 function abi.ffi.method_rocket_propulsion_fire(self)
 	getPointer(self):Fire()
 end
+function abi.ffi.event_rocket_propulsion_reached_target_on_reached_target_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ReachedTarget:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_rocket_propulsion_reached_target_on_reached_target(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ReachedTarget:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
@@ -1636,6 +1826,12 @@ function abi.ffi.method_camera_set_roll(self, roll_angle)
 end
 function abi.ffi.method_camera_viewport_point_to_ray(self, x, y, depth)
 	local result_0 = getPointer(self):ViewportPointToRay(x, y, depth);
+	return createPointer(result_0);
+end
+function abi.ffi.event_camera_interpolation_finished_on_interpolation_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InterpolationFinished:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
 	return createPointer(result_0);
 end
 function abi.ffi.event_camera_interpolation_finished_on_interpolation_finished(self, callback_data, callback_vtable)
@@ -1864,6 +2060,21 @@ function abi.ffi.method_chat_filter_string_for_broadcast(self, string_to_filter_
 	end)
 	return future;
 end
+function abi.ffi.event_chat_chatted_on_chatted_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Chatted:Connect(function(part, message, color)
+		local part_optional, part_optional_0 = 0, 0;
+		if (part ~= nil) then
+			part_optional, part_optional_0 = 1, createPointer(part);
+		end
+		local message_len = #message;
+		local message_content = allocString(message_len);
+		for i = 1, message_len do
+			storeU8(memory, message_content + (i - 1), string.byte(message:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, part_optional, part_optional_0, message_content, message_len, color)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_chat_chatted_on_chatted(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Chatted:Connect(function(part, message, color)
 		local part_optional, part_optional_0 = 0, 0;
@@ -1893,6 +2104,16 @@ end
 function abi.ffi.property_setter_click_detector_max_activation_distance_set_max_activation_distance(self, value)
 	getPointer(self).MaxActivationDistance = value;
 end
+function abi.ffi.event_click_detector_mouse_click_on_mouse_click_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseClick:Connect(function(player_who_clicked)
+		local player_who_clicked_optional, player_who_clicked_optional_0 = 0, 0;
+		if (player_who_clicked ~= nil) then
+			player_who_clicked_optional, player_who_clicked_optional_0 = 1, createPointer(player_who_clicked);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_clicked_optional, player_who_clicked_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_click_detector_mouse_click_on_mouse_click(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseClick:Connect(function(player_who_clicked)
 		local player_who_clicked_optional, player_who_clicked_optional_0 = 0, 0;
@@ -1903,8 +2124,28 @@ function abi.ffi.event_click_detector_mouse_click_on_mouse_click(self, callback_
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_click_detector_mouse_hover_enter_on_mouse_hover_enter_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseHoverEnter:Connect(function(player_who_hovered)
+		local player_who_hovered_optional, player_who_hovered_optional_0 = 0, 0;
+		if (player_who_hovered ~= nil) then
+			player_who_hovered_optional, player_who_hovered_optional_0 = 1, createPointer(player_who_hovered);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_hovered_optional, player_who_hovered_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_click_detector_mouse_hover_enter_on_mouse_hover_enter(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseHoverEnter:Connect(function(player_who_hovered)
+		local player_who_hovered_optional, player_who_hovered_optional_0 = 0, 0;
+		if (player_who_hovered ~= nil) then
+			player_who_hovered_optional, player_who_hovered_optional_0 = 1, createPointer(player_who_hovered);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_hovered_optional, player_who_hovered_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_click_detector_mouse_hover_leave_on_mouse_hover_leave_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseHoverLeave:Connect(function(player_who_hovered)
 		local player_who_hovered_optional, player_who_hovered_optional_0 = 0, 0;
 		if (player_who_hovered ~= nil) then
 			player_who_hovered_optional, player_who_hovered_optional_0 = 1, createPointer(player_who_hovered);
@@ -1920,6 +2161,16 @@ function abi.ffi.event_click_detector_mouse_hover_leave_on_mouse_hover_leave(sel
 			player_who_hovered_optional, player_who_hovered_optional_0 = 1, createPointer(player_who_hovered);
 		end
 		invokeFunction(callback_data, callback_vtable, player_who_hovered_optional, player_who_hovered_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_click_detector_right_mouse_click_on_right_mouse_click_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).RightMouseClick:Connect(function(player_who_clicked)
+		local player_who_clicked_optional, player_who_clicked_optional_0 = 0, 0;
+		if (player_who_clicked ~= nil) then
+			player_who_clicked_optional, player_who_clicked_optional_0 = 1, createPointer(player_who_clicked);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_clicked_optional, player_who_clicked_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -1971,8 +2222,30 @@ end
 function abi.ffi.method_collection_service_remove_tag(self, instance, tag_addr, tag_len)
 	getPointer(self):RemoveTag(getPointer(instance), loadString(memory, tag_addr, tag_len))
 end
+function abi.ffi.event_collection_service_tag_added_on_tag_added_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TagAdded:Connect(function(tag)
+		local tag_len = #tag;
+		local tag_content = allocString(tag_len);
+		for i = 1, tag_len do
+			storeU8(memory, tag_content + (i - 1), string.byte(tag:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, tag_content, tag_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_collection_service_tag_added_on_tag_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TagAdded:Connect(function(tag)
+		local tag_len = #tag;
+		local tag_content = allocString(tag_len);
+		for i = 1, tag_len do
+			storeU8(memory, tag_content + (i - 1), string.byte(tag:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, tag_content, tag_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_collection_service_tag_removed_on_tag_removed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TagRemoved:Connect(function(tag)
 		local tag_len = #tag;
 		local tag_content = allocString(tag_len);
 		for i = 1, tag_len do
@@ -3031,6 +3304,12 @@ end
 function abi.ffi.method_content_provider_unregister_encrypted_asset(self, asset_id)
 	getPointer(self):UnregisterEncryptedAsset(getPointer(asset_id))
 end
+function abi.ffi.event_content_provider_asset_fetch_failed_on_asset_fetch_failed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AssetFetchFailed:Connect(function(asset_id)
+		invokeFunction(callback_data, callback_vtable, createPointer(asset_id))
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_content_provider_asset_fetch_failed_on_asset_fetch_failed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AssetFetchFailed:Connect(function(asset_id)
 		invokeFunction(callback_data, callback_vtable, createPointer(asset_id))
@@ -3083,6 +3362,16 @@ function abi.ffi.method_context_action_service_get_button(self, action_name_addr
 	end)
 	return future;
 end
+function abi.ffi.event_context_action_service_local_tool_equipped_on_local_tool_equipped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).LocalToolEquipped:Connect(function(tool_equipped)
+		local tool_equipped_optional, tool_equipped_optional_0 = 0, 0;
+		if (tool_equipped ~= nil) then
+			tool_equipped_optional, tool_equipped_optional_0 = 1, createPointer(tool_equipped);
+		end
+		invokeFunction(callback_data, callback_vtable, tool_equipped_optional, tool_equipped_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_context_action_service_local_tool_equipped_on_local_tool_equipped(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).LocalToolEquipped:Connect(function(tool_equipped)
 		local tool_equipped_optional, tool_equipped_optional_0 = 0, 0;
@@ -3090,6 +3379,16 @@ function abi.ffi.event_context_action_service_local_tool_equipped_on_local_tool_
 			tool_equipped_optional, tool_equipped_optional_0 = 1, createPointer(tool_equipped);
 		end
 		invokeFunction(callback_data, callback_vtable, tool_equipped_optional, tool_equipped_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_context_action_service_local_tool_unequipped_on_local_tool_unequipped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).LocalToolUnequipped:Connect(function(tool_unequipped)
+		local tool_unequipped_optional, tool_unequipped_optional_0 = 0, 0;
+		if (tool_unequipped ~= nil) then
+			tool_unequipped_optional, tool_unequipped_optional_0 = 1, createPointer(tool_unequipped);
+		end
+		invokeFunction(callback_data, callback_vtable, tool_unequipped_optional, tool_unequipped_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -3113,6 +3412,12 @@ end
 function abi.ffi.method_controller_unbind_button(self, button)
 	getPointer(self):UnbindButton(button)
 end
+function abi.ffi.event_controller_button_changed_on_button_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ButtonChanged:Connect(function(button)
+		invokeFunction(callback_data, callback_vtable, button)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_controller_button_changed_on_button_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ButtonChanged:Connect(function(button)
 		invokeFunction(callback_data, callback_vtable, button)
@@ -3126,6 +3431,17 @@ end
 function abi.ffi.property_getter_skateboard_controller_throttle(self)
 	local result_0 = getPointer(self).Throttle;
 	return result_0;
+end
+function abi.ffi.event_skateboard_controller_axis_changed_on_axis_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AxisChanged:Connect(function(axis)
+		local axis_len = #axis;
+		local axis_content = allocString(axis_len);
+		for i = 1, axis_len do
+			storeU8(memory, axis_content + (i - 1), string.byte(axis:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, axis_content, axis_len)
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_skateboard_controller_axis_changed_on_axis_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).AxisChanged:Connect(function(axis)
@@ -3613,6 +3929,20 @@ end
 function abi.ffi.property_setter_dialog_trigger_offset_set_trigger_offset(self, value)
 	getPointer(self).TriggerOffset = getPointer(value);
 end
+function abi.ffi.event_dialog_dialog_choice_selected_on_dialog_choice_selected_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DialogChoiceSelected:Connect(function(player, dialog_choice)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		local dialog_choice_optional, dialog_choice_optional_0 = 0, 0;
+		if (dialog_choice ~= nil) then
+			dialog_choice_optional, dialog_choice_optional_0 = 1, createPointer(dialog_choice);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, dialog_choice_optional, dialog_choice_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_dialog_dialog_choice_selected_on_dialog_choice_selected(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DialogChoiceSelected:Connect(function(player, dialog_choice)
 		local player_optional, player_optional_0 = 0, 0;
@@ -3863,6 +4193,16 @@ function abi.ffi.property_getter_explosion_visible(self)
 end
 function abi.ffi.property_setter_explosion_visible_set_visible(self, value)
 	getPointer(self).Visible = value == 1;
+end
+function abi.ffi.event_explosion_hit_on_hit_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Hit:Connect(function(part, distance)
+		local part_optional, part_optional_0 = 0, 0;
+		if (part ~= nil) then
+			part_optional, part_optional_0 = 1, createPointer(part);
+		end
+		invokeFunction(callback_data, callback_vtable, part_optional, part_optional_0, distance)
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_explosion_hit_on_hit(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Hit:Connect(function(part, distance)
@@ -4206,6 +4546,20 @@ end
 function abi.ffi.property_setter_gui_base_2_d_selection_group_set_selection_group(self, value)
 	getPointer(self).SelectionGroup = value == 1;
 end
+function abi.ffi.event_gui_base_2_d_selection_changed_on_selection_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).SelectionChanged:Connect(function(am_i_selected, previous_selection, new_selection)
+		local previous_selection_optional, previous_selection_optional_0 = 0, 0;
+		if (previous_selection ~= nil) then
+			previous_selection_optional, previous_selection_optional_0 = 1, createPointer(previous_selection);
+		end
+		local new_selection_optional, new_selection_optional_0 = 0, 0;
+		if (new_selection ~= nil) then
+			new_selection_optional, new_selection_optional_0 = 1, createPointer(new_selection);
+		end
+		invokeFunction(callback_data, callback_vtable, am_i_selected and 1 or 0, previous_selection_optional, previous_selection_optional_0, new_selection_optional, new_selection_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_base_2_d_selection_changed_on_selection_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).SelectionChanged:Connect(function(am_i_selected, previous_selection, new_selection)
 		local previous_selection_optional, previous_selection_optional_0 = 0, 0;
@@ -4408,8 +4762,28 @@ end
 function abi.ffi.property_setter_gui_object_z_index_set_z_index(self, value)
 	getPointer(self).ZIndex = value;
 end
+function abi.ffi.event_gui_object_input_began_on_input_began_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputBegan:Connect(function(input)
+		local input_optional, input_optional_0 = 0, 0;
+		if (input ~= nil) then
+			input_optional, input_optional_0 = 1, createPointer(input);
+		end
+		invokeFunction(callback_data, callback_vtable, input_optional, input_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_object_input_began_on_input_began(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputBegan:Connect(function(input)
+		local input_optional, input_optional_0 = 0, 0;
+		if (input ~= nil) then
+			input_optional, input_optional_0 = 1, createPointer(input);
+		end
+		invokeFunction(callback_data, callback_vtable, input_optional, input_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_object_input_changed_on_input_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputChanged:Connect(function(input)
 		local input_optional, input_optional_0 = 0, 0;
 		if (input ~= nil) then
 			input_optional, input_optional_0 = 1, createPointer(input);
@@ -4428,6 +4802,16 @@ function abi.ffi.event_gui_object_input_changed_on_input_changed(self, callback_
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_object_input_ended_on_input_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputEnded:Connect(function(input)
+		local input_optional, input_optional_0 = 0, 0;
+		if (input ~= nil) then
+			input_optional, input_optional_0 = 1, createPointer(input);
+		end
+		invokeFunction(callback_data, callback_vtable, input_optional, input_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_object_input_ended_on_input_ended(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputEnded:Connect(function(input)
 		local input_optional, input_optional_0 = 0, 0;
@@ -4438,8 +4822,20 @@ function abi.ffi.event_gui_object_input_ended_on_input_ended(self, callback_data
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_object_mouse_enter_on_mouse_enter_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_object_mouse_enter_on_mouse_enter(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_object_mouse_leave_on_mouse_leave_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseLeave:Connect(function(x, y)
 		invokeFunction(callback_data, callback_vtable, x, y)
 	end));
 	return createPointer(result_0);
@@ -4450,8 +4846,20 @@ function abi.ffi.event_gui_object_mouse_leave_on_mouse_leave(self, callback_data
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_object_mouse_moved_on_mouse_moved_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseMoved:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_object_mouse_moved_on_mouse_moved(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseMoved:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_object_mouse_wheel_backward_on_mouse_wheel_backward_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseWheelBackward:Connect(function(x, y)
 		invokeFunction(callback_data, callback_vtable, x, y)
 	end));
 	return createPointer(result_0);
@@ -4462,9 +4870,21 @@ function abi.ffi.event_gui_object_mouse_wheel_backward_on_mouse_wheel_backward(s
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_object_mouse_wheel_forward_on_mouse_wheel_forward_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseWheelForward:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_object_mouse_wheel_forward_on_mouse_wheel_forward(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseWheelForward:Connect(function(x, y)
 		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_object_selection_gained_on_selection_gained_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).SelectionGained:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
@@ -4474,9 +4894,21 @@ function abi.ffi.event_gui_object_selection_gained_on_selection_gained(self, cal
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_object_selection_lost_on_selection_lost_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).SelectionLost:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_object_selection_lost_on_selection_lost(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).SelectionLost:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_object_touch_swipe_on_touch_swipe_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchSwipe:Connect(function(swipe_direction, number_of_touches)
+		invokeFunction(callback_data, callback_vtable, swipe_direction, number_of_touches)
 	end));
 	return createPointer(result_0);
 end
@@ -4535,6 +4967,16 @@ end
 function abi.ffi.property_setter_gui_button_style_set_style(self, value)
 	getPointer(self).Style = value;
 end
+function abi.ffi.event_gui_button_activated_on_activated_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Activated:Connect(function(input_object, click_count)
+		local input_object_optional, input_object_optional_0 = 0, 0;
+		if (input_object ~= nil) then
+			input_object_optional, input_object_optional_0 = 1, createPointer(input_object);
+		end
+		invokeFunction(callback_data, callback_vtable, input_object_optional, input_object_optional_0, click_count)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_button_activated_on_activated(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Activated:Connect(function(input_object, click_count)
 		local input_object_optional, input_object_optional_0 = 0, 0;
@@ -4545,14 +4987,32 @@ function abi.ffi.event_gui_button_activated_on_activated(self, callback_data, ca
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_button_mouse_button_1_click_on_mouse_button_1_click_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Click:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_button_mouse_button_1_click_on_mouse_button_1_click(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Click:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_button_mouse_button_1_down_on_mouse_button_1_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_button_mouse_button_1_down_on_mouse_button_1_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_button_mouse_button_1_up_on_mouse_button_1_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Up:Connect(function(x, y)
 		invokeFunction(callback_data, callback_vtable, x, y)
 	end));
 	return createPointer(result_0);
@@ -4563,14 +5023,32 @@ function abi.ffi.event_gui_button_mouse_button_1_up_on_mouse_button_1_up(self, c
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_button_mouse_button_2_click_on_mouse_button_2_click_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton2Click:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_button_mouse_button_2_click_on_mouse_button_2_click(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton2Click:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_gui_button_mouse_button_2_down_on_mouse_button_2_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton2Down:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_button_mouse_button_2_down_on_mouse_button_2_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton2Down:Connect(function(x, y)
+		invokeFunction(callback_data, callback_vtable, x, y)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_button_mouse_button_2_up_on_mouse_button_2_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton2Up:Connect(function(x, y)
 		invokeFunction(callback_data, callback_vtable, x, y)
 	end));
 	return createPointer(result_0);
@@ -5347,6 +5825,16 @@ end
 function abi.ffi.method_text_box_release_focus(self, submitted)
 	getPointer(self):ReleaseFocus(submitted == 1)
 end
+function abi.ffi.event_text_box_focus_lost_on_focus_lost_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).FocusLost:Connect(function(enter_pressed, input_that_caused_focus_loss)
+		local input_that_caused_focus_loss_optional, input_that_caused_focus_loss_optional_0 = 0, 0;
+		if (input_that_caused_focus_loss ~= nil) then
+			input_that_caused_focus_loss_optional, input_that_caused_focus_loss_optional_0 = 1, createPointer(input_that_caused_focus_loss);
+		end
+		invokeFunction(callback_data, callback_vtable, enter_pressed and 1 or 0, input_that_caused_focus_loss_optional, input_that_caused_focus_loss_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_text_box_focus_lost_on_focus_lost(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).FocusLost:Connect(function(enter_pressed, input_that_caused_focus_loss)
 		local input_that_caused_focus_loss_optional, input_that_caused_focus_loss_optional_0 = 0, 0;
@@ -5357,8 +5845,20 @@ function abi.ffi.event_text_box_focus_lost_on_focus_lost(self, callback_data, ca
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_text_box_focused_on_focused_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Focused:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_text_box_focused_on_focused(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Focused:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_text_box_return_pressed_from_on_screen_keyboard_on_return_pressed_from_on_screen_keyboard_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ReturnPressedFromOnScreenKeyboard:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -5422,8 +5922,30 @@ end
 function abi.ffi.method_video_frame_play(self)
 	getPointer(self):Play()
 end
+function abi.ffi.event_video_frame_did_loop_on_did_loop_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DidLoop:Connect(function(video)
+		local video_len = #video;
+		local video_content = allocString(video_len);
+		for i = 1, video_len do
+			storeU8(memory, video_content + (i - 1), string.byte(video:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, video_content, video_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_video_frame_did_loop_on_did_loop(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DidLoop:Connect(function(video)
+		local video_len = #video;
+		local video_content = allocString(video_len);
+		for i = 1, video_len do
+			storeU8(memory, video_content + (i - 1), string.byte(video:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, video_content, video_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_video_frame_ended_on_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Ended:Connect(function(video)
 		local video_len = #video;
 		local video_content = allocString(video_len);
 		for i = 1, video_len do
@@ -5444,6 +5966,17 @@ function abi.ffi.event_video_frame_ended_on_ended(self, callback_data, callback_
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_video_frame_loaded_on_loaded_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Loaded:Connect(function(video)
+		local video_len = #video;
+		local video_content = allocString(video_len);
+		for i = 1, video_len do
+			storeU8(memory, video_content + (i - 1), string.byte(video:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, video_content, video_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_video_frame_loaded_on_loaded(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Loaded:Connect(function(video)
 		local video_len = #video;
@@ -5455,8 +5988,30 @@ function abi.ffi.event_video_frame_loaded_on_loaded(self, callback_data, callbac
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_video_frame_paused_on_paused_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Paused:Connect(function(video)
+		local video_len = #video;
+		local video_content = allocString(video_len);
+		for i = 1, video_len do
+			storeU8(memory, video_content + (i - 1), string.byte(video:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, video_content, video_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_video_frame_paused_on_paused(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Paused:Connect(function(video)
+		local video_len = #video;
+		local video_content = allocString(video_len);
+		for i = 1, video_len do
+			storeU8(memory, video_content + (i - 1), string.byte(video:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, video_content, video_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_video_frame_played_on_played_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Played:Connect(function(video)
 		local video_len = #video;
 		local video_content = allocString(video_len);
 		for i = 1, video_len do
@@ -5897,8 +6452,20 @@ end
 function abi.ffi.property_setter_handle_adornment_z_index_set_z_index(self, value)
 	getPointer(self).ZIndex = value;
 end
+function abi.ffi.event_handle_adornment_mouse_button_1_down_on_mouse_button_1_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_handle_adornment_mouse_button_1_down_on_mouse_button_1_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_handle_adornment_mouse_button_1_up_on_mouse_button_1_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Up:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -5909,8 +6476,20 @@ function abi.ffi.event_handle_adornment_mouse_button_1_up_on_mouse_button_1_up(s
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_handle_adornment_mouse_enter_on_mouse_enter_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_handle_adornment_mouse_enter_on_mouse_enter(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_handle_adornment_mouse_leave_on_mouse_leave_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseLeave:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -6043,8 +6622,20 @@ end
 function abi.ffi.property_setter_arc_handles_axes_set_axes(self, value)
 	getPointer(self).Axes = getPointer(value);
 end
+function abi.ffi.event_arc_handles_mouse_button_1_down_on_mouse_button_1_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function(axis)
+		invokeFunction(callback_data, callback_vtable, axis)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_arc_handles_mouse_button_1_down_on_mouse_button_1_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function(axis)
+		invokeFunction(callback_data, callback_vtable, axis)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_arc_handles_mouse_button_1_up_on_mouse_button_1_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Up:Connect(function(axis)
 		invokeFunction(callback_data, callback_vtable, axis)
 	end));
 	return createPointer(result_0);
@@ -6055,14 +6646,32 @@ function abi.ffi.event_arc_handles_mouse_button_1_up_on_mouse_button_1_up(self, 
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_arc_handles_mouse_drag_on_mouse_drag_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseDrag:Connect(function(axis, relative_angle, delta_radius)
+		invokeFunction(callback_data, callback_vtable, axis, relative_angle, delta_radius)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_arc_handles_mouse_drag_on_mouse_drag(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseDrag:Connect(function(axis, relative_angle, delta_radius)
 		invokeFunction(callback_data, callback_vtable, axis, relative_angle, delta_radius)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_arc_handles_mouse_enter_on_mouse_enter_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function(axis)
+		invokeFunction(callback_data, callback_vtable, axis)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_arc_handles_mouse_enter_on_mouse_enter(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function(axis)
+		invokeFunction(callback_data, callback_vtable, axis)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_arc_handles_mouse_leave_on_mouse_leave_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseLeave:Connect(function(axis)
 		invokeFunction(callback_data, callback_vtable, axis)
 	end));
 	return createPointer(result_0);
@@ -6087,8 +6696,20 @@ end
 function abi.ffi.property_setter_handles_style_set_style(self, value)
 	getPointer(self).Style = value;
 end
+function abi.ffi.event_handles_mouse_button_1_down_on_mouse_button_1_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function(face)
+		invokeFunction(callback_data, callback_vtable, face)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_handles_mouse_button_1_down_on_mouse_button_1_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Down:Connect(function(face)
+		invokeFunction(callback_data, callback_vtable, face)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_handles_mouse_button_1_up_on_mouse_button_1_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseButton1Up:Connect(function(face)
 		invokeFunction(callback_data, callback_vtable, face)
 	end));
 	return createPointer(result_0);
@@ -6099,14 +6720,32 @@ function abi.ffi.event_handles_mouse_button_1_up_on_mouse_button_1_up(self, call
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_handles_mouse_drag_on_mouse_drag_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseDrag:Connect(function(face, distance)
+		invokeFunction(callback_data, callback_vtable, face, distance)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_handles_mouse_drag_on_mouse_drag(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseDrag:Connect(function(face, distance)
 		invokeFunction(callback_data, callback_vtable, face, distance)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_handles_mouse_enter_on_mouse_enter_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function(face)
+		invokeFunction(callback_data, callback_vtable, face)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_handles_mouse_enter_on_mouse_enter(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseEnter:Connect(function(face)
+		invokeFunction(callback_data, callback_vtable, face)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_handles_mouse_leave_on_mouse_leave_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MouseLeave:Connect(function(face)
 		invokeFunction(callback_data, callback_vtable, face)
 	end));
 	return createPointer(result_0);
@@ -6221,8 +6860,20 @@ end
 function abi.ffi.method_gui_service_set_inspect_menu_enabled(self, enabled)
 	getPointer(self):SetInspectMenuEnabled(enabled == 1)
 end
+function abi.ffi.event_gui_service_menu_closed_on_menu_closed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MenuClosed:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_gui_service_menu_closed_on_menu_closed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MenuClosed:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_gui_service_menu_opened_on_menu_opened_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MenuOpened:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -6616,9 +7267,21 @@ function abi.ffi.method_humanoid_play_emote(self, emote_name_addr, emote_name_le
 	end)
 	return future;
 end
+function abi.ffi.event_humanoid_climbing_on_climbing_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Climbing:Connect(function(speed)
+		invokeFunction(callback_data, callback_vtable, speed)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_climbing_on_climbing(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Climbing:Connect(function(speed)
 		invokeFunction(callback_data, callback_vtable, speed)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_died_on_died_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Died:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
@@ -6628,8 +7291,20 @@ function abi.ffi.event_humanoid_died_on_died(self, callback_data, callback_vtabl
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_falling_down_on_falling_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).FallingDown:Connect(function(active)
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_falling_down_on_falling_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).FallingDown:Connect(function(active)
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_free_falling_on_free_falling_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).FreeFalling:Connect(function(active)
 		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
 	end));
 	return createPointer(result_0);
@@ -6640,9 +7315,21 @@ function abi.ffi.event_humanoid_free_falling_on_free_falling(self, callback_data
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_getting_up_on_getting_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).GettingUp:Connect(function(active)
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_getting_up_on_getting_up(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).GettingUp:Connect(function(active)
 		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_health_changed_on_health_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).HealthChanged:Connect(function(health)
+		invokeFunction(callback_data, callback_vtable, health)
 	end));
 	return createPointer(result_0);
 end
@@ -6652,9 +7339,21 @@ function abi.ffi.event_humanoid_health_changed_on_health_changed(self, callback_
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_jumping_on_jumping_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Jumping:Connect(function(active)
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_jumping_on_jumping(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Jumping:Connect(function(active)
 		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_move_to_finished_on_move_to_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MoveToFinished:Connect(function(reached)
+		invokeFunction(callback_data, callback_vtable, reached and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -6664,8 +7363,20 @@ function abi.ffi.event_humanoid_move_to_finished_on_move_to_finished(self, callb
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_platform_standing_on_platform_standing_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlatformStanding:Connect(function(active)
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_platform_standing_on_platform_standing(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlatformStanding:Connect(function(active)
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_ragdoll_on_ragdoll_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Ragdoll:Connect(function(active)
 		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
 	end));
 	return createPointer(result_0);
@@ -6676,9 +7387,25 @@ function abi.ffi.event_humanoid_ragdoll_on_ragdoll(self, callback_data, callback
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_running_on_running_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Running:Connect(function(speed)
+		invokeFunction(callback_data, callback_vtable, speed)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_running_on_running(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Running:Connect(function(speed)
 		invokeFunction(callback_data, callback_vtable, speed)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_seated_on_seated_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Seated:Connect(function(active, current_seat_part)
+		local current_seat_part_optional, current_seat_part_optional_0 = 0, 0;
+		if (current_seat_part ~= nil) then
+			current_seat_part_optional, current_seat_part_optional_0 = 1, createPointer(current_seat_part);
+		end
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0, current_seat_part_optional, current_seat_part_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -6692,9 +7419,21 @@ function abi.ffi.event_humanoid_seated_on_seated(self, callback_data, callback_v
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_state_changed_on_state_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).StateChanged:Connect(function(old, new)
+		invokeFunction(callback_data, callback_vtable, old, new)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_state_changed_on_state_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).StateChanged:Connect(function(old, new)
 		invokeFunction(callback_data, callback_vtable, old, new)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_state_enabled_changed_on_state_enabled_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).StateEnabledChanged:Connect(function(state, is_enabled)
+		invokeFunction(callback_data, callback_vtable, state, is_enabled and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -6704,9 +7443,21 @@ function abi.ffi.event_humanoid_state_enabled_changed_on_state_enabled_changed(s
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_strafing_on_strafing_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Strafing:Connect(function(active)
+		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_humanoid_strafing_on_strafing(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Strafing:Connect(function(active)
 		invokeFunction(callback_data, callback_vtable, active and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_humanoid_swimming_on_swimming_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Swimming:Connect(function(speed)
+		invokeFunction(callback_data, callback_vtable, speed)
 	end));
 	return createPointer(result_0);
 end
@@ -7891,6 +8642,12 @@ end
 function abi.ffi.method_lighting_set_minutes_after_midnight(self, minutes)
 	getPointer(self):SetMinutesAfterMidnight(minutes)
 end
+function abi.ffi.event_lighting_lighting_changed_on_lighting_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).LightingChanged:Connect(function(sky_changed)
+		invokeFunction(callback_data, callback_vtable, sky_changed and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_lighting_lighting_changed_on_lighting_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).LightingChanged:Connect(function(sky_changed)
 		invokeFunction(callback_data, callback_vtable, sky_changed and 1 or 0)
@@ -8023,6 +8780,17 @@ end
 function abi.ffi.property_setter_lod_data_entity_entity_lod_enabled_set_entity_lod_enabled(self, value)
 	getPointer(self).EntityLodEnabled = value == 1;
 end
+function abi.ffi.event_log_service_message_out_on_message_out_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MessageOut:Connect(function(message, message_type)
+		local message_len = #message;
+		local message_content = allocString(message_len);
+		for i = 1, message_len do
+			storeU8(memory, message_content + (i - 1), string.byte(message:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, message_content, message_len, message_type)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_log_service_message_out_on_message_out(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MessageOut:Connect(function(message, message_type)
 		local message_len = #message;
@@ -8151,6 +8919,16 @@ function abi.ffi.method_marketplace_service_user_owns_game_pass_async(self, user
 	end)
 	return future;
 end
+function abi.ffi.event_marketplace_service_prompt_bundle_purchase_finished_on_prompt_bundle_purchase_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptBundlePurchaseFinished:Connect(function(player, bundle_id, was_purchased)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, bundle_id, was_purchased and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_marketplace_service_prompt_bundle_purchase_finished_on_prompt_bundle_purchase_finished(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptBundlePurchaseFinished:Connect(function(player, bundle_id, was_purchased)
 		local player_optional, player_optional_0 = 0, 0;
@@ -8158,6 +8936,16 @@ function abi.ffi.event_marketplace_service_prompt_bundle_purchase_finished_on_pr
 			player_optional, player_optional_0 = 1, createPointer(player);
 		end
 		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, bundle_id, was_purchased and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_marketplace_service_prompt_game_pass_purchase_finished_on_prompt_game_pass_purchase_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptGamePassPurchaseFinished:Connect(function(player, game_pass_id, was_purchased)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, game_pass_id, was_purchased and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -8171,9 +8959,25 @@ function abi.ffi.event_marketplace_service_prompt_game_pass_purchase_finished_on
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_marketplace_service_prompt_premium_purchase_finished_on_prompt_premium_purchase_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptPremiumPurchaseFinished:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_marketplace_service_prompt_premium_purchase_finished_on_prompt_premium_purchase_finished(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptPremiumPurchaseFinished:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_marketplace_service_prompt_purchase_finished_on_prompt_purchase_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptPurchaseFinished:Connect(function(player, asset_id, is_purchased)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, asset_id, is_purchased and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -8187,6 +8991,16 @@ function abi.ffi.event_marketplace_service_prompt_purchase_finished_on_prompt_pu
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_marketplace_service_prompt_subscription_cancellation_finished_on_prompt_subscription_cancellation_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptSubscriptionCancellationFinished:Connect(function(player, subscription_id, was_canceled)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, subscription_id, was_canceled and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_marketplace_service_prompt_subscription_cancellation_finished_on_prompt_subscription_cancellation_finished(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptSubscriptionCancellationFinished:Connect(function(player, subscription_id, was_canceled)
 		local player_optional, player_optional_0 = 0, 0;
@@ -8194,6 +9008,16 @@ function abi.ffi.event_marketplace_service_prompt_subscription_cancellation_fini
 			player_optional, player_optional_0 = 1, createPointer(player);
 		end
 		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, subscription_id, was_canceled and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_marketplace_service_prompt_subscription_purchase_finished_on_prompt_subscription_purchase_finished_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptSubscriptionPurchaseFinished:Connect(function(player, subscription_id, was_purchased)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, subscription_id, was_purchased and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -8328,8 +9152,20 @@ function abi.ffi.property_getter_mouse_y(self)
 	local result_0 = getPointer(self).Y;
 	return result_0;
 end
+function abi.ffi.event_mouse_button_1_down_on_button_1_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Button1Down:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_mouse_button_1_down_on_button_1_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Button1Down:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_mouse_button_1_up_on_button_1_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Button1Up:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -8340,8 +9176,20 @@ function abi.ffi.event_mouse_button_1_up_on_button_1_up(self, callback_data, cal
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_mouse_button_2_down_on_button_2_down_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Button2Down:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_mouse_button_2_down_on_button_2_down(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Button2Down:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_mouse_button_2_up_on_button_2_up_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Button2Up:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -8352,8 +9200,20 @@ function abi.ffi.event_mouse_button_2_up_on_button_2_up(self, callback_data, cal
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_mouse_idle_on_idle_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Idle:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_mouse_idle_on_idle(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Idle:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_mouse_move_on_move_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Move:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -8364,14 +9224,32 @@ function abi.ffi.event_mouse_move_on_move(self, callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_mouse_wheel_backward_on_wheel_backward_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).WheelBackward:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_mouse_wheel_backward_on_wheel_backward(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).WheelBackward:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_mouse_wheel_forward_on_wheel_forward_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).WheelForward:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_mouse_wheel_forward_on_wheel_forward(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).WheelForward:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_network_marker_received_on_received_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Received:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -8752,6 +9630,16 @@ function abi.ffi.method_base_part_set_network_owner(self, player_instance)
 end
 function abi.ffi.method_base_part_set_network_ownership_auto(self)
 	getPointer(self):SetNetworkOwnershipAuto()
+end
+function abi.ffi.event_base_part_touch_ended_on_touch_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchEnded:Connect(function(other_part)
+		local other_part_optional, other_part_optional_0 = 0, 0;
+		if (other_part ~= nil) then
+			other_part_optional, other_part_optional_0 = 1, createPointer(other_part);
+		end
+		invokeFunction(callback_data, callback_vtable, other_part_optional, other_part_optional_0)
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_base_part_touch_ended_on_touch_ended(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchEnded:Connect(function(other_part)
@@ -9251,6 +10139,16 @@ function abi.ffi.method_workspace_pgs_is_enabled(self)
 	local result_0 = getPointer(self):PGSIsEnabled();
 	return result_0 and 1 or 0;
 end
+function abi.ffi.event_workspace_persistent_loaded_on_persistent_loaded_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PersistentLoaded:Connect(function(player)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_workspace_persistent_loaded_on_persistent_loaded(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PersistentLoaded:Connect(function(player)
 		local player_optional, player_optional_0 = 0, 0;
@@ -9550,9 +10448,21 @@ end
 function abi.ffi.method_path_compute_async(self, start, finish)
 	getPointer(self):ComputeAsync(getPointer(start), getPointer(finish))
 end
+function abi.ffi.event_path_blocked_on_blocked_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Blocked:Connect(function(blocked_waypoint_idx)
+		invokeFunction(callback_data, callback_vtable, blocked_waypoint_idx)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_path_blocked_on_blocked(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Blocked:Connect(function(blocked_waypoint_idx)
 		invokeFunction(callback_data, callback_vtable, blocked_waypoint_idx)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_path_unblocked_on_unblocked_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Unblocked:Connect(function(unblocked_waypoint_idx)
+		invokeFunction(callback_data, callback_vtable, unblocked_waypoint_idx)
 	end));
 	return createPointer(result_0);
 end
@@ -9980,8 +10890,28 @@ end
 function abi.ffi.method_player_request_stream_around_async(self, position, time_out)
 	getPointer(self):RequestStreamAroundAsync(getPointer(position), time_out)
 end
+function abi.ffi.event_player_character_added_on_character_added_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).CharacterAdded:Connect(function(character)
+		local character_optional, character_optional_0 = 0, 0;
+		if (character ~= nil) then
+			character_optional, character_optional_0 = 1, createPointer(character);
+		end
+		invokeFunction(callback_data, callback_vtable, character_optional, character_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_player_character_added_on_character_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).CharacterAdded:Connect(function(character)
+		local character_optional, character_optional_0 = 0, 0;
+		if (character ~= nil) then
+			character_optional, character_optional_0 = 1, createPointer(character);
+		end
+		invokeFunction(callback_data, callback_vtable, character_optional, character_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_player_character_appearance_loaded_on_character_appearance_loaded_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).CharacterAppearanceLoaded:Connect(function(character)
 		local character_optional, character_optional_0 = 0, 0;
 		if (character ~= nil) then
 			character_optional, character_optional_0 = 1, createPointer(character);
@@ -10000,6 +10930,16 @@ function abi.ffi.event_player_character_appearance_loaded_on_character_appearanc
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_player_character_removing_on_character_removing_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).CharacterRemoving:Connect(function(character)
+		local character_optional, character_optional_0 = 0, 0;
+		if (character ~= nil) then
+			character_optional, character_optional_0 = 1, createPointer(character);
+		end
+		invokeFunction(callback_data, callback_vtable, character_optional, character_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_player_character_removing_on_character_removing(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).CharacterRemoving:Connect(function(character)
 		local character_optional, character_optional_0 = 0, 0;
@@ -10007,6 +10947,21 @@ function abi.ffi.event_player_character_removing_on_character_removing(self, cal
 			character_optional, character_optional_0 = 1, createPointer(character);
 		end
 		invokeFunction(callback_data, callback_vtable, character_optional, character_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_player_chatted_on_chatted_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Chatted:Connect(function(message, recipient)
+		local message_len = #message;
+		local message_content = allocString(message_len);
+		for i = 1, message_len do
+			storeU8(memory, message_content + (i - 1), string.byte(message:sub(i, i)));
+		end
+		local recipient_optional, recipient_optional_0 = 0, 0;
+		if (recipient ~= nil) then
+			recipient_optional, recipient_optional_0 = 1, createPointer(recipient);
+		end
+		invokeFunction(callback_data, callback_vtable, message_content, message_len, recipient_optional, recipient_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -10025,9 +10980,26 @@ function abi.ffi.event_player_chatted_on_chatted(self, callback_data, callback_v
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_player_idled_on_idled_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Idled:Connect(function(time)
+		invokeFunction(callback_data, callback_vtable, time)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_player_idled_on_idled(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Idled:Connect(function(time)
 		invokeFunction(callback_data, callback_vtable, time)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_player_on_teleport_on_on_teleport_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).OnTeleport:Connect(function(teleport_state, place_id, spawn_name)
+		local spawn_name_len = #spawn_name;
+		local spawn_name_content = allocString(spawn_name_len);
+		for i = 1, spawn_name_len do
+			storeU8(memory, spawn_name_content + (i - 1), string.byte(spawn_name:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, teleport_state, place_id, spawn_name_content, spawn_name_len)
 	end));
 	return createPointer(result_0);
 end
@@ -10228,6 +11200,16 @@ function abi.ffi.method_players_get_user_id_from_name_async(self, user_name_addr
 	end)
 	return future;
 end
+function abi.ffi.event_players_player_added_on_player_added_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerAdded:Connect(function(player)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_players_player_added_on_player_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerAdded:Connect(function(player)
 		local player_optional, player_optional_0 = 0, 0;
@@ -10238,8 +11220,28 @@ function abi.ffi.event_players_player_added_on_player_added(self, callback_data,
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_players_player_membership_changed_on_player_membership_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerMembershipChanged:Connect(function(player)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_players_player_membership_changed_on_player_membership_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerMembershipChanged:Connect(function(player)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_players_player_removing_on_player_removing_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerRemoving:Connect(function(player)
 		local player_optional, player_optional_0 = 0, 0;
 		if (player ~= nil) then
 			player_optional, player_optional_0 = 1, createPointer(player);
@@ -10522,8 +11524,28 @@ end
 function abi.ffi.method_proximity_prompt_input_hold_end(self)
 	getPointer(self):InputHoldEnd()
 end
+function abi.ffi.event_proximity_prompt_prompt_button_hold_began_on_prompt_button_hold_began_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptButtonHoldBegan:Connect(function(player_who_triggered)
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_proximity_prompt_prompt_button_hold_began_on_prompt_button_hold_began(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptButtonHoldBegan:Connect(function(player_who_triggered)
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_proximity_prompt_prompt_button_hold_ended_on_prompt_button_hold_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptButtonHoldEnded:Connect(function(player_who_triggered)
 		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
 		if (player_who_triggered ~= nil) then
 			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
@@ -10542,9 +11564,21 @@ function abi.ffi.event_proximity_prompt_prompt_button_hold_ended_on_prompt_butto
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_proximity_prompt_prompt_hidden_on_prompt_hidden_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptHidden:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_proximity_prompt_prompt_hidden_on_prompt_hidden(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptHidden:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_proximity_prompt_prompt_shown_on_prompt_shown_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptShown:Connect(function(input_type)
+		invokeFunction(callback_data, callback_vtable, input_type)
 	end));
 	return createPointer(result_0);
 end
@@ -10554,8 +11588,28 @@ function abi.ffi.event_proximity_prompt_prompt_shown_on_prompt_shown(self, callb
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_proximity_prompt_trigger_ended_on_trigger_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TriggerEnded:Connect(function(player_who_triggered)
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_proximity_prompt_trigger_ended_on_trigger_ended(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TriggerEnded:Connect(function(player_who_triggered)
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_proximity_prompt_triggered_on_triggered_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Triggered:Connect(function(player_who_triggered)
 		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
 		if (player_who_triggered ~= nil) then
 			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
@@ -10588,8 +11642,36 @@ end
 function abi.ffi.property_setter_proximity_prompt_service_max_prompts_visible_set_max_prompts_visible(self, value)
 	getPointer(self).MaxPromptsVisible = value;
 end
+function abi.ffi.event_proximity_prompt_service_prompt_button_hold_began_on_prompt_button_hold_began_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptButtonHoldBegan:Connect(function(prompt, player_who_triggered)
+		local prompt_optional, prompt_optional_0 = 0, 0;
+		if (prompt ~= nil) then
+			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
+		end
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, prompt_optional, prompt_optional_0, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_proximity_prompt_service_prompt_button_hold_began_on_prompt_button_hold_began(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptButtonHoldBegan:Connect(function(prompt, player_who_triggered)
+		local prompt_optional, prompt_optional_0 = 0, 0;
+		if (prompt ~= nil) then
+			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
+		end
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, prompt_optional, prompt_optional_0, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_proximity_prompt_service_prompt_button_hold_ended_on_prompt_button_hold_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptButtonHoldEnded:Connect(function(prompt, player_who_triggered)
 		local prompt_optional, prompt_optional_0 = 0, 0;
 		if (prompt ~= nil) then
 			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
@@ -10616,6 +11698,16 @@ function abi.ffi.event_proximity_prompt_service_prompt_button_hold_ended_on_prom
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_proximity_prompt_service_prompt_hidden_on_prompt_hidden_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptHidden:Connect(function(prompt)
+		local prompt_optional, prompt_optional_0 = 0, 0;
+		if (prompt ~= nil) then
+			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
+		end
+		invokeFunction(callback_data, callback_vtable, prompt_optional, prompt_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_proximity_prompt_service_prompt_hidden_on_prompt_hidden(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptHidden:Connect(function(prompt)
 		local prompt_optional, prompt_optional_0 = 0, 0;
@@ -10623,6 +11715,16 @@ function abi.ffi.event_proximity_prompt_service_prompt_hidden_on_prompt_hidden(s
 			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
 		end
 		invokeFunction(callback_data, callback_vtable, prompt_optional, prompt_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_proximity_prompt_service_prompt_shown_on_prompt_shown_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptShown:Connect(function(prompt, input_type)
+		local prompt_optional, prompt_optional_0 = 0, 0;
+		if (prompt ~= nil) then
+			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
+		end
+		invokeFunction(callback_data, callback_vtable, prompt_optional, prompt_optional_0, input_type)
 	end));
 	return createPointer(result_0);
 end
@@ -10636,8 +11738,36 @@ function abi.ffi.event_proximity_prompt_service_prompt_shown_on_prompt_shown(sel
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_proximity_prompt_service_prompt_trigger_ended_on_prompt_trigger_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptTriggerEnded:Connect(function(prompt, player_who_triggered)
+		local prompt_optional, prompt_optional_0 = 0, 0;
+		if (prompt ~= nil) then
+			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
+		end
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, prompt_optional, prompt_optional_0, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_proximity_prompt_service_prompt_trigger_ended_on_prompt_trigger_ended(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptTriggerEnded:Connect(function(prompt, player_who_triggered)
+		local prompt_optional, prompt_optional_0 = 0, 0;
+		if (prompt ~= nil) then
+			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
+		end
+		local player_who_triggered_optional, player_who_triggered_optional_0 = 0, 0;
+		if (player_who_triggered ~= nil) then
+			player_who_triggered_optional, player_who_triggered_optional_0 = 1, createPointer(player_who_triggered);
+		end
+		invokeFunction(callback_data, callback_vtable, prompt_optional, prompt_optional_0, player_who_triggered_optional, player_who_triggered_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_proximity_prompt_service_prompt_triggered_on_prompt_triggered_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PromptTriggered:Connect(function(prompt, player_who_triggered)
 		local prompt_optional, prompt_optional_0 = 0, 0;
 		if (prompt ~= nil) then
 			prompt_optional, prompt_optional_0 = 1, createPointer(prompt);
@@ -10826,14 +11956,32 @@ end
 function abi.ffi.method_run_service_unbind_from_render_step(self, name_addr, name_len)
 	getPointer(self):UnbindFromRenderStep(loadString(memory, name_addr, name_len))
 end
+function abi.ffi.event_run_service_heartbeat_on_heartbeat_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Heartbeat:Connect(function(delta_time)
+		invokeFunction(callback_data, callback_vtable, delta_time)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_run_service_heartbeat_on_heartbeat(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Heartbeat:Connect(function(delta_time)
 		invokeFunction(callback_data, callback_vtable, delta_time)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_run_service_post_simulation_on_post_simulation_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PostSimulation:Connect(function(delta_time_sim)
+		invokeFunction(callback_data, callback_vtable, delta_time_sim)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_run_service_post_simulation_on_post_simulation(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PostSimulation:Connect(function(delta_time_sim)
+		invokeFunction(callback_data, callback_vtable, delta_time_sim)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_run_service_pre_animation_on_pre_animation_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PreAnimation:Connect(function(delta_time_sim)
 		invokeFunction(callback_data, callback_vtable, delta_time_sim)
 	end));
 	return createPointer(result_0);
@@ -10844,9 +11992,21 @@ function abi.ffi.event_run_service_pre_animation_on_pre_animation(self, callback
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_run_service_pre_render_on_pre_render_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PreRender:Connect(function(delta_time_render)
+		invokeFunction(callback_data, callback_vtable, delta_time_render)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_run_service_pre_render_on_pre_render(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PreRender:Connect(function(delta_time_render)
 		invokeFunction(callback_data, callback_vtable, delta_time_render)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_run_service_pre_simulation_on_pre_simulation_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PreSimulation:Connect(function(delta_time_sim)
+		invokeFunction(callback_data, callback_vtable, delta_time_sim)
 	end));
 	return createPointer(result_0);
 end
@@ -10856,9 +12016,21 @@ function abi.ffi.event_run_service_pre_simulation_on_pre_simulation(self, callba
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_run_service_render_stepped_on_render_stepped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).RenderStepped:Connect(function(delta_time)
+		invokeFunction(callback_data, callback_vtable, delta_time)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_run_service_render_stepped_on_render_stepped(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).RenderStepped:Connect(function(delta_time)
 		invokeFunction(callback_data, callback_vtable, delta_time)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_run_service_stepped_on_stepped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Stepped:Connect(function(time, delta_time)
+		invokeFunction(callback_data, callback_vtable, time, delta_time)
 	end));
 	return createPointer(result_0);
 end
@@ -10924,6 +12096,26 @@ end
 function abi.ffi.property_setter_screenshot_hud_visible_set_visible(self, value)
 	getPointer(self).Visible = value == 1;
 end
+function abi.ffi.event_script_context_error_on_error_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Error:Connect(function(message, stack_trace, script)
+		local message_len = #message;
+		local message_content = allocString(message_len);
+		for i = 1, message_len do
+			storeU8(memory, message_content + (i - 1), string.byte(message:sub(i, i)));
+		end
+		local stack_trace_len = #stack_trace;
+		local stack_trace_content = allocString(stack_trace_len);
+		for i = 1, stack_trace_len do
+			storeU8(memory, stack_trace_content + (i - 1), string.byte(stack_trace:sub(i, i)));
+		end
+		local script_optional, script_optional_0 = 0, 0;
+		if (script ~= nil) then
+			script_optional, script_optional_0 = 1, createPointer(script);
+		end
+		invokeFunction(callback_data, callback_vtable, message_content, message_len, stack_trace_content, stack_trace_len, script_optional, script_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_script_context_error_on_error(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Error:Connect(function(message, stack_trace, script)
 		local message_len = #message;
@@ -10960,14 +12152,40 @@ function abi.ffi.method_service_provider_get_service(self, class_name_addr, clas
 	end
 	return result_0_optional, result_0_optional_0;
 end
+function abi.ffi.event_service_provider_close_on_close_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Close:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_service_provider_close_on_close(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Close:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_service_provider_service_added_on_service_added_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ServiceAdded:Connect(function(service)
+		local service_optional, service_optional_0 = 0, 0;
+		if (service ~= nil) then
+			service_optional, service_optional_0 = 1, createPointer(service);
+		end
+		invokeFunction(callback_data, callback_vtable, service_optional, service_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_service_provider_service_added_on_service_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ServiceAdded:Connect(function(service)
+		local service_optional, service_optional_0 = 0, 0;
+		if (service ~= nil) then
+			service_optional, service_optional_0 = 1, createPointer(service);
+		end
+		invokeFunction(callback_data, callback_vtable, service_optional, service_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_service_provider_service_removing_on_service_removing_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).ServiceRemoving:Connect(function(service)
 		local service_optional, service_optional_0 = 0, 0;
 		if (service ~= nil) then
 			service_optional, service_optional_0 = 1, createPointer(service);
@@ -11044,9 +12262,21 @@ function abi.ffi.method_data_model_is_loaded(self)
 	local result_0 = getPointer(self):IsLoaded();
 	return result_0 and 1 or 0;
 end
+function abi.ffi.event_data_model_graphics_quality_change_request_on_graphics_quality_change_request_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).GraphicsQualityChangeRequest:Connect(function(better_quality)
+		invokeFunction(callback_data, callback_vtable, better_quality and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_data_model_graphics_quality_change_request_on_graphics_quality_change_request(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).GraphicsQualityChangeRequest:Connect(function(better_quality)
 		invokeFunction(callback_data, callback_vtable, better_quality and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_data_model_loaded_on_loaded_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Loaded:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
 end
@@ -11337,6 +12567,17 @@ end
 function abi.ffi.method_sound_stop(self)
 	getPointer(self):Stop()
 end
+function abi.ffi.event_sound_did_loop_on_did_loop_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DidLoop:Connect(function(sound_id, num_of_times_looped)
+		local sound_id_len = #sound_id;
+		local sound_id_content = allocString(sound_id_len);
+		for i = 1, sound_id_len do
+			storeU8(memory, sound_id_content + (i - 1), string.byte(sound_id:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, sound_id_content, sound_id_len, num_of_times_looped)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_sound_did_loop_on_did_loop(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DidLoop:Connect(function(sound_id, num_of_times_looped)
 		local sound_id_len = #sound_id;
@@ -11348,8 +12589,30 @@ function abi.ffi.event_sound_did_loop_on_did_loop(self, callback_data, callback_
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_sound_ended_on_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Ended:Connect(function(sound_id)
+		local sound_id_len = #sound_id;
+		local sound_id_content = allocString(sound_id_len);
+		for i = 1, sound_id_len do
+			storeU8(memory, sound_id_content + (i - 1), string.byte(sound_id:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, sound_id_content, sound_id_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_sound_ended_on_ended(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Ended:Connect(function(sound_id)
+		local sound_id_len = #sound_id;
+		local sound_id_content = allocString(sound_id_len);
+		for i = 1, sound_id_len do
+			storeU8(memory, sound_id_content + (i - 1), string.byte(sound_id:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, sound_id_content, sound_id_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_sound_loaded_on_loaded_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Loaded:Connect(function(sound_id)
 		local sound_id_len = #sound_id;
 		local sound_id_content = allocString(sound_id_len);
 		for i = 1, sound_id_len do
@@ -11370,8 +12633,30 @@ function abi.ffi.event_sound_loaded_on_loaded(self, callback_data, callback_vtab
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_sound_paused_on_paused_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Paused:Connect(function(sound_id)
+		local sound_id_len = #sound_id;
+		local sound_id_content = allocString(sound_id_len);
+		for i = 1, sound_id_len do
+			storeU8(memory, sound_id_content + (i - 1), string.byte(sound_id:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, sound_id_content, sound_id_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_sound_paused_on_paused(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Paused:Connect(function(sound_id)
+		local sound_id_len = #sound_id;
+		local sound_id_content = allocString(sound_id_len);
+		for i = 1, sound_id_len do
+			storeU8(memory, sound_id_content + (i - 1), string.byte(sound_id:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, sound_id_content, sound_id_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_sound_played_on_played_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Played:Connect(function(sound_id)
 		local sound_id_len = #sound_id;
 		local sound_id_content = allocString(sound_id_len);
 		for i = 1, sound_id_len do
@@ -11392,8 +12677,30 @@ function abi.ffi.event_sound_played_on_played(self, callback_data, callback_vtab
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_sound_resumed_on_resumed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Resumed:Connect(function(sound_id)
+		local sound_id_len = #sound_id;
+		local sound_id_content = allocString(sound_id_len);
+		for i = 1, sound_id_len do
+			storeU8(memory, sound_id_content + (i - 1), string.byte(sound_id:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, sound_id_content, sound_id_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_sound_resumed_on_resumed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Resumed:Connect(function(sound_id)
+		local sound_id_len = #sound_id;
+		local sound_id_content = allocString(sound_id_len);
+		for i = 1, sound_id_len do
+			storeU8(memory, sound_id_content + (i - 1), string.byte(sound_id:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, sound_id_content, sound_id_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_sound_stopped_on_stopped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Stopped:Connect(function(sound_id)
 		local sound_id_len = #sound_id;
 		local sound_id_content = allocString(sound_id_len);
 		for i = 1, sound_id_len do
@@ -11982,8 +13289,28 @@ end
 function abi.ffi.property_setter_team_team_color_set_team_color(self, value)
 	getPointer(self).TeamColor = getPointer(value);
 end
+function abi.ffi.event_team_player_added_on_player_added_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerAdded:Connect(function(player)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_team_player_added_on_player_added(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerAdded:Connect(function(player)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_team_player_removed_on_player_removed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PlayerRemoved:Connect(function(player)
 		local player_optional, player_optional_0 = 0, 0;
 		if (player ~= nil) then
 			player_optional, player_optional_0 = 1, createPointer(player);
@@ -12062,6 +13389,25 @@ end
 function abi.ffi.method_teleport_service_set_teleport_gui(self, gui)
 	getPointer(self):SetTeleportGui(getPointer(gui))
 end
+function abi.ffi.event_teleport_service_teleport_init_failed_on_teleport_init_failed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TeleportInitFailed:Connect(function(player, teleport_result, error_message, place_id, teleport_options)
+		local player_optional, player_optional_0 = 0, 0;
+		if (player ~= nil) then
+			player_optional, player_optional_0 = 1, createPointer(player);
+		end
+		local error_message_len = #error_message;
+		local error_message_content = allocString(error_message_len);
+		for i = 1, error_message_len do
+			storeU8(memory, error_message_content + (i - 1), string.byte(error_message:sub(i, i)));
+		end
+		local teleport_options_optional, teleport_options_optional_0 = 0, 0;
+		if (teleport_options ~= nil) then
+			teleport_options_optional, teleport_options_optional_0 = 1, createPointer(teleport_options);
+		end
+		invokeFunction(callback_data, callback_vtable, player_optional, player_optional_0, teleport_result, error_message_content, error_message_len, place_id, teleport_options_optional, teleport_options_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_teleport_service_teleport_init_failed_on_teleport_init_failed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TeleportInitFailed:Connect(function(player, teleport_result, error_message, place_id, teleport_options)
 		local player_optional, player_optional_0 = 0, 0;
@@ -12130,6 +13476,16 @@ function abi.ffi.method_text_channel_send_async(self, message_addr, message_len,
 	end)
 	return future;
 end
+function abi.ffi.event_text_channel_message_received_on_message_received_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MessageReceived:Connect(function(incoming_message)
+		local incoming_message_optional, incoming_message_optional_0 = 0, 0;
+		if (incoming_message ~= nil) then
+			incoming_message_optional, incoming_message_optional_0 = 1, createPointer(incoming_message);
+		end
+		invokeFunction(callback_data, callback_vtable, incoming_message_optional, incoming_message_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_text_channel_message_received_on_message_received(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MessageReceived:Connect(function(incoming_message)
 		local incoming_message_optional, incoming_message_optional_0 = 0, 0;
@@ -12170,6 +13526,21 @@ function abi.ffi.property_getter_text_chat_command_secondary_alias(self)
 end
 function abi.ffi.property_setter_text_chat_command_secondary_alias_set_secondary_alias(self, value_addr, value_len)
 	getPointer(self).SecondaryAlias = loadString(memory, value_addr, value_len);
+end
+function abi.ffi.event_text_chat_command_triggered_on_triggered_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Triggered:Connect(function(origin_text_source, unfiltered_text)
+		local origin_text_source_optional, origin_text_source_optional_0 = 0, 0;
+		if (origin_text_source ~= nil) then
+			origin_text_source_optional, origin_text_source_optional_0 = 1, createPointer(origin_text_source);
+		end
+		local unfiltered_text_len = #unfiltered_text;
+		local unfiltered_text_content = allocString(unfiltered_text_len);
+		for i = 1, unfiltered_text_len do
+			storeU8(memory, unfiltered_text_content + (i - 1), string.byte(unfiltered_text:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, origin_text_source_optional, origin_text_source_optional_0, unfiltered_text_content, unfiltered_text_len)
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_text_chat_command_triggered_on_triggered(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Triggered:Connect(function(origin_text_source, unfiltered_text)
@@ -12459,8 +13830,28 @@ end
 function abi.ffi.property_setter_text_chat_service_create_default_text_channels_set_create_default_text_channels(self, value)
 	getPointer(self).CreateDefaultTextChannels = value == 1;
 end
+function abi.ffi.event_text_chat_service_message_received_on_message_received_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MessageReceived:Connect(function(text_chat_message)
+		local text_chat_message_optional, text_chat_message_optional_0 = 0, 0;
+		if (text_chat_message ~= nil) then
+			text_chat_message_optional, text_chat_message_optional_0 = 1, createPointer(text_chat_message);
+		end
+		invokeFunction(callback_data, callback_vtable, text_chat_message_optional, text_chat_message_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_text_chat_service_message_received_on_message_received(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).MessageReceived:Connect(function(text_chat_message)
+		local text_chat_message_optional, text_chat_message_optional_0 = 0, 0;
+		if (text_chat_message ~= nil) then
+			text_chat_message_optional, text_chat_message_optional_0 = 1, createPointer(text_chat_message);
+		end
+		invokeFunction(callback_data, callback_vtable, text_chat_message_optional, text_chat_message_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_text_chat_service_sending_message_on_sending_message_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).SendingMessage:Connect(function(text_chat_message)
 		local text_chat_message_optional, text_chat_message_optional_0 = 0, 0;
 		if (text_chat_message ~= nil) then
 			text_chat_message_optional, text_chat_message_optional_0 = 1, createPointer(text_chat_message);
@@ -12754,6 +14145,12 @@ end
 function abi.ffi.method_tween_base_play(self)
 	getPointer(self):Play()
 end
+function abi.ffi.event_tween_base_completed_on_completed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Completed:Connect(function(playback_state)
+		invokeFunction(callback_data, callback_vtable, playback_state)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_tween_base_completed_on_completed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Completed:Connect(function(playback_state)
 		invokeFunction(callback_data, callback_vtable, playback_state)
@@ -13025,8 +14422,28 @@ end
 function abi.ffi.method_ui_page_layout_previous(self)
 	getPointer(self):Previous()
 end
+function abi.ffi.event_ui_page_layout_page_enter_on_page_enter_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PageEnter:Connect(function(page)
+		local page_optional, page_optional_0 = 0, 0;
+		if (page ~= nil) then
+			page_optional, page_optional_0 = 1, createPointer(page);
+		end
+		invokeFunction(callback_data, callback_vtable, page_optional, page_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_ui_page_layout_page_enter_on_page_enter(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PageEnter:Connect(function(page)
+		local page_optional, page_optional_0 = 0, 0;
+		if (page ~= nil) then
+			page_optional, page_optional_0 = 1, createPointer(page);
+		end
+		invokeFunction(callback_data, callback_vtable, page_optional, page_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_ui_page_layout_page_leave_on_page_leave_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PageLeave:Connect(function(page)
 		local page_optional, page_optional_0 = 0, 0;
 		if (page ~= nil) then
 			page_optional, page_optional_0 = 1, createPointer(page);
@@ -13042,6 +14459,16 @@ function abi.ffi.event_ui_page_layout_page_leave_on_page_leave(self, callback_da
 			page_optional, page_optional_0 = 1, createPointer(page);
 		end
 		invokeFunction(callback_data, callback_vtable, page_optional, page_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_ui_page_layout_stopped_on_stopped_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Stopped:Connect(function(current_page)
+		local current_page_optional, current_page_optional_0 = 0, 0;
+		if (current_page ~= nil) then
+			current_page_optional, current_page_optional_0 = 1, createPointer(current_page);
+		end
+		invokeFunction(callback_data, callback_vtable, current_page_optional, current_page_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -13276,9 +14703,21 @@ end
 function abi.ffi.method_user_game_settings_set_onboarding_completed(self, onboarding_id_addr, onboarding_id_len)
 	getPointer(self):SetOnboardingCompleted(loadString(memory, onboarding_id_addr, onboarding_id_len))
 end
+function abi.ffi.event_user_game_settings_fullscreen_changed_on_fullscreen_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).FullscreenChanged:Connect(function(is_fullscreen)
+		invokeFunction(callback_data, callback_vtable, is_fullscreen and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_game_settings_fullscreen_changed_on_fullscreen_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).FullscreenChanged:Connect(function(is_fullscreen)
 		invokeFunction(callback_data, callback_vtable, is_fullscreen and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_game_settings_studio_mode_changed_on_studio_mode_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).StudioModeChanged:Connect(function(is_studio_mode)
+		invokeFunction(callback_data, callback_vtable, is_studio_mode and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -13428,6 +14867,16 @@ end
 function abi.ffi.method_user_input_service_set_navigation_gamepad(self, gamepad_enum, enabled)
 	getPointer(self):SetNavigationGamepad(gamepad_enum, enabled == 1)
 end
+function abi.ffi.event_user_input_service_device_acceleration_changed_on_device_acceleration_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DeviceAccelerationChanged:Connect(function(acceleration)
+		local acceleration_optional, acceleration_optional_0 = 0, 0;
+		if (acceleration ~= nil) then
+			acceleration_optional, acceleration_optional_0 = 1, createPointer(acceleration);
+		end
+		invokeFunction(callback_data, callback_vtable, acceleration_optional, acceleration_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_device_acceleration_changed_on_device_acceleration_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DeviceAccelerationChanged:Connect(function(acceleration)
 		local acceleration_optional, acceleration_optional_0 = 0, 0;
@@ -13435,6 +14884,16 @@ function abi.ffi.event_user_input_service_device_acceleration_changed_on_device_
 			acceleration_optional, acceleration_optional_0 = 1, createPointer(acceleration);
 		end
 		invokeFunction(callback_data, callback_vtable, acceleration_optional, acceleration_optional_0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_device_gravity_changed_on_device_gravity_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DeviceGravityChanged:Connect(function(gravity)
+		local gravity_optional, gravity_optional_0 = 0, 0;
+		if (gravity ~= nil) then
+			gravity_optional, gravity_optional_0 = 1, createPointer(gravity);
+		end
+		invokeFunction(callback_data, callback_vtable, gravity_optional, gravity_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -13448,6 +14907,16 @@ function abi.ffi.event_user_input_service_device_gravity_changed_on_device_gravi
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_device_rotation_changed_on_device_rotation_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DeviceRotationChanged:Connect(function(rotation, cframe)
+		local rotation_optional, rotation_optional_0 = 0, 0;
+		if (rotation ~= nil) then
+			rotation_optional, rotation_optional_0 = 1, createPointer(rotation);
+		end
+		invokeFunction(callback_data, callback_vtable, rotation_optional, rotation_optional_0, createPointer(cframe))
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_device_rotation_changed_on_device_rotation_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).DeviceRotationChanged:Connect(function(rotation, cframe)
 		local rotation_optional, rotation_optional_0 = 0, 0;
@@ -13458,8 +14927,20 @@ function abi.ffi.event_user_input_service_device_rotation_changed_on_device_rota
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_gamepad_connected_on_gamepad_connected_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).GamepadConnected:Connect(function(gamepad_num)
+		invokeFunction(callback_data, callback_vtable, gamepad_num)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_gamepad_connected_on_gamepad_connected(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).GamepadConnected:Connect(function(gamepad_num)
+		invokeFunction(callback_data, callback_vtable, gamepad_num)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_gamepad_disconnected_on_gamepad_disconnected_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).GamepadDisconnected:Connect(function(gamepad_num)
 		invokeFunction(callback_data, callback_vtable, gamepad_num)
 	end));
 	return createPointer(result_0);
@@ -13470,8 +14951,28 @@ function abi.ffi.event_user_input_service_gamepad_disconnected_on_gamepad_discon
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_input_began_on_input_began_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputBegan:Connect(function(input, game_processed_event)
+		local input_optional, input_optional_0 = 0, 0;
+		if (input ~= nil) then
+			input_optional, input_optional_0 = 1, createPointer(input);
+		end
+		invokeFunction(callback_data, callback_vtable, input_optional, input_optional_0, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_input_began_on_input_began(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputBegan:Connect(function(input, game_processed_event)
+		local input_optional, input_optional_0 = 0, 0;
+		if (input ~= nil) then
+			input_optional, input_optional_0 = 1, createPointer(input);
+		end
+		invokeFunction(callback_data, callback_vtable, input_optional, input_optional_0, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_input_changed_on_input_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputChanged:Connect(function(input, game_processed_event)
 		local input_optional, input_optional_0 = 0, 0;
 		if (input ~= nil) then
 			input_optional, input_optional_0 = 1, createPointer(input);
@@ -13490,6 +14991,16 @@ function abi.ffi.event_user_input_service_input_changed_on_input_changed(self, c
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_input_ended_on_input_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputEnded:Connect(function(input, game_processed_event)
+		local input_optional, input_optional_0 = 0, 0;
+		if (input ~= nil) then
+			input_optional, input_optional_0 = 1, createPointer(input);
+		end
+		invokeFunction(callback_data, callback_vtable, input_optional, input_optional_0, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_input_ended_on_input_ended(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).InputEnded:Connect(function(input, game_processed_event)
 		local input_optional, input_optional_0 = 0, 0;
@@ -13500,9 +15011,21 @@ function abi.ffi.event_user_input_service_input_ended_on_input_ended(self, callb
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_jump_request_on_jump_request_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).JumpRequest:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_jump_request_on_jump_request(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).JumpRequest:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_last_input_type_changed_on_last_input_type_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).LastInputTypeChanged:Connect(function(last_input_type)
+		invokeFunction(callback_data, callback_vtable, last_input_type)
 	end));
 	return createPointer(result_0);
 end
@@ -13512,9 +15035,25 @@ function abi.ffi.event_user_input_service_last_input_type_changed_on_last_input_
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_pointer_action_on_pointer_action_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PointerAction:Connect(function(wheel, pan, pinch, game_processed_event)
+		invokeFunction(callback_data, callback_vtable, wheel, createPointer(pan), pinch, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_pointer_action_on_pointer_action(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).PointerAction:Connect(function(wheel, pan, pinch, game_processed_event)
 		invokeFunction(callback_data, callback_vtable, wheel, createPointer(pan), pinch, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_text_box_focus_released_on_text_box_focus_released_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TextBoxFocusReleased:Connect(function(textbox_released)
+		local textbox_released_optional, textbox_released_optional_0 = 0, 0;
+		if (textbox_released ~= nil) then
+			textbox_released_optional, textbox_released_optional_0 = 1, createPointer(textbox_released);
+		end
+		invokeFunction(callback_data, callback_vtable, textbox_released_optional, textbox_released_optional_0)
 	end));
 	return createPointer(result_0);
 end
@@ -13528,6 +15067,16 @@ function abi.ffi.event_user_input_service_text_box_focus_released_on_text_box_fo
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_text_box_focused_on_text_box_focused_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TextBoxFocused:Connect(function(textbox_focused)
+		local textbox_focused_optional, textbox_focused_optional_0 = 0, 0;
+		if (textbox_focused ~= nil) then
+			textbox_focused_optional, textbox_focused_optional_0 = 1, createPointer(textbox_focused);
+		end
+		invokeFunction(callback_data, callback_vtable, textbox_focused_optional, textbox_focused_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_text_box_focused_on_text_box_focused(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TextBoxFocused:Connect(function(textbox_focused)
 		local textbox_focused_optional, textbox_focused_optional_0 = 0, 0;
@@ -13538,8 +15087,28 @@ function abi.ffi.event_user_input_service_text_box_focused_on_text_box_focused(s
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_touch_ended_on_touch_ended_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchEnded:Connect(function(touch, game_processed_event)
+		local touch_optional, touch_optional_0 = 0, 0;
+		if (touch ~= nil) then
+			touch_optional, touch_optional_0 = 1, createPointer(touch);
+		end
+		invokeFunction(callback_data, callback_vtable, touch_optional, touch_optional_0, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_touch_ended_on_touch_ended(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchEnded:Connect(function(touch, game_processed_event)
+		local touch_optional, touch_optional_0 = 0, 0;
+		if (touch ~= nil) then
+			touch_optional, touch_optional_0 = 1, createPointer(touch);
+		end
+		invokeFunction(callback_data, callback_vtable, touch_optional, touch_optional_0, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_touch_moved_on_touch_moved_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchMoved:Connect(function(touch, game_processed_event)
 		local touch_optional, touch_optional_0 = 0, 0;
 		if (touch ~= nil) then
 			touch_optional, touch_optional_0 = 1, createPointer(touch);
@@ -13558,6 +15127,16 @@ function abi.ffi.event_user_input_service_touch_moved_on_touch_moved(self, callb
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_touch_started_on_touch_started_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchStarted:Connect(function(touch, game_processed_event)
+		local touch_optional, touch_optional_0 = 0, 0;
+		if (touch ~= nil) then
+			touch_optional, touch_optional_0 = 1, createPointer(touch);
+		end
+		invokeFunction(callback_data, callback_vtable, touch_optional, touch_optional_0, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_touch_started_on_touch_started(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchStarted:Connect(function(touch, game_processed_event)
 		local touch_optional, touch_optional_0 = 0, 0;
@@ -13568,9 +15147,21 @@ function abi.ffi.event_user_input_service_touch_started_on_touch_started(self, c
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_touch_swipe_on_touch_swipe_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchSwipe:Connect(function(swipe_direction, number_of_touches, game_processed_event)
+		invokeFunction(callback_data, callback_vtable, swipe_direction, number_of_touches, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_touch_swipe_on_touch_swipe(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchSwipe:Connect(function(swipe_direction, number_of_touches, game_processed_event)
 		invokeFunction(callback_data, callback_vtable, swipe_direction, number_of_touches, game_processed_event and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_touch_tap_in_world_on_touch_tap_in_world_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchTapInWorld:Connect(function(position, processed_by_ui)
+		invokeFunction(callback_data, callback_vtable, createPointer(position), processed_by_ui and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -13580,14 +15171,32 @@ function abi.ffi.event_user_input_service_touch_tap_in_world_on_touch_tap_in_wor
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_user_c_frame_changed_on_user_c_frame_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).UserCFrameChanged:Connect(function(type, value)
+		invokeFunction(callback_data, callback_vtable, type, createPointer(value))
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_user_c_frame_changed_on_user_c_frame_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).UserCFrameChanged:Connect(function(type, value)
 		invokeFunction(callback_data, callback_vtable, type, createPointer(value))
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_user_input_service_window_focus_released_on_window_focus_released_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).WindowFocusReleased:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_user_input_service_window_focus_released_on_window_focus_released(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).WindowFocusReleased:Connect(function()
+		invokeFunction(callback_data, callback_vtable)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_user_input_service_window_focused_on_window_focused_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).WindowFocused:Connect(function()
 		invokeFunction(callback_data, callback_vtable)
 	end));
 	return createPointer(result_0);
@@ -13640,9 +15249,21 @@ end
 function abi.ffi.method_vr_service_set_touchpad_mode(self, pad, mode)
 	getPointer(self):SetTouchpadMode(pad, mode)
 end
+function abi.ffi.event_vr_service_navigation_requested_on_navigation_requested_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).NavigationRequested:Connect(function(cframe, input_user_c_frame)
+		invokeFunction(callback_data, callback_vtable, createPointer(cframe), input_user_c_frame)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_vr_service_navigation_requested_on_navigation_requested(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).NavigationRequested:Connect(function(cframe, input_user_c_frame)
 		invokeFunction(callback_data, callback_vtable, createPointer(cframe), input_user_c_frame)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_vr_service_touchpad_mode_changed_on_touchpad_mode_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).TouchpadModeChanged:Connect(function(pad, mode)
+		invokeFunction(callback_data, callback_vtable, pad, mode)
 	end));
 	return createPointer(result_0);
 end
@@ -13652,9 +15273,21 @@ function abi.ffi.event_vr_service_touchpad_mode_changed_on_touchpad_mode_changed
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_vr_service_user_c_frame_changed_on_user_c_frame_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).UserCFrameChanged:Connect(function(type, value)
+		invokeFunction(callback_data, callback_vtable, type, createPointer(value))
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_vr_service_user_c_frame_changed_on_user_c_frame_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).UserCFrameChanged:Connect(function(type, value)
 		invokeFunction(callback_data, callback_vtable, type, createPointer(value))
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_vr_service_user_c_frame_enabled_on_user_c_frame_enabled_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).UserCFrameEnabled:Connect(function(type, enabled)
+		invokeFunction(callback_data, callback_vtable, type, enabled and 1 or 0)
 	end));
 	return createPointer(result_0);
 end
@@ -13671,6 +15304,12 @@ end
 function abi.ffi.property_setter_bool_value_value_set_value(self, value)
 	getPointer(self).Value = value == 1;
 end
+function abi.ffi.event_bool_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, value and 1 or 0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_bool_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
 		invokeFunction(callback_data, callback_vtable, value and 1 or 0)
@@ -13683,6 +15322,12 @@ function abi.ffi.property_getter_brick_color_value_value(self)
 end
 function abi.ffi.property_setter_brick_color_value_value_set_value(self, value)
 	getPointer(self).Value = getPointer(value);
+end
+function abi.ffi.event_brick_color_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, createPointer(value))
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_brick_color_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
@@ -13697,6 +15342,12 @@ end
 function abi.ffi.property_setter_c_frame_value_value_set_value(self, value)
 	getPointer(self).Value = getPointer(value);
 end
+function abi.ffi.event_c_frame_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, createPointer(value))
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_c_frame_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
 		invokeFunction(callback_data, callback_vtable, createPointer(value))
@@ -13709,6 +15360,12 @@ function abi.ffi.property_getter_color_3_value_value(self)
 end
 function abi.ffi.property_setter_color_3_value_value_set_value(self, value)
 	getPointer(self).Value = getPointer(value);
+end
+function abi.ffi.event_color_3_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, createPointer(value))
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_color_3_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
@@ -13723,6 +15380,12 @@ end
 function abi.ffi.property_setter_int_value_value_set_value(self, value)
 	getPointer(self).Value = value;
 end
+function abi.ffi.event_int_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, value)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_int_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
 		invokeFunction(callback_data, callback_vtable, value)
@@ -13735,6 +15398,12 @@ function abi.ffi.property_getter_number_value_value(self)
 end
 function abi.ffi.property_setter_number_value_value_set_value(self, value)
 	getPointer(self).Value = value;
+end
+function abi.ffi.event_number_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, value)
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_number_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
@@ -13753,6 +15422,16 @@ end
 function abi.ffi.property_setter_object_value_value_set_value(self, value)
 	getPointer(self).Value = getPointer(value);
 end
+function abi.ffi.event_object_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		local value_optional, value_optional_0 = 0, 0;
+		if (value ~= nil) then
+			value_optional, value_optional_0 = 1, createPointer(value);
+		end
+		invokeFunction(callback_data, callback_vtable, value_optional, value_optional_0)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_object_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
 		local value_optional, value_optional_0 = 0, 0;
@@ -13769,6 +15448,12 @@ function abi.ffi.property_getter_ray_value_value(self)
 end
 function abi.ffi.property_setter_ray_value_value_set_value(self, value)
 	getPointer(self).Value = getPointer(value);
+end
+function abi.ffi.event_ray_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, createPointer(value))
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_ray_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
@@ -13788,6 +15473,17 @@ end
 function abi.ffi.property_setter_string_value_value_set_value(self, value_addr, value_len)
 	getPointer(self).Value = loadString(memory, value_addr, value_len);
 end
+function abi.ffi.event_string_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		local value_len = #value;
+		local value_content = allocString(value_len);
+		for i = 1, value_len do
+			storeU8(memory, value_content + (i - 1), string.byte(value:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, value_content, value_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_string_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
 		local value_len = #value;
@@ -13805,6 +15501,12 @@ function abi.ffi.property_getter_vector_3_value_value(self)
 end
 function abi.ffi.property_setter_vector_3_value_value_set_value(self, value)
 	getPointer(self).Value = getPointer(value);
+end
+function abi.ffi.event_vector_3_value_changed_on_changed_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)
+		invokeFunction(callback_data, callback_vtable, createPointer(value))
+	end));
+	return createPointer(result_0);
 end
 function abi.ffi.event_vector_3_value_changed_on_changed(self, callback_data, callback_vtable)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(value)

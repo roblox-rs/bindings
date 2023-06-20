@@ -240,13 +240,13 @@ fn transform_class_function(
     })
 }
 
-fn transform_class_event(dump: &Dump, event: &ClassEventMember) -> Option<Member> {
+fn transform_class_event(dump: &Dump, event: &ClassEventMember) -> Vec<Member> {
     if !event
         .parameters
         .iter()
         .all(|parameter| is_type_generated(dump, &parameter.value_type))
     {
-        return None;
+        return vec![];
     }
 
     let inputs = event
@@ -260,36 +260,55 @@ fn transform_class_event(dump: &Dump, event: &ClassEventMember) -> Option<Member
         })
         .collect::<Vec<_>>();
 
-    Some(Member {
-        flags: MemberFlags {
-            deprecated: event.tags.contains("Deprecated"),
-            ..MemberFlags::default()
+    vec![
+        Member {
+            flags: MemberFlags {
+                deprecated: event.tags.contains("Deprecated"),
+                ..MemberFlags::default()
+            },
+            implementation: implementations::Event.into(),
+            api_name: event.name.clone(),
+            name: format!("on_{}_async", to_snake(&event.name)),
+            inputs: vec![
+                Parameter::new("self", CodegenKind::Instance("Instance".to_string())),
+                Parameter::new(
+                    "callback",
+                    CodegenKind::Function(inputs.clone(), Box::new(CodegenKind::Void), Async::Yes),
+                ),
+            ],
+            outputs: vec![CodegenKind::DataType("RbxScriptConnection".to_string())],
         },
-        implementation: implementations::Event.into(),
-        api_name: event.name.clone(),
-        name: format!("on_{}", to_snake(&event.name)),
-        inputs: vec![
-            Parameter::new("self", CodegenKind::Instance("Instance".to_string())),
-            Parameter::new(
-                "callback",
-                CodegenKind::Function(inputs, Box::new(CodegenKind::Void), Async::No),
-            ),
-        ],
-        outputs: vec![CodegenKind::DataType("RbxScriptConnection".to_string())],
-    })
+        Member {
+            flags: MemberFlags {
+                deprecated: event.tags.contains("Deprecated"),
+                ..MemberFlags::default()
+            },
+            implementation: implementations::Event.into(),
+            api_name: event.name.clone(),
+            name: format!("on_{}", to_snake(&event.name)),
+            inputs: vec![
+                Parameter::new("self", CodegenKind::Instance("Instance".to_string())),
+                Parameter::new(
+                    "callback",
+                    CodegenKind::Function(inputs, Box::new(CodegenKind::Void), Async::No),
+                ),
+            ],
+            outputs: vec![CodegenKind::DataType("RbxScriptConnection".to_string())],
+        },
+    ]
 }
 
-fn transform_class_callback(dump: &Dump, callback: &ClassCallbackMember) -> Option<Member> {
+fn transform_class_callback(dump: &Dump, callback: &ClassCallbackMember) -> Vec<Member> {
     if !callback
         .parameters
         .iter()
         .all(|parameter| is_type_generated(dump, &parameter.value_type))
     {
-        return None;
+        return vec![];
     }
 
     if !is_type_generated(dump, &callback.return_type) {
-        return None;
+        return vec![];
     }
 
     let inputs = callback
@@ -303,27 +322,50 @@ fn transform_class_callback(dump: &Dump, callback: &ClassCallbackMember) -> Opti
         })
         .collect::<Vec<_>>();
 
-    Some(Member {
-        flags: MemberFlags {
-            deprecated: callback.tags.contains("Deprecated"),
-            ..MemberFlags::default()
-        },
-        implementation: implementations::Callback.into(),
-        name: format!("on_{}", to_snake(&callback.name)),
-        api_name: callback.name.clone(),
-        inputs: vec![
-            Parameter::new("self", CodegenKind::Instance("Instance".to_string())),
-            Parameter::new(
-                "callback",
-                CodegenKind::Function(
-                    inputs,
-                    Box::new(transform_value_type(&callback.return_type, false)),
-                    Async::Yes,
+    vec![
+        Member {
+            flags: MemberFlags {
+                deprecated: callback.tags.contains("Deprecated"),
+                ..MemberFlags::default()
+            },
+            implementation: implementations::Callback.into(),
+            name: format!("on_{}_async", to_snake(&callback.name)),
+            api_name: callback.name.clone(),
+            inputs: vec![
+                Parameter::new("self", CodegenKind::Instance("Instance".to_string())),
+                Parameter::new(
+                    "callback",
+                    CodegenKind::Function(
+                        inputs.clone(),
+                        Box::new(transform_value_type(&callback.return_type, false)),
+                        Async::Yes,
+                    ),
                 ),
-            ),
-        ],
-        outputs: Vec::new(),
-    })
+            ],
+            outputs: Vec::new(),
+        },
+        Member {
+            flags: MemberFlags {
+                deprecated: callback.tags.contains("Deprecated"),
+                ..MemberFlags::default()
+            },
+            implementation: implementations::Callback.into(),
+            name: format!("on_{}", to_snake(&callback.name)),
+            api_name: callback.name.clone(),
+            inputs: vec![
+                Parameter::new("self", CodegenKind::Instance("Instance".to_string())),
+                Parameter::new(
+                    "callback",
+                    CodegenKind::Function(
+                        inputs,
+                        Box::new(transform_value_type(&callback.return_type, false)),
+                        Async::No,
+                    ),
+                ),
+            ],
+            outputs: Vec::new(),
+        },
+    ]
 }
 
 fn transform_class_member(dump: &Dump, class: &Class, member: &ClassMember) -> Vec<Member> {
@@ -337,9 +379,7 @@ fn transform_class_member(dump: &Dump, class: &Class, member: &ClassMember) -> V
         ClassMember::Function(function) => transform_class_function(dump, class, function)
             .into_iter()
             .collect(),
-        ClassMember::Callback(callback) => transform_class_callback(dump, callback)
-            .into_iter()
-            .collect(),
+        ClassMember::Callback(callback) => transform_class_callback(dump, callback),
     }
 }
 
