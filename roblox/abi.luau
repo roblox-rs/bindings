@@ -302,6 +302,14 @@ function abi.ffi.event_instance_destroying_on_destroying(self, callback_data, ca
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.property_getter_instance_parent(self)
+	local result_0 = getPointer(self).Parent;
+	local result_0_optional, result_0_optional_0 = 0, 0;
+	if (result_0 ~= nil) then
+		result_0_optional, result_0_optional_0 = 1, createPointer(result_0);
+	end
+	return result_0_optional, result_0_optional_0;
+end
 function abi.ffi.property_setter_instance_parent_set_parent(self, value_kind, value)
 	local value_optional;
 	if (value_kind == 1) then
@@ -310,6 +318,17 @@ function abi.ffi.property_setter_instance_parent_set_parent(self, value_kind, va
 	getPointer(self).Parent = value_optional;
 end
 function abi.ffi.event_instance_changed_on_instance_changed(self, callback_data, callback_vtable)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(property)
+		local property_len = #property;
+		local property_content = allocString(property_len);
+		for i = 1, property_len do
+			storeU8(memory, property_content + (i - 1), string.byte(property:sub(i, i)));
+		end
+		invokeFunction(callback_data, callback_vtable, property_content, property_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_instance_changed_on_instance_changed_async(self, callback_data, callback_vtable, callback_poll)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Changed:Connect(function(property)
 		local property_len = #property;
 		local property_content = allocString(property_len);
@@ -1458,6 +1477,19 @@ function abi.ffi.method_beam_set_texture_offset(self, offset)
 	getPointer(self):SetTextureOffset(offset)
 end
 function abi.ffi.event_bindable_event_event(self, callback_data, callback_vtable)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Event:Connect(function(...)
+		local values_tuple = { ... };
+		local values_len = select("#", ...);
+		local values_tuple_vec = allocVec(values_len * 4)
+		for i = 1, values_len do
+			local values_tuple_vec_value = values_tuple[i];
+			storeU32(memory, values_tuple_vec + (i - 1) * 4 + 0, createPointer(values_tuple_vec_value));
+		end
+		invokeFunction(callback_data, callback_vtable, values_tuple_vec, values_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_bindable_event_event_event_async(self, callback_data, callback_vtable, callback_poll)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Event:Connect(function(...)
 		local values_tuple = { ... };
 		local values_len = select("#", ...);
@@ -7473,6 +7505,12 @@ function abi.ffi.event_humanoid_touched_on_humanoid_touched(self, callback_data,
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_humanoid_touched_on_humanoid_touched_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Touched:Connect(function(part, limb)
+		invokeFunction(callback_data, callback_vtable, createPointer(part), createPointer(limb))
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.property_getter_humanoid_description_back_accessory(self)
 	local result_0 = getPointer(self).BackAccessory;
 	local result_0_len = #result_0;
@@ -9657,6 +9695,12 @@ function abi.ffi.event_base_part_touched_on_touched(self, callback_data, callbac
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_base_part_touched_on_touched_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).Touched:Connect(function(part)
+		invokeFunction(callback_data, callback_vtable, createPointer(part))
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.property_getter_part_shape(self)
 	local result_0 = getPointer(self).Shape;
 	return result_0;
@@ -11807,7 +11851,33 @@ function abi.ffi.event_remote_event_on_server_event(self, callback_data, callbac
 	end));
 	return createPointer(result_0);
 end
+function abi.ffi.event_remote_event_on_server_event_on_server_event_async(self, callback_data, callback_vtable, callback_poll)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).OnServerEvent:Connect(function(player, ...)
+		local values_tuple = { ... };
+		local values_len = select("#", ...);
+		local values_tuple_vec = allocVec(values_len * 4)
+		for i = 1, values_len do
+			local values_tuple_vec_value = values_tuple[i];
+			storeU32(memory, values_tuple_vec + (i - 1) * 4 + 0, createPointer(values_tuple_vec_value));
+		end
+		invokeFunction(callback_data, callback_vtable, createPointer(player), values_tuple_vec, values_len)
+	end));
+	return createPointer(result_0);
+end
 function abi.ffi.event_remote_event_on_client_event(self, callback_data, callback_vtable)
+	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).OnClientEvent:Connect(function(...)
+		local values_tuple = { ... };
+		local values_len = select("#", ...);
+		local values_tuple_vec = allocVec(values_len * 4)
+		for i = 1, values_len do
+			local values_tuple_vec_value = values_tuple[i];
+			storeU32(memory, values_tuple_vec + (i - 1) * 4 + 0, createPointer(values_tuple_vec_value));
+		end
+		invokeFunction(callback_data, callback_vtable, values_tuple_vec, values_len)
+	end));
+	return createPointer(result_0);
+end
+function abi.ffi.event_remote_event_on_client_event_on_client_event_async(self, callback_data, callback_vtable, callback_poll)
 	local result_0 = createConnection(callback_data, callback_vtable, getPointer(self).OnClientEvent:Connect(function(...)
 		local values_tuple = { ... };
 		local values_len = select("#", ...);
@@ -11844,7 +11914,7 @@ function abi.ffi.method_remote_event_fire_server(self, values_addr, values_len)
 	end
 	getPointer(self):FireServer(unpack(values_vec, 1, values_len))
 end
-function abi.ffi.callback_remote_function_on_server_invoke(self, callback_data, callback_vtable, callback_poll)
+function abi.ffi.callback_remote_function_on_server_invoke(self, callback_data, callback_vtable)
 	getPointer(self).OnServerInvoke = function(player, ...)
 		local values_tuple = { ... };
 		local values_len = select("#", ...);
@@ -11862,7 +11932,43 @@ function abi.ffi.callback_remote_function_on_server_invoke(self, callback_data, 
 		return unpack(callback_vec, 1, result_1);
 	end;
 end
-function abi.ffi.callback_remote_function_on_client_invoke(self, callback_data, callback_vtable, callback_poll)
+function abi.ffi.callback_remote_function_on_server_invoke_on_server_invoke_async(self, callback_data, callback_vtable, callback_poll)
+	getPointer(self).OnServerInvoke = function(player, ...)
+		local values_tuple = { ... };
+		local values_len = select("#", ...);
+		local values_tuple_vec = allocVec(values_len * 4)
+		for i = 1, values_len do
+			local values_tuple_vec_value = values_tuple[i];
+			storeU32(memory, values_tuple_vec + (i - 1) * 4 + 0, createPointer(values_tuple_vec_value));
+		end
+		local result_0, result_1 = invokeFunction(callback_data, callback_vtable, createPointer(player), values_tuple_vec, values_len);
+		local callback_vec = table.create(result_1);
+		for i = 1, result_1 do
+			local vecElement_0 = loadU32(memory, result_0 + (i - 1) * 4 + 0)
+			callback_vec[i] = getPointer(vecElement_0);
+		end
+		return unpack(callback_vec, 1, result_1);
+	end;
+end
+function abi.ffi.callback_remote_function_on_client_invoke(self, callback_data, callback_vtable)
+	getPointer(self).OnClientInvoke = function(...)
+		local values_tuple = { ... };
+		local values_len = select("#", ...);
+		local values_tuple_vec = allocVec(values_len * 4)
+		for i = 1, values_len do
+			local values_tuple_vec_value = values_tuple[i];
+			storeU32(memory, values_tuple_vec + (i - 1) * 4 + 0, createPointer(values_tuple_vec_value));
+		end
+		local result_0, result_1 = invokeFunction(callback_data, callback_vtable, values_tuple_vec, values_len);
+		local callback_vec = table.create(result_1);
+		for i = 1, result_1 do
+			local vecElement_0 = loadU32(memory, result_0 + (i - 1) * 4 + 0)
+			callback_vec[i] = getPointer(vecElement_0);
+		end
+		return unpack(callback_vec, 1, result_1);
+	end;
+end
+function abi.ffi.callback_remote_function_on_client_invoke_on_client_invoke_async(self, callback_data, callback_vtable, callback_poll)
 	getPointer(self).OnClientInvoke = function(...)
 		local values_tuple = { ... };
 		local values_len = select("#", ...);
@@ -15631,6 +15737,17 @@ end
 function abi.ffi.static_function_internal_new_instance_new(class_name_addr, class_name_len)
 	local result_0 = Instance.new(loadString(memory, class_name_addr, class_name_len));
 	return createPointer(result_0);
+end
+function abi.ffi.static_function_internal_task_wait(time)
+	local future = createPointer(0);
+	task.spawn(function()
+		local result_0 = task.wait(time);
+		local output_addr = allocVec(8);
+		storeFloat(memory, output_addr + 0, result_0);
+		updatePointer(future, output_addr);
+		wakeFuture(future);
+	end)
+	return future;
 end
 function abi.ffi.static_function_vector_3_new()
 	local result_0 = Vector3.new();
