@@ -1,29 +1,10 @@
-[package]
-name = "roblox_rs"
-version = "0.1.0"
-authors = ["Firebolt <24422634+Fireboltofdeath@users.noreply.github.com>"]
-edition = "2018"
-build = "./build/main.rs"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-# Smaller allocator
-wee_alloc = { version = "0.4.5" }
-
-[build_dependencies]
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-serde_with = "1.14.0"
-convert_case = "0.5"
-lazy_static = "1.4"
-chrono = "0.4"
-
-[features]
-default = ["multivalue"]
-multivalue = []
-deprecated_apis = []
+[workspace]
+members = [
+    "crates/roblox-rs",
+    "crates/roblox-dump",
+    "crates/codegen",
+    "crates/stream"
+]
 
 [profile.dev]
 # optimize for size even on dev to prevent excessive locals

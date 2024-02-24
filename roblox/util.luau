@@ -18,6 +18,10 @@ return function(rt, wasm, memory)
 		return pointers[id];
 	end
 
+	local function updatePointer(id, value)
+		pointers[id] = value;
+	end
+
 	local function dropPointer(id)
 		pointers[id] = pointers.last;
 		pointers.last = id;
@@ -48,14 +52,6 @@ return function(rt, wasm, memory)
 		return invokeFunction(data, vtable, ...);
 	end
 
-	local function allocString(text)
-		local vec = wasm.func_list.__heap_alloc_string(#text);
-		for i = 1, #text do
-			rt.store.i32_n8(memory, vec + i - 1, string.byte(text, i, i));
-		end
-		return vec;
-	end
-
 	local function readString(addr, len)
 		local s = "";
 		for i = 1, len do
@@ -65,10 +61,10 @@ return function(rt, wasm, memory)
 	end
 
 	return {
-		writeStringReturn = writeStringReturn,
 		dropFunctionRef = dropFunctionRef,
 		invokeFunction = invokeFunction,
 		createPointer = createPointer,
+		updatePointer = updatePointer,
 		dropPointer = dropPointer,
 		readString = readString,
 		getPointer = getPointer,
