@@ -197,6 +197,25 @@ pub fn internal_namespace() -> PartialNamespace {
                     ..MemberFlags::default()
                 };
             },
+            member! {
+                task_spawn(StaticFunction(Some("task"), Some("spawn")));
+                signature = (
+                    closure: CodegenKind::Function(vec![], Box::new(CodegenKind::Void), Async::No)
+                ) -> CodegenKind::Void;
+            },
+            member! {
+                task_defer(StaticFunction(Some("task"), Some("defer")));
+                signature = (
+                    closure: CodegenKind::Function(vec![], Box::new(CodegenKind::Void), Async::No)
+                ) -> CodegenKind::Void;
+            },
+            member! {
+                task_delay(StaticFunction(Some("task"), Some("delay")));
+                signature = (
+                    delay: number,
+                    closure: CodegenKind::Function(vec![], Box::new(CodegenKind::Void), Async::No)
+                ) -> CodegenKind::Void;
+            },
         ],
     }
 }

@@ -15749,6 +15749,21 @@ function abi.ffi.static_function_internal_task_wait(time)
 	end)
 	return future;
 end
+function abi.ffi.static_function_internal_task_spawn(closure_data, closure_vtable)
+	task.spawn(function()
+		invokeFunction(closure_data, closure_vtable)
+	end)
+end
+function abi.ffi.static_function_internal_task_defer(closure_data, closure_vtable)
+	task.defer(function()
+		invokeFunction(closure_data, closure_vtable)
+	end)
+end
+function abi.ffi.static_function_internal_task_delay(delay, closure_data, closure_vtable)
+	task.delay(delay, function()
+		invokeFunction(closure_data, closure_vtable)
+	end)
+end
 function abi.ffi.static_function_vector_3_new()
 	local result_0 = Vector3.new();
 	return createPointer(result_0);

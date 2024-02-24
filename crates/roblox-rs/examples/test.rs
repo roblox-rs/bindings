@@ -3,13 +3,8 @@ use std::convert::TryFrom;
 
 use roblox_rs::{println, *};
 
-// Use `wee_alloc` as the global allocator.
-// #[global_allocator]
-// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
-/// # Safety
 #[allow(unreachable_code)]
-pub fn main() {
+fn main() {
     futures::spawn(async {
         loop {
             let time = task::wait(4.0).await;
