@@ -152,6 +152,7 @@ macro_rules! roblox_enum {
     ($name:ident; { $($field:ident = $value:expr),*, }) => {
 		#[allow(non_camel_case_types)]
 		#[repr(C)]
+		#[derive(Clone, Copy)]
         pub enum $name {
             $(
                 $field = $value

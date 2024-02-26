@@ -9,6 +9,7 @@ pub mod stream;
 pub mod structs;
 
 #[derive(Clone)]
+#[allow(dead_code)]
 pub struct UniqueIds(Cell<u32>, RefCell<HashMap<String, u32>>);
 
 impl UniqueIds {
