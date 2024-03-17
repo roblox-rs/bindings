@@ -1,5 +1,4 @@
-local rt = require(script.runtime);
-local wasm, memory, util;
+local wasm, memory, util, rt;
 local createPointer, getPointer, dropPointer, invokeOnce, readString, writeStringReturn;
 
 local function wrapConstructorNumber(constructor)
@@ -67,6 +66,7 @@ wasm = require(script.wasm)({
 	},
 });
 
+rt = wasm.rt;
 memory = wasm.memory_list.memory;
 util = require(script.util)(rt, wasm, memory);
 
