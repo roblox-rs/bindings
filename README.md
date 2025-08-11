@@ -8,10 +8,10 @@ The roblox-rs crate can be installed from `crates.io` or you can use the Git rep
 ```toml
 [dependencies]
 roblox-rs = { version = <LATEST_VERSION> }
-roblox-rs = { git = "https://github.com/roblox-rs/bindings.git", branch = "v2" }
+roblox-rs = { git = "https://github.com/roblox-rs/bindings.git" }
 ```
 
 The roblox-rs-cli must be installed via Git for now.
 ```bash
-cargo install --git https://github.com/roblox-rs/bindings --branch v2 roblox-rs-cli
+cargo install --git https://github.com/roblox-rs/bindings roblox-rs-cli
 ```
